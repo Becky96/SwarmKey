@@ -14,6 +14,7 @@
 		22F21CE3B902225374BA1CA2 /* maximilian.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87D3A0051CCB2C0F0ECA139E /* maximilian.cpp */; };
 		3AEFE4FA8AD5C72671AD07F8 /* ofxRtMidiOut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 712B183BC00EBFFB1EEA5AB8 /* ofxRtMidiOut.cpp */; };
 		3F1123E44796C08BA1BBFF4D /* ofxDatGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 48505C0D9DE942237364716F /* ofxDatGui.cpp */; };
+		55C4888C20210C2D00972154 /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55C4888A20210C2D00972154 /* Particle.cpp */; settings = {ASSET_TAGS = (); }; };
 		55D52FC7201F5BDA00639726 /* Swarm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D52FC5201F5BDA00639726 /* Swarm.cpp */; settings = {ASSET_TAGS = (); }; };
 		5C4A4AA5D4784DF23EA43038 /* maxiAtoms.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA3ACBB8D16CC0DA1E79C6 /* maxiAtoms.cpp */; };
 		631702104AFC104323A9EB79 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81AC32CCCB56FAABA3E1BDE0 /* CoreMIDI.framework */; };
@@ -76,6 +77,8 @@
 		470CF04F1D4D1B38D5AA1797 /* ofxRtMidiOut.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxRtMidiOut.h; path = ../../../addons/ofxMidi/src/desktop/ofxRtMidiOut.h; sourceTree = SOURCE_ROOT; };
 		48505C0D9DE942237364716F /* ofxDatGui.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxDatGui.cpp; path = "../../../addons/ofxDatGui-master/src/ofxDatGui.cpp"; sourceTree = SOURCE_ROOT; };
 		4CFB659E40D3D3DC5A3E9478 /* maxiGrains.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = maxiGrains.h; path = ../../../addons/ofxMaxim/libs/maxiGrains.h; sourceTree = SOURCE_ROOT; };
+		55C4888A20210C2D00972154 /* Particle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Particle.cpp; sourceTree = "<group>"; };
+		55C4888B20210C2D00972154 /* Particle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Particle.hpp; sourceTree = "<group>"; };
 		55D52FC5201F5BDA00639726 /* Swarm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Swarm.cpp; sourceTree = "<group>"; };
 		55D52FC6201F5BDA00639726 /* Swarm.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Swarm.hpp; sourceTree = "<group>"; };
 		62E0E78EC7EE98511CD37BB5 /* ofxDatGuiMatrix.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiMatrix.h; path = "../../../addons/ofxDatGui-master/src/components/ofxDatGuiMatrix.h"; sourceTree = SOURCE_ROOT; };
@@ -368,6 +371,8 @@
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				55D52FC5201F5BDA00639726 /* Swarm.cpp */,
 				55D52FC6201F5BDA00639726 /* Swarm.hpp */,
+				55C4888A20210C2D00972154 /* Particle.cpp */,
+				55C4888B20210C2D00972154 /* Particle.hpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -487,6 +492,7 @@
 				727733ED4A01FFE86D3E1051 /* ofxSmartFont.cpp in Sources */,
 				55D52FC7201F5BDA00639726 /* Swarm.cpp in Sources */,
 				3F1123E44796C08BA1BBFF4D /* ofxDatGui.cpp in Sources */,
+				55C4888C20210C2D00972154 /* Particle.cpp in Sources */,
 				0FCED26D40D46CF89A58E54C /* fft.cpp in Sources */,
 				5C4A4AA5D4784DF23EA43038 /* maxiAtoms.cpp in Sources */,
 				ABA8875AF0C06690CC0B92B1 /* maxiBark.cpp in Sources */,
