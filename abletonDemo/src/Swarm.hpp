@@ -54,8 +54,8 @@ public:
     //Algoirthm variables
     vector<Particle*> particles;
     int N = 100;                 //Number of particles
-    float con = 0.7984;         //Constriction factor
-    float c1, c2;               //Learning rates
+    float noteCon = 0.7984;         //Constriction factor
+    float noteC1, noteC2;               //Learning rates
     float r1, r2;               //Stochastic elements
     Particle best;
 
@@ -108,6 +108,12 @@ public:
     
     int chosenOctave = 4;
     int determineParticleOctave(int index);
+    
+    
+    bool play = false;
+    
+    int stressedVelocity;
+    int notStressedVelocity;
 };
 
 #endif /* Swarm_hpp */

@@ -3,7 +3,8 @@
 #include "ofMain.h"
 #include "ofxMaxim.h"
 #include "Swarm.hpp"
-#include "ofxDatGui.h" 
+#include "ofxDatGui.h"
+#include "SwarmGUI.hpp"
 
 //Number of swarms
 #define SWARM_NUM 2
@@ -39,8 +40,11 @@ class ofApp : public ofBaseApp{
     Swarm swarms[SWARM_NUM];
     Swarm swarmPort;
     
+    SwarmGUI * left;
+    SwarmGUI * right;
     
-    int tempo = 2;
+    
+    int tempo = 8;
     ofxDatGuiSlider* tempoSlider;
     ofParameter<int> tempoInt;
     
@@ -51,55 +55,9 @@ class ofApp : public ofBaseApp{
     bool changeNotes = true;
     bool startSwarm = false;
     
-    
-    //PSO GUI
-    vector<ofxDatGuiComponent*> PSOcomponents;
-    ofxDatGuiSlider* numOfPSO;
-    ofxDatGuiSlider* constrictionRate;
-    ofxDatGuiSlider* PSOc1;
-    ofxDatGuiSlider* PSOc2;
-    ofxDatGuiSlider* PSOdt;
-    ofxDatGuiSlider* PSOtarget;
-    ofxDatGuiSlider* dimension;
-    ofParameter<int> numOfPSOI;
-    ofParameter<float> constrictionRateF;
-    ofParameter<float> c1F;
-    ofParameter<float> c2F;
-    ofParameter<float> PSOdtF;
-    ofParameter<int> PSOtI;
-    ofParameter<int> dimensionI;
-    
-    
-    ofxDatGuiSlider* rhythmCon;
-    ofxDatGuiSlider* rhythmC1;
-    ofxDatGuiSlider* rhythmC2;
-    ofParameter<float> rhythmConF;
-    ofParameter<float> rhythmC1F;
-    ofParameter<float> rhythmC2F;
 
     
-    //Interval penalties
-    vector<ofxDatGuiComponent*> intervalPenalties;
-    ofxDatGuiSlider* firstPen;
-    ofxDatGuiSlider* secondPen;
-    ofxDatGuiSlider* thirdPen;
-    ofxDatGuiSlider* fourthPen;
-    ofxDatGuiSlider* fifthPen;
-    ofxDatGuiSlider* sixthPen;
-    ofxDatGuiSlider* seventhPen;
-    ofxDatGuiSlider* eighthPen;
-    ofxDatGuiSlider* elsePen;
-    
-    ofParameter<int> firstInt;
-    ofParameter<int> secondInt;
-    ofParameter<int> thirdInt;
-    ofParameter<int> fourthInt;
-    ofParameter<int> fifthInt;
-    ofParameter<int> sixthInt;
-    ofParameter<int> seventhInt;
-    ofParameter<int> eighthInt;
-    ofParameter<int> elseInt;
-    
+
     void onSliderEvent(ofxDatGuiSliderEvent e);
     
     ofxDatGui* gui;
@@ -109,18 +67,10 @@ class ofApp : public ofBaseApp{
     bool changeRhythm = true;
     int changeRhythmInt = 0;
 
-    int pitchPlayhead = 0;
-    
-    int stressed = 110;
-    int notStressed = 80;
+    int pitchPlayheadLeft = 0;
+    int pitchPlayheadRight = 0;
 
-    
-    ofxDatGuiSlider* stressedSlider;
-    ofxDatGuiSlider* notStressedSlider;
-    ofParameter<int> stressedInt;
-    ofParameter<int> notStressedInt;
-    
-    ofxDatGuiSlider* octave;
-    ofParameter<int> octaveInt;
+
+
    
 };

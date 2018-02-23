@@ -30,8 +30,9 @@ void Swarm::setup(int _channel) {
     channel = _channel;
     
     //Default note and velocity
-    note = 1;
-    velocity = 100;
+
+    stressedVelocity = 100;
+    notStressedVelocity = 80;
     
     //Initialising population
     for (int i = 0; i < N; i++) {
@@ -45,8 +46,8 @@ void Swarm::setup(int _channel) {
     bestRhythm->setupParticle();
     
     //Learning factors
-    c1 = con * (4.1/2);
-    c2 = c1;
+    noteC1 = noteCon * (4.1/2);
+    noteC2 = noteC1;
     
     rhythmC1 = rhythmCon * (4.1/2.);
     rhythmC2 = rhythmC1;
@@ -316,7 +317,7 @@ void Swarm::updateParticles() {
         for (int j = 0; j < 4; j++) {
             
             //Velocity update
-            particles[i]->indFreqsVel[j] = con * (particles[i]->indFreqsVel[j] + (c1*r1*(particles[i]->bestIndFreqs[j]-particles[i]->indFreqs[j])+ c2*r2*(best.bestIndFreqs[j]-particles[i]->indFreqs[j])));
+            particles[i]->indFreqsVel[j] = noteCon * (particles[i]->indFreqsVel[j] + (noteC1*r1*(particles[i]->bestIndFreqs[j]-particles[i]->indFreqs[j])+ noteC2*r2*(best.bestIndFreqs[j]-particles[i]->indFreqs[j])));
             
         
             //Position update
