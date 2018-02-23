@@ -10,9 +10,10 @@
 #define Swarm_hpp
 
 #include <stdio.h>
+#include "ofMain.h"
 #include "ofxMidi.h"
 #include "ofxMaxim.h"
-#include "Particle.cpp"
+#include "Particle.hpp"
 
 class Swarm {
     
@@ -25,7 +26,8 @@ public:
     
     void exit();
     
-    void play();
+    
+
     
     
     ofxMidiOut midiOut;
@@ -57,6 +59,9 @@ public:
     float r1, r2;               //Stochastic elements
     Particle best;
 
+    
+    float rhythmCon = 0.7984;
+    float rhythmC1, rhythmC2;
 
     int prevBestIndFreqs[4];
     
@@ -84,6 +89,25 @@ public:
     int eighthPen = 100;          //Octave
     int elsePen = 10000;                //Other inval
 
+    
+    
+    //Rhythm
+    //Rhythm functionality
+    void runRhythm();
+    void fitnessRhythm();
+    void checkPersonalBestRhythm();
+    void calculateBestRhythm();
+    void updateParticlesRhythm();
+    void createSequenceRhythm(int d, Particle * p);
+    
+    int chosenDimension;
+    float validDurations[5] = {4, 2, 1, 0.5, 0.25};
+    vector<float> validDur;
+    int bestFitnessRhythm = 200000;
+    Particle *bestRhythm;
+    
+    int chosenOctave = 4;
+    int determineParticleOctave(int index);
 };
 
 #endif /* Swarm_hpp */

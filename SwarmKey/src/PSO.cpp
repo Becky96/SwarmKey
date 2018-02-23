@@ -55,7 +55,7 @@ void PSO::fitness() {
        // }
         
         
-        sum+= abs(chosenDimension-particles[i]->dimensionality)*1000.;
+        sum+= abs(chosenDimension-particles[i]->dimensionality)*100.;
         /*
         for (int j = 0; j < particles[i]->rhythm.size(); j++) {
             
@@ -108,6 +108,7 @@ void PSO::checkPersonalBest() {
                 particles[i]->bestRhythm.push_back(particles[i]->rhythm[j]);
                 
             }
+            particles[i]->bestFitness = particles[i]->fitness;
             
         }
     }
@@ -265,17 +266,6 @@ void PSO::createSequence(int d, Particle * p) {
                 p->rhythm.clear();
                 sum = 0;
             }
-            
-//            cout << " " << endl;
-//            cout << "in while loop" << endl;
-//            cout << "sum: " << sum << endl;
-//            cout << " " << endl;
-//            cout << "rhythm size: " << p->rhythm.size();
-//            cout << " " << endl;
-//            for (int i = 0; i < p->rhythm.size(); i++) {
-//              //  cout << p->rhythm[i] << ", ";
-//            }
-//            
             
         }
         

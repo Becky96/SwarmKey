@@ -39,6 +39,7 @@ class ofApp : public ofBaseApp{
     Swarm swarms[SWARM_NUM];
     Swarm swarmPort;
     
+    
     int tempo = 2;
     ofxDatGuiSlider* tempoSlider;
     ofParameter<int> tempoInt;
@@ -48,8 +49,7 @@ class ofApp : public ofBaseApp{
     int playHead = 0;
     
     bool changeNotes = true;
-    
-    
+    bool startSwarm = false;
     
     
     //PSO GUI
@@ -60,13 +60,23 @@ class ofApp : public ofBaseApp{
     ofxDatGuiSlider* PSOc2;
     ofxDatGuiSlider* PSOdt;
     ofxDatGuiSlider* PSOtarget;
+    ofxDatGuiSlider* dimension;
     ofParameter<int> numOfPSOI;
     ofParameter<float> constrictionRateF;
     ofParameter<float> c1F;
     ofParameter<float> c2F;
     ofParameter<float> PSOdtF;
     ofParameter<int> PSOtI;
+    ofParameter<int> dimensionI;
     
+    
+    ofxDatGuiSlider* rhythmCon;
+    ofxDatGuiSlider* rhythmC1;
+    ofxDatGuiSlider* rhythmC2;
+    ofParameter<float> rhythmConF;
+    ofParameter<float> rhythmC1F;
+    ofParameter<float> rhythmC2F;
+
     
     //Interval penalties
     vector<ofxDatGuiComponent*> intervalPenalties;
@@ -96,5 +106,21 @@ class ofApp : public ofBaseApp{
 
     float vel = 3;
 
+    bool changeRhythm = true;
+    int changeRhythmInt = 0;
 
+    int pitchPlayhead = 0;
+    
+    int stressed = 110;
+    int notStressed = 80;
+
+    
+    ofxDatGuiSlider* stressedSlider;
+    ofxDatGuiSlider* notStressedSlider;
+    ofParameter<int> stressedInt;
+    ofParameter<int> notStressedInt;
+    
+    ofxDatGuiSlider* octave;
+    ofParameter<int> octaveInt;
+   
 };

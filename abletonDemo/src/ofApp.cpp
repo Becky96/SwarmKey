@@ -15,8 +15,7 @@ void ofApp::setup(){
         
         swarms[i].openVirtualPort("Swarm");
         swarms[i].setup(i);
-        swarms[i].play();
-        
+
         cout << swarms[i].particles[0]->indFreqs[0] << endl;
         
     }
@@ -58,6 +57,49 @@ void ofApp::setup(){
     PSOcomponents.push_back(PSOtarget);
     y+=PSOtarget->getHeight();
     
+    dimension = new ofxDatGuiSlider(dimensionI.set("Chosen Dimension", 1, 1, 16));
+    dimension->setPosition(x, y);
+    dimension->onSliderEvent(this, &ofApp::onSliderEvent);
+    PSOcomponents.push_back(dimension);
+    y+=dimension->getHeight();
+    
+    rhythmCon = new ofxDatGuiSlider(rhythmConF.set("Rhythm con", 0.8, 0., 1.));
+    rhythmCon->setPosition(x, y);
+    rhythmCon->onSliderEvent(this, &ofApp::onSliderEvent);
+    PSOcomponents.push_back(rhythmCon);
+    y+=rhythmCon->getHeight();
+    
+    rhythmC1 = new ofxDatGuiSlider(rhythmC1F.set("Rhythm c1", 1.4, 0., 4.));
+    rhythmC1->setPosition(x, y);
+    rhythmC1->onSliderEvent(this, &ofApp::onSliderEvent);
+    PSOcomponents.push_back(rhythmC1);
+    y+=rhythmC1->getHeight();
+    
+    rhythmC2 = new ofxDatGuiSlider(rhythmC2F.set("Rhythm c2", 1.4, 0., 4.));
+    rhythmC2->setPosition(x, y);
+    rhythmC2->onSliderEvent(this, &ofApp::onSliderEvent);
+    PSOcomponents.push_back(rhythmC2);
+    y+=rhythmC2->getHeight();
+    
+    stressedSlider = new ofxDatGuiSlider(stressedInt.set("stressed", 110, 0, 125));
+    stressedSlider->setPosition(x, y);
+    stressedSlider->onSliderEvent(this, &ofApp::onSliderEvent);
+    PSOcomponents.push_back(stressedSlider);
+    y+=stressedSlider->getHeight();
+    
+    
+    notStressedSlider = new ofxDatGuiSlider(notStressedInt.set("not stressed", 80, 0, 125));
+    notStressedSlider->setPosition(x, y);
+    notStressedSlider->onSliderEvent(this, &ofApp::onSliderEvent);
+    PSOcomponents.push_back(notStressedSlider);
+    y+=notStressedSlider->getHeight();
+    
+    
+    octave = new ofxDatGuiSlider(octaveInt.set("octave", 4, 1, 8));
+    octave->setPosition(x, y);
+    octave->onSliderEvent(this, &ofApp::onSliderEvent);
+    PSOcomponents.push_back(octave);
+    y+=octave->getHeight();
     
     tempoSlider = new ofxDatGuiSlider(tempoInt.set("Tempo", 4, 1, 12));
     tempoSlider->setPosition(x, y);
@@ -120,6 +162,9 @@ void ofApp::setup(){
     elsePen->onSliderEvent(this, &ofApp::onSliderEvent);
     intervalPenalties.push_back(elsePen);
     y+=elsePen->getHeight();
+    
+    
+    
 
 
     
@@ -134,7 +179,6 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
 
     
     for (int i = 0; i < PSOcomponents.size(); i++) {
@@ -154,6 +198,7 @@ void ofApp::update(){
 
 void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
     
+    if (startSwarm) {
     
     for (int i = 0; i < bufferSize; i++){
         
@@ -161,18 +206,36 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
         
         if (lastCount != currentCount) {
             
-
-            swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[playHead%4]], swarms[1].velocity);
-            //swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[playHead%4]], swarms[2].velocity);
-
-            if (playHead % 4 == 3) {
-                changeNotes = true;
+            if (playHead % 16 == 0) {
+                changeRhythm = true;
+                changeRhythmInt++;
             }
             
+            if (swarms[1].bestRhythm->hits[playHead% 16] == 1) {
+            
+                if (playHead % 16 == 0) {
+                    swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[pitchPlayhead%4]], stressed);
+                } else {
+                    
+                    swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[pitchPlayhead%4]], notStressed);
+                    
+                }
+
+                
+                if (pitchPlayhead % 4 == 3) {
+                    changeNotes = true;
+                }
+                
+                pitchPlayhead++;
+
+            }
             playHead++;
             lastCount = 0;
+            
+            swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[pitchPlayhead%4]]);
         }
         
+    }
     }
     
     
@@ -195,14 +258,21 @@ void ofApp::draw(){
 
 
     
-    if (changeNotes == true) {
+    if (startSwarm == true) {
+        if (changeNotes == true) {
 
-        swarms[1].run();
-        //swarms[2].run();
+            swarms[1].run();
+            //swarms[2].run();
 
-        changeNotes = false;
+            changeNotes = false;
+        }
+        
+        if (changeRhythmInt % 3 == 0 && changeRhythm == true) {
+            swarms[1].runRhythm();
+            //changeRhythmInt = 0;
+            changeRhythm = false;
+        }
     }
-
     swarms[1].display();
     
     string sequence = "Sequence: " + ofToString(swarms[1].best.indFreqs[0]) + ", " + ofToString(swarms[1].best.indFreqs[1]) + ", " + ofToString(swarms[1].best.indFreqs[2]) + ", " + ofToString(swarms[1].best.indFreqs[3]);
@@ -223,6 +293,13 @@ void ofApp::draw(){
     string bestFit = "Best fitness currently: " + ofToString(swarms[1].bestFitness);
     ofDrawBitmapStringHighlight(bestFit, 20, 360);
 
+    
+    
+    string rhythmSequence = "Sequence: " + ofToString(swarms[1].bestRhythm->rhythm);
+    string rhythmBest = "Dimensionality: " + ofToString(swarms[1].bestRhythm->dimensionality);
+
+    ofDrawBitmapStringHighlight(rhythmSequence, 20, 400);
+     ofDrawBitmapStringHighlight(rhythmBest, 20, 440);
 }
 
 
@@ -452,6 +529,85 @@ void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
 
     }
 
+    
+    
+    if (e.target == dimension) {
+        
+        
+        for (int i = 0; i < swarms[1].particles.size(); i++) {
+            swarms[1].particles[i]->dimensionalityVel = ofRandom(-5, 5);
+            swarms[1].particles[i]->bestFitnessRhythm = 2000000;
+            swarms[1].particles[i]->fitnessRhythm = 200000;
+            swarms[1].particles[i]->bestDimensionality = swarms[1].particles[i]->dimensionality;
+        }
+        
+        swarms[1].bestRhythm->bestDimensionality = e.value;
+    
+        swarms[1].bestFitnessRhythm = 2000000;
+        swarms[1].bestRhythm->bestRhythm.clear();
+        swarms[1].chosenDimension = e.value;
+        
+        cout << swarms[1].chosenDimension << endl;
+    }
+    
+    
+    if (e.target == rhythmCon) {
+        swarms[1].rhythmCon = e.value;
+        
+        
+        for (int i = 0; i < swarms[1].particles.size(); i++) {
+            
+            swarms[1].particles[i]->dimensionalityVel = ofRandom(-vel, vel);
+            
+        }
+    }
+    
+    if (e.target == PSOc1) {
+        swarms[1].c1 = e.value;
+        
+        
+        for (int i = 0; i < swarms[1].particles.size(); i++) {
+            for (int j = 0; j < 4; j++) {
+                swarms[1].particles[i]->indFreqsVel[j] = ofRandom(-vel, vel);
+            }
+        }
+    }
+    
+    if (e.target == PSOc2) {
+        swarms[1].c2 = e.value;
+        
+        
+        for (int i = 0; i < swarms[1].particles.size(); i++) {
+            for (int j = 0; j < 4; j++) {
+                swarms[1].particles[i]->indFreqsVel[j] = ofRandom(-vel, vel);
+            }
+        }
+    }
+    
+
+    if (e.target == stressedSlider) {
+        stressed = e.value;
+    }
+    
+    if (e.target == notStressedSlider) {
+        notStressed = e.value;
+    }
+    
+    if (e.target == octave) {
+        
+        swarms[1].bestFitness = 9999999999;
+        
+        
+        for (int i = 0; i < swarms[1].particles.size(); i++) {
+            for (int j = 0; j < 4; j++) {
+                swarms[1].particles[i]->indFreqsVel[j] = ofRandom(-vel, vel);
+                swarms[1].particles[i]->bestIndFreqs[j] = swarms[1].particles[i]->indFreqs[j];
+                swarms[1].particles[i]->bestFit = 100000;
+            }
+        }
+
+        swarms[1].chosenOctave = e.value;
+    }
 }
 
 
@@ -464,6 +620,14 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
+    
+    if (key == 's' && startSwarm == false) {
+        startSwarm = true;
+        lastCount = 0;
+        currentCount = 0;
+    } else if (key == 's' && startSwarm == true) {
+        startSwarm = false;
+    }
 
 }
 

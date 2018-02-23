@@ -16,6 +16,7 @@ class Particle {
     
 public:
     
+    void setupParticle();
     
     //Variables for following intervals
     int bestIndFreqs[4];
@@ -30,30 +31,35 @@ public:
     
     ofColor col = ofColor(ofRandom(100, 255), ofRandom(10, 255), ofRandom(100, 255));
     
-    Particle() {
+    //Rhythm
+    vector<float> rhythm;
+    vector<float> rhythmVels;
+    vector<int> hits;
+    vector<float> bestRhythm;
+    
+    
+    vector<float> compareRhythm;
+    vector<float> compareRhythmVels;
+    vector<float> compareBestRhythm;
+    
+    float validDurations[5] = {4, 2, 1, 0.5, 0.25};
+    
+    int dimensionality;
+    float dimensionalityVel = ofRandom(-2, 2);
+    
+    int bestDimensionality;
+    
+    
+    int fitnessRhythm = 200000;
+    int bestFitnessRhythm = 200000;
+    
+    
+    void determineRhythm();
+    void fillRhythm(float duration);
 
-        //Variables for following intervals
-        indFreqs[0] = start;
-        indFreqs[1] = start+int(ofRandom(0, 8));
-        indFreqs[2] = start+int(ofRandom(0, 8));
-        indFreqs[3] = start+int(ofRandom(0, 8));
-        
-        
-        bestIndFreqs[0] = start;
-        bestIndFreqs[1] = start+int(ofRandom(0, 8));
-        bestIndFreqs[2] = start+int(ofRandom(0, 8));
-        bestIndFreqs[3] = start+int(ofRandom(0, 8));
-        
-        //Frequency velocities
-        indFreqsVel[0] = ofRandom(-2, 2);
-        indFreqsVel[1] = ofRandom(-2, 2);
-        indFreqsVel[2] = ofRandom(-2, 2);
-        indFreqsVel[3] = ofRandom(-2, 2);
-        
-    }
     
+    int currentOctave;
     
-    void display();
     
     
     
