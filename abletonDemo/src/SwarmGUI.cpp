@@ -12,6 +12,8 @@
 
 void SwarmGUI::setupInterface() {
     
+    textY = y;
+    
     //Algorithm component sliders
     noteConSlider = new ofxDatGuiSlider(noteConFloat.set("Note Constriction Rate", 0.7984, 0., 1.));
     noteConSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
@@ -31,7 +33,7 @@ void SwarmGUI::setupInterface() {
     algorithmComponents.push_back(noteC2Slider);
     y+=noteC2Slider->getHeight();
     
-    rhythmConSlider = new ofxDatGuiSlider(rhythmConFloat.set("Rhythm Constriction Rate", 0.7984, 0., 1.));
+    rhythmConSlider = new ofxDatGuiSlider(rhythmConFloat.set("Rhythm Constriction Rate", 0.4, 0., 1.));
     rhythmConSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     rhythmConSlider->setPosition(x, y);
     algorithmComponents.push_back(rhythmConSlider);
@@ -48,8 +50,6 @@ void SwarmGUI::setupInterface() {
     rhythmC2Slider->setPosition(x, y);
     algorithmComponents.push_back(rhythmC2Slider);
     y+=rhythmC2Slider->getHeight();
-    
-    
     
     
     //GUI setup of toggle and sliders.
@@ -77,7 +77,6 @@ void SwarmGUI::setupInterface() {
     octaveSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     swarmComponents.push_back(octaveSlider);
     y+=octaveSlider->getHeight();
-    
     
     
     //Interval penalties for specific swarm
@@ -137,6 +136,7 @@ void SwarmGUI::setupInterface() {
     intervalPenalties.push_back(elsePen);
     y+=elsePen->getHeight();
 
+    y+=20;
     
 }
 
@@ -250,15 +250,17 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     
     if (e.target == velocitySlider) {
         
-        swarm->stressedVelocity = e.value;
-        swarm->notStressedVelocity = e.value-10;
+        swarm->desiredVelocity = e.value;
+        resetParticleVelocity();
         
     }
     
     if (e.target == octaveSlider) {
         
-        swarm->chosenOctave = e.value;
         
+        swarm->chosenOctave = e.value;
+        resetParticleIntervals();
+
     }
     
     ///////////////////////////////
@@ -344,6 +346,7 @@ void SwarmGUI::resetParticleIntervals() {
 void SwarmGUI::resetParticleRhythms() {
     
     swarm->bestRhythm->bestRhythm.clear();
+    swarm->bestFitnessRhythm = 9999999;
     
     for (int i = 0; i < swarm->particles.size(); i++) {
         swarm->particles[i]->dimensionalityVel = ofRandom(-vel, vel);
@@ -375,3 +378,45 @@ void SwarmGUI::resetParticleRhythmVelocity() {
     }
     
 }
+
+//--------------------------------------------------------------
+
+void SwarmGUI::resetParticleVelocity() {
+    
+    for (int i = 0; i < swarm->particles.size(); i++) {
+        swarm->particles[i]->velocityVel = ofRandom(-vel, vel);
+        swarm->particles[i]->bestParticleVelocity = swarm->particles[i]->velocity;
+        swarm->particles[i]->bestParticleVelocityFitness = 9999;
+    }
+    
+    swarm->bestVelocityFitness = 99999;
+}
+
+//--------------------------------------------------------------
+
+void SwarmGUI::displaySwarmParameters() {
+    string sequence = "Note sequence: " + ofToString(swarm->best.indFreqs[0]) + ", " + ofToString(swarm->best.indFreqs[1]) + ", " + ofToString(swarm->best.indFreqs[2]) + ", " + ofToString(swarm->best.indFreqs[3]);
+    ofDrawBitmapStringHighlight(sequence, x, y);
+    
+    sequence = "MIDI equivalent: " + ofToString(swarm->availableNotes[swarm->best.indFreqs[0]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[1]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[2]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[3]]);
+    ofDrawBitmapStringHighlight(sequence, x, y+50);
+    
+    
+    
+    string bestFit = "Best note fitness currently: " + ofToString(swarm->bestFitness);
+    ofDrawBitmapStringHighlight(bestFit, x, y+100);
+    
+    
+    
+    string rhythmSequence = "Sequence: " + ofToString(swarm->bestRhythm->rhythm);
+    string rhythmBest = "Dimensionality: " + ofToString(swarm->bestRhythm->dimensionality);
+    
+    ofDrawBitmapStringHighlight(rhythmSequence, x, y+150);
+    ofDrawBitmapStringHighlight(rhythmBest, x, y+200);
+    
+    string velocityText = "Velocity: " + ofToString(swarm->bestParticleSwarmVelocity);
+    ofDrawBitmapStringHighlight(velocityText, x, y+225);
+
+    
+}
+

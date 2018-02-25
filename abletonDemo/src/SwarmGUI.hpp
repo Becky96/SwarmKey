@@ -32,6 +32,7 @@ public:
     
     int channel;
     int x, y;
+    int textY;
     Swarm * swarm;
     int vel = 3;
     
@@ -49,6 +50,8 @@ public:
     void resetParticleRhythms();
     void resetParticleIntervalVelocity();
     void resetParticleRhythmVelocity();
+    void resetParticleVelocity();
+    void displaySwarmParameters();
     
     //PSO algorithm components - will not be visible to the user
     //but is used in the meantime for designing the project.

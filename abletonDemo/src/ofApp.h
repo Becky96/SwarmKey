@@ -52,7 +52,8 @@ class ofApp : public ofBaseApp{
     int currentCount, lastCount;
     int playHead = 0;
     
-    bool changeNotes = true;
+    bool changeNotesLeft = true;
+    bool changeNotesRight = true;
     bool startSwarm = false;
     
 

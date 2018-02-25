@@ -40,6 +40,9 @@ void Particle::setupParticle() {
     for (int i = 0; i < rhythm.size(); i++) {
         bestRhythm.push_back(0);
     }
+    
+    
+    velocity = int(ofRandom(40, 100));
 }
 
 
@@ -111,8 +114,7 @@ void Particle::determineRhythm() {
             //Fill in hit sequence
             for (int i = 0; i < rhythm.size(); i++) {
                 
-                //cout << rhythm[i] << ", " ;
-                
+   
                 if (rhythm[i] == 0.25) {
                     
                     hits.push_back(1);

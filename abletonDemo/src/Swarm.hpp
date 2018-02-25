@@ -38,14 +38,16 @@ public:
     
     
     //Algorithm functions
-    void run();
+    void run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, int alternateNotePlayhead);
     void fitness();
     void checkPersonalBest();
     void checkSwarmBest();
+    void harmonicIntervalFitness(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, int alternateNotePlayhead);
     void updateParticles();
     void checkRepeat();
     void disturb();
     
+    int previousBestFitness;
     
     void display();
     
@@ -60,7 +62,7 @@ public:
     Particle best;
 
     
-    float rhythmCon = 0.7984;
+    float rhythmCon = 0.4;
     float rhythmC1, rhythmC2;
 
     int prevBestIndFreqs[4];
@@ -114,6 +116,24 @@ public:
     
     int stressedVelocity;
     int notStressedVelocity;
+    
+    
+    //Velocity
+    void runVelocity();
+    void fitnessVelocity();
+    void checkPersonalBestVelocity();
+    void calculateBestVelocity();
+    void updateParticleVelocity();
+    
+    int desiredVelocity = 100;
+
+    int bestParticleSwarmVelocity;
+    float bestVelocityFitness = 999;
+    
+    float velocityCon = 0.4;
+    float velocityC1, velocityC2;
+
+    
 };
 
 #endif /* Swarm_hpp */

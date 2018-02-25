@@ -52,7 +52,10 @@ void Swarm::setup(int _channel) {
     rhythmC1 = rhythmCon * (4.1/2.);
     rhythmC2 = rhythmC1;
     
-    calculateKey(60);
+    velocityC1 = velocityCon * (4.1/2.);
+    velocityC2 = velocityC1;
+    
+    calculateKey(65);
     
     //Initialising prevBestIndFreqs
     prevBestIndFreqs[0] = 100;
@@ -79,19 +82,115 @@ void Swarm::calculateKey(int start) {
     
     }
     
-    
+    for (int i = 0; i < availableNotes.size(); i++) {
+        cout << "i: " << availableNotes[i] << endl;
+    }
 }
 //--------------------------------------------------------------
 //Algorithm functions to determine pitch sequence
-void Swarm::run() {
+void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, int alternateNotePlayhead) {
     
     fitness();
+    checkPersonalBest();
+    checkSwarmBest();
+    harmonicIntervalFitness(alternateSwarm, rhythmPlayhead, notePlayhead, alternateNotePlayhead);
     checkPersonalBest();
     checkSwarmBest();
     disturb();
     updateParticles();
     checkRepeat();
 
+}
+
+
+void Swarm::harmonicIntervalFitness(Swarm *alternateSwarm, int rhythmPlayhead, int notePlayhead, int alternateNotePlayhead) {
+    
+    //Only evaluate harmonic intervals if both swarms are due to play
+    //note at same time.
+//    cout << " " << endl;
+//    cout << "Current rhythm playhead: " << rhythmPlayhead%16 << endl;
+//    cout << "Current swarm note playhead" << notePlayhead%4 << endl;
+//    cout << "Alternate swarm note playhead" << alternateNotePlayhead%4 << endl;
+//    cout << "alternate swarm hit: " << alternateSwarm->bestRhythm->hits[rhythmPlayhead%16] << endl;
+//    
+//    cout << "current swarm hit: " << bestRhythm->hits[rhythmPlayhead%16] << endl;
+    
+    /*
+    if (alternateSwarm->bestRhythm->hits[rhythmPlayhead%16] == 1 && bestRhythm->hits[rhythmPlayhead%16] == 1) {
+        
+        
+        cout << "REACHED" << endl;
+
+        
+        int alternateSwarmNote = alternateSwarm->best.indFreqs[alternateNotePlayhead%4];
+        
+        for (int i = 0; i < particles.size(); i++) {
+            
+            if (particles[i]->hits[rhythmPlayhead%16] == 1) {
+                
+                int swarmNote = particles[i]->indFreqs[notePlayhead%4];
+                
+                int interval = abs(alternateSwarmNote-swarmNote);
+                
+                if (interval == 2 || interval == 4 || interval == 6 || interval == 7 || interval > 8) {
+                    
+                    particles[i]->fitness+=1000000;
+                }
+                
+                
+            }
+        }
+        
+        
+    }*/
+    
+    
+    
+    
+    int tempNotePlayhead;
+    int tempAlternateNotePlayhead;
+    
+    //Loop through all particles to compare harmonic intervals between itself and the best particle of the alternate swarm.
+    for (int i = 0; i < particles.size(); i++) {
+        
+        float harmonicIntervalSum = 0;
+        tempNotePlayhead = notePlayhead;
+        tempAlternateNotePlayhead = alternateNotePlayhead;
+        
+        for (int j = 0; j < 16; j++) {
+        
+            //If particle has a hit at the same index of the best particle of the alternate swarm, calculate the harmonic interval.
+            if (particles[i]->hits[j] == 1) {
+            
+                if (alternateSwarm->bestRhythm->hits[j] == 1) {
+                
+                    //cout << "CALCULATE INERVAL" << endl;
+                    //Calculate absolute difference
+                    int interval = abs(alternateSwarm->best.indFreqs[tempAlternateNotePlayhead]-particles[i]->indFreqs[tempNotePlayhead]);
+                    
+                    //Add penalty to intervals of 1, 2, 6, and 7 between swarms.
+                    if (interval == 1 || interval == 2 || interval == 6 || interval == 7) {
+                        harmonicIntervalSum += 10000;
+                    }
+                    
+                    //Increment the note playheads to calculate other harmonic intervals within the particle sequences.
+                    tempAlternateNotePlayhead++;
+                    tempNotePlayhead++;
+                    
+                    
+                    
+                }
+            }
+            
+        }
+        
+        particles[i]->fitness+=harmonicIntervalSum;
+        
+    }
+    
+    bestFitness = 9999999;
+    
+    
 }
 
 int Swarm::determineParticleOctave(int index) {
@@ -744,4 +843,75 @@ void Swarm::createSequenceRhythm(int d, Particle * p) {
     }
     
 }
+
+//--------------------------------------------------------------
+
+void Swarm::runVelocity() {
+    
+    fitnessVelocity();
+    checkPersonalBestVelocity();
+    calculateBestVelocity();
+    updateParticleVelocity();
+    
+}
+
+//--------------------------------------------------------------
+
+void Swarm::fitnessVelocity() {
+    
+    
+    for (int i = 0; i < particles.size(); i++) {
+    
+        particles[i]->velocityFitness = (desiredVelocity-particles[i]->velocity) * (desiredVelocity-particles[i]->velocity);
+        
+    }
+    
+}
+//--------------------------------------------------------------
+
+void Swarm::checkPersonalBestVelocity() {
+    
+    for (int i = 0; i < particles.size(); i++) {
+        
+        if (particles[i]->velocityFitness < particles[i]->bestParticleVelocityFitness) {
+            
+            particles[i]->bestParticleVelocity = particles[i]->velocity;
+            particles[i]->bestParticleVelocityFitness = particles[i]->velocityFitness;
+        }
+        
+    }
+    
+}
+
+//--------------------------------------------------------------
+
+void Swarm::calculateBestVelocity() {
+    
+    for (int i = 0; i < particles.size(); i++) {
+        
+        if (particles[i]->velocityFitness < bestVelocityFitness) {
+            
+            bestParticleSwarmVelocity = particles[i]->velocity;
+            bestVelocityFitness = particles[i]->velocityFitness;
+            
+        }
+    }
+    
+}
+
+//--------------------------------------------------------------
+
+void Swarm::updateParticleVelocity() {
+    
+    for (int i = 0; i < particles.size(); i++) {
+        r1 = ofRandom(1);
+        r2 = ofRandom(2);
+        
+        particles[i]->velocityVel = velocityCon * (particles[i]->velocityVel + (velocityC1*r1*(particles[i]->bestParticleVelocity - particles[i]->velocity) + (velocityC2*r2*(bestParticleSwarmVelocity - particles[i]->velocity))));
+        
+        particles[i]->velocity = ofClamp(int(particles[i]->velocity + particles[i]->velocityVel), 1, 125);
+    }
+}
+
+//--------------------------------------------------------------
 
