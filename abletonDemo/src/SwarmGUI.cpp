@@ -184,7 +184,8 @@ void SwarmGUI::onToggleEvent(ofxDatGuiToggleEvent e) {
     //Set swarm to play.
     if (e.target == playingToggle && e.checked == false) {
         
-        swarm->play = true;
+        swarm->readyToPlay = true;
+        swarm->notePlayhead = 0;
         cout << swarm->play << endl;
     }
     

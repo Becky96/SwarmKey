@@ -48,6 +48,9 @@ class ofApp : public ofBaseApp{
     ofxDatGuiSlider* tempoSlider;
     ofParameter<int> tempoInt;
     
+    vector<string> options = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+    ofxDatGuiDropdown* key;
+    
     maxiOsc timer;
     int currentCount, lastCount;
     int playHead = 0;
@@ -60,6 +63,7 @@ class ofApp : public ofBaseApp{
     
 
     void onSliderEvent(ofxDatGuiSliderEvent e);
+    void onDropdownEvent(ofxDatGuiDropdownEvent e);
     
     ofxDatGui* gui;
 

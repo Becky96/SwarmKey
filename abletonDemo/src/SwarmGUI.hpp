@@ -101,6 +101,8 @@ public:
     ofParameter<int> seventhInt;
     ofParameter<int> eighthInt;
     ofParameter<int> elseInt;
+    
+    int playHead;
 
 };
 

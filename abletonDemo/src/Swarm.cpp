@@ -55,7 +55,7 @@ void Swarm::setup(int _channel) {
     velocityC1 = velocityCon * (4.1/2.);
     velocityC2 = velocityC1;
     
-    calculateKey(65);
+    calculateKey(62);
     
     //Initialising prevBestIndFreqs
     prevBestIndFreqs[0] = 100;
@@ -93,65 +93,45 @@ void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, in
     fitness();
     checkPersonalBest();
     checkSwarmBest();
+    
+    if (channel == 1) {
+       // cout << "reached" << endl;
     harmonicIntervalFitness(alternateSwarm, rhythmPlayhead, notePlayhead, alternateNotePlayhead);
+        fitness();
     checkPersonalBest();
     checkSwarmBest();
+    }
+    
     disturb();
     updateParticles();
     checkRepeat();
+    
+    for (int i = 0; i < particles.size(); i++) {
+        particles[i]->fitness = 0;
+    }
 
 }
 
 
 void Swarm::harmonicIntervalFitness(Swarm *alternateSwarm, int rhythmPlayhead, int notePlayhead, int alternateNotePlayhead) {
     
-    //Only evaluate harmonic intervals if both swarms are due to play
-    //note at same time.
-//    cout << " " << endl;
-//    cout << "Current rhythm playhead: " << rhythmPlayhead%16 << endl;
-//    cout << "Current swarm note playhead" << notePlayhead%4 << endl;
-//    cout << "Alternate swarm note playhead" << alternateNotePlayhead%4 << endl;
-//    cout << "alternate swarm hit: " << alternateSwarm->bestRhythm->hits[rhythmPlayhead%16] << endl;
-//    
-//    cout << "current swarm hit: " << bestRhythm->hits[rhythmPlayhead%16] << endl;
-    
-    /*
-    if (alternateSwarm->bestRhythm->hits[rhythmPlayhead%16] == 1 && bestRhythm->hits[rhythmPlayhead%16] == 1) {
-        
-        
-        cout << "REACHED" << endl;
-
-        
-        int alternateSwarmNote = alternateSwarm->best.indFreqs[alternateNotePlayhead%4];
-        
-        for (int i = 0; i < particles.size(); i++) {
-            
-            if (particles[i]->hits[rhythmPlayhead%16] == 1) {
-                
-                int swarmNote = particles[i]->indFreqs[notePlayhead%4];
-                
-                int interval = abs(alternateSwarmNote-swarmNote);
-                
-                if (interval == 2 || interval == 4 || interval == 6 || interval == 7 || interval > 8) {
-                    
-                    particles[i]->fitness+=1000000;
-                }
-                
-                
-            }
-        }
-        
-        
-    }*/
-    
-    
     
     
     int tempNotePlayhead;
     int tempAlternateNotePlayhead;
     
+    //Check rhythm is current
+    /*
+    cout << "NEW: " << endl;
+    for (int i = 0; i < 16; i++) {
+        cout << alternateSwarm->bestRhythm->hits[i] << ", ";
+    }*/
+    
+    
     //Loop through all particles to compare harmonic intervals between itself and the best particle of the alternate swarm.
     for (int i = 0; i < particles.size(); i++) {
+        
+        particles[i]->fitness = 0;
         
         float harmonicIntervalSum = 0;
         tempNotePlayhead = notePlayhead;
@@ -168,11 +148,24 @@ void Swarm::harmonicIntervalFitness(Swarm *alternateSwarm, int rhythmPlayhead, i
                     //Calculate absolute difference
                     int interval = abs(alternateSwarm->best.indFreqs[tempAlternateNotePlayhead]-particles[i]->indFreqs[tempNotePlayhead]);
                     
+                    //interval of 1 - 0
+                    //2 - 1
+                    //3 - 2
+                    //4 - 3
+                    //5 - 4
+                    //6 - 5
+                    //7 - 6
+                    //8 - 7
                     //Add penalty to intervals of 1, 2, 6, and 7 between swarms.
-                    if (interval == 1 || interval == 2 || interval == 6 || interval == 7) {
+                    if (interval % 7 == 1 || interval % 7 == 3 || interval % 7 == 6 ) {
                         harmonicIntervalSum += 10000;
+                    } else if (interval % 7 == 0 || interval % 7 == 2 || interval % 7 == 4) {
+                        harmonicIntervalSum -= 100;
                     }
                     
+                    if (interval > 13) {
+                        harmonicIntervalSum+=10000;
+                    }
                     //Increment the note playheads to calculate other harmonic intervals within the particle sequences.
                     tempAlternateNotePlayhead++;
                     tempNotePlayhead++;
@@ -239,6 +232,7 @@ void Swarm::fitness() {
     
     
     for (int i = 0; i < particles.size(); i++) {
+        
         
         float fitnessSum = 0;
         
@@ -314,7 +308,7 @@ void Swarm::fitness() {
         for (int j = 0; j < 4; j++) {
             int octave = determineParticleOctave(particles[i]->indFreqs[j]);
             
-            fitnessSum += (abs(chosenOctave-octave)*abs(chosenOctave-octave)) * 100.;
+            fitnessSum += (abs(chosenOctave-octave)*abs(chosenOctave-octave)) * 10000.;
         }
         
         //    cout << fitnessSum << endl;
@@ -358,7 +352,7 @@ void Swarm::fitness() {
         
         
         
-        particles[i]->fitness = fitnessSum;
+        particles[i]->fitness += fitnessSum;
         ///cout << "Fitness of " << i << ": " << particles[i]->fitness << endl;
         
     }

@@ -113,6 +113,7 @@ public:
     
     
     bool play = false;
+    bool readyToPlay = false;
     
     int stressedVelocity;
     int notStressedVelocity;
@@ -130,9 +131,10 @@ public:
     int bestParticleSwarmVelocity;
     float bestVelocityFitness = 999;
     
-    float velocityCon = 0.4;
+    float velocityCon = 0.78;
     float velocityC1, velocityC2;
 
+    int notePlayhead = 0;
     
 };
 
