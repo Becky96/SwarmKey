@@ -138,6 +138,23 @@ void SwarmGUI::setupInterface() {
 
     y+=20;
     
+    
+    desiredNoteDistSlider = new ofxDatGuiSlider(desiredNoteDistInt.set("Desired note dist", 0, 0, 200));
+    desiredNoteDistSlider->setPosition(x, y);
+    desiredNoteDistSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
+    motifComponents.push_back(desiredNoteDistSlider);
+    y+=desiredNoteDistSlider->getHeight();
+    
+    desiredRhythmDistSlider = new ofxDatGuiSlider(desiredRhythmDistInt.set("Desired rhythm dist", 0, 0, 16));
+    desiredRhythmDistSlider->setPosition(x, y);
+    desiredRhythmDistSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
+    motifComponents.push_back(desiredRhythmDistSlider);
+    y+=desiredRhythmDistSlider->getHeight();
+    
+    
+    
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -156,6 +173,11 @@ void SwarmGUI::updateInterface() {
         intervalPenalties[i]->update();
     }
     
+    for (int i = 0; i < motifComponents.size(); i++) {
+        motifComponents[i]->update();
+    }
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -172,6 +194,10 @@ void SwarmGUI::drawInterface() {
     
     for (int i = 0; i < intervalPenalties.size(); i++) {
         intervalPenalties[i]->draw();
+    }
+    
+    for (int i = 0; i < motifComponents.size(); i++) {
+        motifComponents[i]->draw();
     }
     
     
@@ -243,7 +269,7 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     ///////////////////////////////
     if (e.target == rhythmSlider) {
         
-        swarm->bestRhythm->bestDimensionality = e.value;
+        swarm->bestRhythm.bestDimensionality = e.value;
         swarm->chosenDimension = e.value;
         resetParticleRhythms();
         
@@ -306,7 +332,6 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
         
         swarm->seventhPen = e.value;
         resetParticleIntervals();
-        cout << "Within GUI: " << swarm->seventhPen << endl;
     }
     
     if (e.target == eighthPen) {
@@ -322,6 +347,18 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     }
     
     
+    //Motif sliders
+    if (e.target == desiredNoteDistSlider) {
+        swarm->desiredNoteDistance = e.value;
+        resetParticleIntervals();
+    }
+    
+    if (e.target == desiredRhythmDistSlider) {
+        swarm->desiredRhythmDistance = e.value;
+        resetParticleRhythms();
+    }
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -329,6 +366,8 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
 void SwarmGUI::resetParticleIntervals() {
     
     swarm->bestFitness = 99999999;
+    swarm->best.fitness = 99999999;
+    
     
     for (int i = 0; i < swarm->particles.size(); i++) {
         for (int j = 0; j < 4; j++) {
@@ -346,7 +385,7 @@ void SwarmGUI::resetParticleIntervals() {
 
 void SwarmGUI::resetParticleRhythms() {
     
-    swarm->bestRhythm->bestRhythm.clear();
+    swarm->bestRhythm.bestRhythm.clear();
     swarm->bestFitnessRhythm = 9999999;
     
     for (int i = 0; i < swarm->particles.size(); i++) {
@@ -385,7 +424,7 @@ void SwarmGUI::resetParticleRhythmVelocity() {
 void SwarmGUI::resetParticleVelocity() {
     
     for (int i = 0; i < swarm->particles.size(); i++) {
-        swarm->particles[i]->velocityVel = ofRandom(-vel, vel);
+        swarm->particles[i]->velocityVel = ofRandom(-0.75, 0.75);
         swarm->particles[i]->bestParticleVelocity = swarm->particles[i]->velocity;
         swarm->particles[i]->bestParticleVelocityFitness = 9999;
     }
@@ -400,23 +439,26 @@ void SwarmGUI::displaySwarmParameters() {
     ofDrawBitmapStringHighlight(sequence, x, y);
     
     sequence = "MIDI equivalent: " + ofToString(swarm->availableNotes[swarm->best.indFreqs[0]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[1]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[2]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[3]]);
-    ofDrawBitmapStringHighlight(sequence, x, y+50);
+    ofDrawBitmapStringHighlight(sequence, x, y+25);
     
     
     
     string bestFit = "Best note fitness currently: " + ofToString(swarm->bestFitness);
-    ofDrawBitmapStringHighlight(bestFit, x, y+100);
+    ofDrawBitmapStringHighlight(bestFit, x, y+50);
     
     
     
-    string rhythmSequence = "Sequence: " + ofToString(swarm->bestRhythm->rhythm);
-    string rhythmBest = "Dimensionality: " + ofToString(swarm->bestRhythm->dimensionality);
+    string rhythmSequence = "Sequence: " + ofToString(swarm->bestRhythm.rhythm);
+    string rhythmBest = "Dimensionality: " + ofToString(swarm->bestRhythm.dimensionality);
     
-    ofDrawBitmapStringHighlight(rhythmSequence, x, y+150);
-    ofDrawBitmapStringHighlight(rhythmBest, x, y+200);
+    ofDrawBitmapStringHighlight(rhythmSequence, x, y+75);
+    ofDrawBitmapStringHighlight(rhythmBest, x, y+100);
     
     string velocityText = "Velocity: " + ofToString(swarm->bestParticleSwarmVelocity);
-    ofDrawBitmapStringHighlight(velocityText, x, y+225);
+    ofDrawBitmapStringHighlight(velocityText, x, y+150);
+    
+    string rhythmText = "Rhythm fitness: " + ofToString(swarm->bestFitnessRhythm);
+    ofDrawBitmapStringHighlight(rhythmText, x, y+125);
 
     
 }

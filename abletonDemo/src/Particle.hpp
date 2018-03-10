@@ -64,9 +64,11 @@ public:
     //Velocity
     int velocityFitness;                    //Rate strength of particle's velocity
     int velocity;                           //Specific particle velocity
-    int velocityVel = ofRandom(-2, 2);      //Rate to accelerate particle's velocity
+    float velocityVel = ofRandom(-0.5, 0.5);      //Rate to accelerate particle's velocity
     int bestParticleVelocityFitness = 999;                       //Particle's personal best velocity
     int bestParticleVelocity;
+    
+    int bestNeighbour[4];
     
     
     

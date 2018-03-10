@@ -60,7 +60,8 @@ class ofApp : public ofBaseApp{
     bool startSwarm = false;
     
 
-    
+    bool noteChangeLeft = false;
+    bool noteChangeRight = false;
 
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onDropdownEvent(ofxDatGuiDropdownEvent e);

@@ -103,6 +103,13 @@ public:
     ofParameter<int> elseInt;
     
     int playHead;
+    
+    vector<ofxDatGuiComponent*> motifComponents;
+    ofxDatGuiSlider* desiredRhythmDistSlider;
+    ofxDatGuiSlider* desiredNoteDistSlider;
+    
+    ofParameter<int> desiredNoteDistInt;
+    ofParameter<int> desiredRhythmDistInt;
 
 };
 

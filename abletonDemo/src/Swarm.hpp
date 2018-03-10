@@ -24,6 +24,7 @@ public:
     
     void setup(int _channel);
     
+    void inputMotif(int nMotif[4], int rMotif[16]);
     void exit();
     
     
@@ -55,7 +56,7 @@ public:
     
     //Algoirthm variables
     vector<Particle*> particles;
-    int N = 100;                 //Number of particles
+    int N = 50;                 //Number of particles
     float noteCon = 0.7984;         //Constriction factor
     float noteC1, noteC2;               //Learning rates
     float r1, r2;               //Stochastic elements
@@ -68,7 +69,7 @@ public:
     int prevBestIndFreqs[4];
     
     
-    float dt = 0.01; //Like DFO
+    float dt = 0.2; //Like DFO
 
 
     void calculateKey(int start);
@@ -106,7 +107,7 @@ public:
     float validDurations[5] = {4, 2, 1, 0.5, 0.25};
     vector<float> validDur;
     int bestFitnessRhythm = 200000;
-    Particle *bestRhythm;
+    Particle bestRhythm;
     
     int chosenOctave = 4;
     int determineParticleOctave(int index);
@@ -135,6 +136,24 @@ public:
     float velocityC1, velocityC2;
 
     int notePlayhead = 0;
+    
+    
+    
+    //Motif/Phrase
+    int desiredRhythmDistance = 0;
+    int desiredNoteDistance = 0;
+    
+    //Note motif of continuous tonic of whatever key currently in.
+    int noteMotif[4] = {28, 30, 32, 30};
+    int rhythmMotif[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
+    int dimensionalityMotif = 0;
+    
+    
+    //TESTING DFO
+    void calculateBestFly();
+    void calculateBestNeighbour();
+    void updateFly();
+    void clampParticles();
     
 };
 

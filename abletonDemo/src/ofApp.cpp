@@ -18,16 +18,31 @@ void ofApp::setup(){
         
     }
     
+    int nMotif1[4] = {28, 30, 32, 30};
+    int rMotif1[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
+    swarms[1].inputMotif(nMotif1, rMotif1);
+    
+    
+    int nMotif2[4] = {24, 26, 28, 26};
+    int rMotif2[16] = {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
+    swarms[2].inputMotif(nMotif2, rMotif2);
+    
+    
+    
+    
+    
+    //Set up of interfaces for swarms.
     left = new SwarmGUI(1, 1000, 200, &swarms[1]);
     right = new SwarmGUI(2, 1300, 200, &swarms[2]);
     
     left->setupInterface();
-   right->setupInterface();
+    right->setupInterface();
     
     int x = 400;
     int y = 600;
     
-    tempoSlider = new ofxDatGuiSlider(tempoInt.set("Tempo", 8, 1, 12));
+    //Swarm global controls (controlling both swarms)
+    tempoSlider = new ofxDatGuiSlider(tempoInt.set("Tempo", 8, 1, 30));
     tempoSlider->setPosition(x, y);
     tempoSlider->onSliderEvent(this, &ofApp::onSliderEvent);
     y+=tempoSlider->getHeight();
@@ -89,15 +104,13 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
 
                 changeRhythm = true;
                 changeRhythmInt++;
-                //cout << "Rhythm counter: " << changeRhythmInt << endl;
-                
             }
             
             //Determine whether to play first swarm
             if (swarms[1].play == true) {
                 
                 
-                if (swarms[1].bestRhythm->hits[playHead% 16] == 1) {
+                if (swarms[1].bestRhythm.hits[playHead% 16] == 1) {
             
                     if (playHead % 16 == 0) {
                         swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]], swarms[1].bestParticleSwarmVelocity);
@@ -117,6 +130,7 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
                                swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[(swarms[1].best.indFreqs[swarms[1].notePlayhead%4])+2]);
                     
                     swarms[1].notePlayhead++;
+                    noteChangeLeft = true;
 
                 }
                 
@@ -128,7 +142,7 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
             if (swarms[2].play == true) {
                 
                 
-                if (swarms[2].bestRhythm->hits[playHead% 16] == 1) {
+                if (swarms[2].bestRhythm.hits[playHead% 16] == 1) {
                     
                     if (playHead % 16 == 0) {
                         swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]], swarms[2].bestParticleSwarmVelocity);
@@ -137,12 +151,11 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
                         
                     }
                     
-                    
-                    //cout << swarms[2].best.indFreqs[swarms[2].notePlayhead%4] << endl;
-
+                
                     swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]]);
                     
                     swarms[2].notePlayhead++;
+                    noteChangeRight = true;
                     
                 }
                 
@@ -175,12 +188,14 @@ void ofApp::draw(){
     
     if (startSwarm == true) {
         
-        if (changeRhythmInt % 1 == 0) {
+        if (noteChangeLeft == true) {
             
             swarms[1].runVelocity();
-
+            noteChangeLeft = false;
+            
+        } if (noteChangeRight == true) {
             swarms[2].runVelocity();
-
+            noteChangeRight = false;
             
         }
 
@@ -192,7 +207,7 @@ void ofApp::draw(){
             if (swarms[2].play == true) {
     
                 
-                if (swarms[2].bestRhythm->dimensionality != swarms[2].chosenDimension) {
+                if (swarms[2].bestRhythm.dimensionality != swarms[2].chosenDimension) {
                 swarms[2].runRhythm();
                 }
                 
@@ -204,11 +219,11 @@ void ofApp::draw(){
             
             if (swarms[1].play == true) {
                 
-                cout << "Dimension: " << swarms[1].bestRhythm->dimensionality << endl;
-                if (swarms[1].bestRhythm->dimensionality != swarms[1].chosenDimension) {
+                cout << "Dimension: " << swarms[1].bestRhythm.dimensionality << endl;
+                //if (swarms[1].bestRhythm->dimensionality != swarms[1].chosenDimension) {
 
                 swarms[1].runRhythm();
-                }
+                //}
                 swarms[1].run(&swarms[2], playHead, swarms[1].notePlayhead, swarms[2].notePlayhead);
                 
                 
@@ -216,7 +231,6 @@ void ofApp::draw(){
 
             
             changeRhythm = false;
-            //playHead = 0;
         }
     }
     
@@ -256,11 +270,7 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
 }
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    
-    cout << swarms[2].play << endl;
-    cout << "Outside GUI: " << swarms[2].seventhPen << endl;
-    
-
+ 
 }
 
 //--------------------------------------------------------------

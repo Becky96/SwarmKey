@@ -28,8 +28,7 @@ void Swarm::openVirtualPort(string portName) {
 void Swarm::setup(int _channel) {
     
     channel = _channel;
-    
-    //Default note and velocity
+        //Default note and velocity
 
     stressedVelocity = 100;
     notStressedVelocity = 80;
@@ -42,8 +41,8 @@ void Swarm::setup(int _channel) {
 
     }
     
-    bestRhythm = new Particle();
-    bestRhythm->setupParticle();
+    //bestRhythm = *new Particle();
+    bestRhythm.setupParticle();
     
     //Learning factors
     noteC1 = noteCon * (4.1/2);
@@ -55,7 +54,7 @@ void Swarm::setup(int _channel) {
     velocityC1 = velocityCon * (4.1/2.);
     velocityC2 = velocityC1;
     
-    calculateKey(62);
+    calculateKey(64);
     
     //Initialising prevBestIndFreqs
     prevBestIndFreqs[0] = 100;
@@ -63,8 +62,28 @@ void Swarm::setup(int _channel) {
     prevBestIndFreqs[2] = 100;
     prevBestIndFreqs[3] = 100;
     
+   // best.indFreqs[0] = 28;
+   // best.indFreqs[1] = 28;
+  //  best.indFreqs[2] = 28;
+   // best.indFreqs[3] = 28;
+    
 }
+//--------------------------------------------------------------
+void Swarm::inputMotif(int nMotif[4], int rMotif[16]) {
+    
+    
+    for (int i = 0; i < 4; i++) {
+        noteMotif[i] = nMotif[i];
+    }
+    
+    for (int i = 0; i < 16; i++) {
+        rhythmMotif[i] = rMotif[i];
+        if (rhythmMotif[i] == 1) {
+            dimensionalityMotif++;
+        }
+    }
 
+}
 //--------------------------------------------------------------
 //Determine viable keys to play
 void Swarm::calculateKey(int start) {
@@ -82,33 +101,41 @@ void Swarm::calculateKey(int start) {
     
     }
     
-    for (int i = 0; i < availableNotes.size(); i++) {
-        cout << "i: " << availableNotes[i] << endl;
-    }
+ //   cout << "size: " << availableNotes.size() << endl;
+   // for (int i = 0; i < availableNotes.size(); i++) {
+     //   cout << i << ": " << availableNotes[i] << endl;
+   // }
 }
 //--------------------------------------------------------------
 //Algorithm functions to determine pitch sequence
 void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, int alternateNotePlayhead) {
+   
     
     fitness();
     checkPersonalBest();
     checkSwarmBest();
     
-    if (channel == 1) {
-       // cout << "reached" << endl;
+   if (channel == 1) {
+
     harmonicIntervalFitness(alternateSwarm, rhythmPlayhead, notePlayhead, alternateNotePlayhead);
-        fitness();
+    fitness();
     checkPersonalBest();
     checkSwarmBest();
     }
     
-    disturb();
+    //disturb();
     updateParticles();
-    checkRepeat();
+    
+    if (desiredNoteDistance != 0) {
+        checkRepeat();
+    }
+    
     
     for (int i = 0; i < particles.size(); i++) {
         particles[i]->fitness = 0;
     }
+    
+    
 
 }
 
@@ -142,7 +169,7 @@ void Swarm::harmonicIntervalFitness(Swarm *alternateSwarm, int rhythmPlayhead, i
             //If particle has a hit at the same index of the best particle of the alternate swarm, calculate the harmonic interval.
             if (particles[i]->hits[j] == 1) {
             
-                if (alternateSwarm->bestRhythm->hits[j] == 1) {
+                if (alternateSwarm->bestRhythm.hits[j] == 1) {
                 
                     //cout << "CALCULATE INERVAL" << endl;
                     //Calculate absolute difference
@@ -158,9 +185,9 @@ void Swarm::harmonicIntervalFitness(Swarm *alternateSwarm, int rhythmPlayhead, i
                     //8 - 7
                     //Add penalty to intervals of 1, 2, 6, and 7 between swarms.
                     if (interval % 7 == 1 || interval % 7 == 3 || interval % 7 == 6 ) {
-                        harmonicIntervalSum += 10000;
+                        harmonicIntervalSum += 1000;
                     } else if (interval % 7 == 0 || interval % 7 == 2 || interval % 7 == 4) {
-                        harmonicIntervalSum -= 100;
+                        harmonicIntervalSum -= 0;
                     }
                     
                     if (interval > 13) {
@@ -235,10 +262,26 @@ void Swarm::fitness() {
         
         
         float fitnessSum = 0;
+        //cout << " " << endl;
+        //cout << "Particle number: " << i << endl;
         
+        //Calculating motif fitness
+        double noteDistance = 0;
+        for (int j = 0; j < 4; j++) {
+            
+          //  cout << "Particle freq: " << particles[i]->indFreqs[j] << endl;
+            noteDistance += (noteMotif[j] - particles[i]->indFreqs[j]) * (noteMotif[j] - particles[i]->indFreqs[j]);
+           // cout << "Current note distance: " << noteDistance << endl;
+        }
+       // cout << "Overall note distance: " << noteDistance;
+        fitnessSum = abs(desiredNoteDistance - noteDistance);
+        
+        
+        
+        //Calculating interval fitness
+        
+        if (desiredNoteDistance != 0) {
         int intervals[3];
-    
-        
         //Determine whether the bar is ascending or descending in pitch.
         //sign = -1 if descending
         //sign = 0 if there is no change between note 1 and note 2
@@ -305,55 +348,20 @@ void Swarm::fitness() {
    
         }
         
-        for (int j = 0; j < 4; j++) {
-            int octave = determineParticleOctave(particles[i]->indFreqs[j]);
-            
-            fitnessSum += (abs(chosenOctave-octave)*abs(chosenOctave-octave)) * 10000.;
         }
         
-        //    cout << fitnessSum << endl;
+        
+        //Calculating fitness from desired octave
+        /*for (int j = 0; j < 4; j++) {
             
-            /*
-            //Checking intervals between consecutive notes to maintain a linear progression of  either ascending or descending.
-            //If there is no difference between the 1st and 2nd note, add a penalty.
-            if (sign == 0) {
-                
-                fitnessSum+=2000;
-            }
+            int octave = determineParticleOctave(particles[i]->indFreqs[j]);
+            fitnessSum += (abs(chosenOctave-octave)*abs(chosenOctave-octave)) * 10000.;
             
-            //If notes are ascending
-            else if (sign == 1) {
-                
-                
-                if (particles[i]->indFreqs[j+1] > particles[i]->indFreqs[j]) {
-                    fitnessSum-=100;
-                    
-                } else if (particles[i]->indFreqs[j+1] <= particles[i]->indFreqs[j]) {
-                    fitnessSum+=10000;
-                }
-                
-            } else if (sign == -1) {
-                
-                if (particles[i]->indFreqs[j+1] < particles[i]->indFreqs[j]) {
-                    fitnessSum-=100;
-                    
-                } else if (particles[i]->indFreqs[j+1] >= particles[i]->indFreqs[j]) {
-                    fitnessSum+=10000;
-                }
-                
-            }
-            
-            if (abs(particles[i]->indFreqs[j+1])- particles[i]->indFreqs[j] == 0) {
-                fitnessSum+=10000;
-            }
+        }*/
         
-             */
+    
+        particles[i]->fitness = fitnessSum;
         
-        
-        
-        
-        particles[i]->fitness += fitnessSum;
-        ///cout << "Fitness of " << i << ": " << particles[i]->fitness << endl;
         
     }
     
@@ -608,9 +616,46 @@ void Swarm::fitnessRhythm() {
     
     for (int i = 0; i < N; i++) {
         
-        float sum = 0;
-        sum+=abs(chosenDimension-particles[i]->dimensionality)*100.;
-        particles[i]->fitnessRhythm = sum;
+        float fitnessSum = 0;
+      
+        //fitnessSum+=abs(chosenDimension-particles[i]->dimensionality)*100.;
+        
+        //cout << " " << endl;
+        //cout << "Particle number: " << i << endl;
+        //Calculating motif fitness
+        double rhythmDistance = 0;
+        //for (int j = 0; j < 16; j++) {
+            
+          //  rhythmDistance += (rhythmMotif[j] - particles[i]->hits[j]) * (rhythmMotif[j] - particles[i]->hits[j]);
+         
+        //}
+     
+        
+        rhythmDistance = abs(dimensionalityMotif-particles[i]->dimensionality);
+      //  cout << "Particle dimension: " << particles[i]->dimensionality << endl;
+      //  cout << "Particle hits: " << endl;
+        for (int j = 0; j < 16; j++) {
+        // cout << particles[i]->hits[j] << ", ";
+        }
+        //cout << " " << endl;
+        //cout << "desired distance: " << desiredRhythmDistance << endl;
+        fitnessSum = abs(desiredRhythmDistance - rhythmDistance);
+        //cout << "new fitness: " << fitnessSum << endl;
+
+        
+        /*
+        double rhythmDistance;
+        for (int j = 0; j < 16; j++) {
+            
+            rhythmDistance += abs(rhythmMotif[i] - particles[i]->hits[i]) * abs(rhythmMotif[i] - particles[i]->hits[i]);
+            
+        }
+        
+        rhythmDistance = sqrt(rhythmDistance);
+        
+        sum = abs(desiredRhythmDistance - rhythmDistance) * abs(desiredRhythmDistance - rhythmDistance);
+*/
+        particles[i]->fitnessRhythm = fitnessSum;
         
     }
 }
@@ -641,12 +686,34 @@ void Swarm::calculateBestRhythm() {
     
     for (int i = 0; i < particles.size(); i++) {
         
+        
         if (particles[i]->fitnessRhythm < bestFitnessRhythm) {
             
+            
+            cout << "Dimension of new best particle: " << particles[i]->dimensionality << endl;
+            cout << "Fitness of new best particle: " << particles[i]->fitnessRhythm << endl;
+            cout << "New best particle sequence: " << endl;
+            for (int j = 0; j < 16; j++) {
+                cout << particles[i]->hits[j] << ", ";
+            }
+            
+            cout << " " << endl;
+        
             bestFitnessRhythm = particles[i]->fitnessRhythm;
-            bestRhythm = particles[i];
-            bestRhythm->bestDimensionality = particles[i]->dimensionality;
+            
+            
+            bestRhythm = *particles[i];
+            bestRhythm.dimensionality = particles[i]->dimensionality;
+            bestRhythm.hits = particles[i]->hits;
+            bestRhythm.bestRhythm = particles[i]->rhythm;
+            bestRhythm.bestDimensionality = particles[i]->dimensionality;
+            
+            cout << "New best rhythm value" << endl;
+            for (int j = 0; j < 16; j++) {
+                cout << bestRhythm.hits[j] << ", ";
+            }
         }
+        
     }
     
     
@@ -663,10 +730,9 @@ void Swarm::updateParticlesRhythm() {
         r1 = ofRandom(1);
         r2 = ofRandom(1);
         
-        particles[i]->dimensionalityVel = (rhythmCon * (particles[i]->dimensionalityVel + (rhythmC1*r1*(particles[i]->bestDimensionality-particles[i]->dimensionality) + (rhythmC2*r2*(bestRhythm->bestDimensionality - particles[i]->dimensionality)))));
+        particles[i]->dimensionalityVel = (rhythmCon * (particles[i]->dimensionalityVel + (rhythmC1*r1*(particles[i]->bestDimensionality-particles[i]->dimensionality) + (rhythmC2*r2*(bestRhythm.bestDimensionality - particles[i]->dimensionality)))))*5.;
         
-        
-        particles[i]->dimensionality = particles[i]->dimensionality + particles[i]->dimensionalityVel;
+        particles[i]->dimensionality = (particles[i]->dimensionality + particles[i]->dimensionalityVel);
         
         particles[i]->dimensionality = int(ofClamp(particles[i]->dimensionality, 1, 16));
         
