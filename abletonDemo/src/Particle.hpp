@@ -24,6 +24,14 @@ public:
     float indFreqsVel[4];
     
     
+    
+    //CHORD
+    int chord[3];
+    int chordVel[3];
+    int bestChord[3];                       //Best chord generated (from personal best fitness)
+    int chordFitness = 9999;                //Current fitness
+    int chordBestFitness = 9999;            //Personal best fitness
+    
     int start = int(ofRandom(29, 36));
     
     int fitness;
@@ -69,6 +77,9 @@ public:
     int bestParticleVelocity;
     
     int bestNeighbour[4];
+    
+    
+    
     
     
     

@@ -142,6 +142,7 @@ public:
     //Motif/Phrase
     int desiredRhythmDistance = 0;
     int desiredNoteDistance = 0;
+    int targetDimensionality;
     
     //Note motif of continuous tonic of whatever key currently in.
     int noteMotif[4] = {28, 30, 32, 30};
@@ -149,11 +150,24 @@ public:
     int dimensionalityMotif = 0;
     
     
-    //TESTING DFO
-    void calculateBestFly();
-    void calculateBestNeighbour();
-    void updateFly();
-    void clampParticles();
+    int chordPotential = 0;
+    int prevChordPotential;
+    int chordBestFitness = 9999;
+    int bestChord[3];
+    
+    float chordCon = 0.78;
+    float chordC1, chordC2;
+    
+    void runChord(int notePlayhead);
+    void randomiseParticleChord(int p);
+    void removeParticleChordIndex();
+    void fitnessChord();
+    void checkPersonalBestChord();
+    void checkBestChord();
+    void updateParticleChord();
+    
+    int currentNotePlayhead;
+    
     
 };
 

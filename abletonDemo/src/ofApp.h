@@ -44,7 +44,7 @@ class ofApp : public ofBaseApp{
     SwarmGUI * right;
     
     
-    int tempo = 8;
+    float tempo = 4.;
     ofxDatGuiSlider* tempoSlider;
     ofParameter<int> tempoInt;
     
@@ -76,7 +76,10 @@ class ofApp : public ofBaseApp{
     int pitchPlayheadLeft = 0;
     int pitchPlayheadRight = 0;
 
-
-
+    int lastNotePlayheadLeft;
+    bool calculateChordLeft = false;
+    
+    int lastNotePlayheadRight;
+    bool calculateChordRight = false;
    
 };

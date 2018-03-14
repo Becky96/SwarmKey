@@ -78,6 +78,11 @@ void SwarmGUI::setupInterface() {
     swarmComponents.push_back(octaveSlider);
     y+=octaveSlider->getHeight();
     
+    chordSlider = new ofxDatGuiSlider(chordInt.set("Chord potential", 0, 0, 3));
+    chordSlider->setPosition(x, y);
+    chordSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
+    swarmComponents.push_back(chordSlider);
+    y+=chordSlider->getHeight();
     
     //Interval penalties for specific swarm
     //First
@@ -145,7 +150,7 @@ void SwarmGUI::setupInterface() {
     motifComponents.push_back(desiredNoteDistSlider);
     y+=desiredNoteDistSlider->getHeight();
     
-    desiredRhythmDistSlider = new ofxDatGuiSlider(desiredRhythmDistInt.set("Desired rhythm dist", 0, 0, 16));
+    desiredRhythmDistSlider = new ofxDatGuiSlider(desiredRhythmDistInt.set("Desired rhythm", swarm->dimensionalityMotif, 0, 16));
     desiredRhythmDistSlider->setPosition(x, y);
     desiredRhythmDistSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     motifComponents.push_back(desiredRhythmDistSlider);
@@ -290,6 +295,20 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
 
     }
     
+    if (e.target == chordSlider) {
+        
+        if (e.value > swarm->chordPotential) {
+            swarm->randomiseParticleChord(e.value);
+        }
+        
+        if (e.value < swarm->chordPotential) {
+            swarm->removeParticleChordIndex();
+        }
+        swarm->prevChordPotential = swarm->chordPotential;
+        swarm->chordPotential = e.value;
+
+    }
+    
     ///////////////////////////////
     //Interval penalties
     if (e.target == firstPen) {
@@ -350,11 +369,13 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     //Motif sliders
     if (e.target == desiredNoteDistSlider) {
         swarm->desiredNoteDistance = e.value;
+        swarm->targetDimensionality = e.value;
         resetParticleIntervals();
     }
     
     if (e.target == desiredRhythmDistSlider) {
-        swarm->desiredRhythmDistance = e.value;
+        swarm->targetDimensionality = e.value;
+      //  swarm->desiredRhythmDistance = e.value;
         resetParticleRhythms();
     }
     

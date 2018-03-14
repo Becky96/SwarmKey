@@ -31,6 +31,15 @@ void Particle::setupParticle() {
     indFreqsVel[3] = ofRandom(-2, 2);
 
     
+    chord[0] = 0;
+    chord[1] = 0;
+    chord[2] = 0;
+    
+    chordVel[0] = ofRandom(-2, 2);
+    chordVel[1] = ofRandom(-2, 2);
+    chordVel[2] = ofRandom(-2, 2);
+    
+    
     for (int i = 0; i < 16; i++) {
         compareBestRhythm.push_back(0);
     }

@@ -75,10 +75,12 @@ public:
     ofxDatGuiSlider* rhythmSlider;
     ofxDatGuiSlider* velocitySlider;
     ofxDatGuiSlider* octaveSlider;
+    ofxDatGuiSlider* chordSlider;
 
     ofParameter<int> rhythmInt;
     ofParameter<int> velocityInt;
     ofParameter<int> octaveInt;
+    ofParameter<int> chordInt;
     
     //Interval penalties
     vector<ofxDatGuiComponent*> intervalPenalties;
