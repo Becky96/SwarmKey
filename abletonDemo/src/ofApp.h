@@ -50,6 +50,7 @@ class ofApp : public ofBaseApp{
     
     vector<string> options = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     ofxDatGuiDropdown* key;
+    int getKey(string _key);
     
     maxiOsc timer;
     int currentCount, lastCount;

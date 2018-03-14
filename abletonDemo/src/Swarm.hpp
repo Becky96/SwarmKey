@@ -169,6 +169,8 @@ public:
     int currentNotePlayhead;
     
     
+    
+    
 };
 
 #endif /* Swarm_hpp */

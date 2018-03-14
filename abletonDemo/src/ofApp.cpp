@@ -47,7 +47,11 @@ void ofApp::setup(){
     tempoSlider->onSliderEvent(this, &ofApp::onSliderEvent);
     y+=tempoSlider->getHeight();
     
-    key = new ofxDatGuiDropdown("Select key");
+    
+    
+    
+    
+    key = new ofxDatGuiDropdown("Select key", options);
     key->setPosition(x, y);
     key->onDropdownEvent(this, &ofApp::onDropdownEvent);
     
@@ -316,6 +320,71 @@ void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
 
 
 void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
+    
+    cout << options[e.child] << endl;
+    
+    if (options[e.child] == "C") {
+        swarms[1].calculateKey(60);
+        swarms[2].calculateKey(60);
+    }
+    
+    if (options[e.child] == "C#") {
+        swarms[1].calculateKey(61);
+        swarms[2].calculateKey(61);
+    }
+    
+    if (options[e.child] == "D") {
+        swarms[1].calculateKey(62);
+        swarms[2].calculateKey(62);
+    }
+    
+    if (options[e.child] == "D#") {
+        swarms[1].calculateKey(63);
+        swarms[2].calculateKey(63);
+    }
+    
+    if (options[e.child] == "E") {
+        swarms[1].calculateKey(64);
+        swarms[2].calculateKey(64);
+    }
+    
+    if (options[e.child] == "F") {
+        swarms[1].calculateKey(65);
+        swarms[2].calculateKey(65);
+    }
+    
+    if (options[e.child] == "F#") {
+        swarms[1].calculateKey(66);
+        swarms[2].calculateKey(66);
+    }
+    
+    if (options[e.child] == "G") {
+        swarms[1].calculateKey(67);
+        swarms[2].calculateKey(67);
+    }
+    
+    
+    if (options[e.child] == "G#") {
+        swarms[1].calculateKey(68);
+        swarms[2].calculateKey(68);
+    }
+    
+    if (options[e.child] == "A") {
+        swarms[1].calculateKey(69);
+        swarms[2].calculateKey(69);
+    }
+    
+    
+    if (options[e.child] == "A#") {
+        swarms[1].calculateKey(70);
+        swarms[2].calculateKey(70);
+    }
+    
+    
+    if (options[e.child] == "B") {
+        swarms[1].calculateKey(71);
+        swarms[2].calculateKey(71);
+    }
     
     
     

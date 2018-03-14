@@ -88,6 +88,8 @@ void Swarm::inputMotif(int nMotif[4], int rMotif[16]) {
     targetDimensionality = dimensionalityMotif;
 
 }
+
+
 //--------------------------------------------------------------
 //Determine viable keys to play
 void Swarm::calculateKey(int start) {
