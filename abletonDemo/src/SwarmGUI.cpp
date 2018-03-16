@@ -15,6 +15,7 @@ void SwarmGUI::setupInterface() {
     textY = y;
     
     //Algorithm component sliders
+    /*
     noteConSlider = new ofxDatGuiSlider(noteConFloat.set("Note Constriction Rate", 0.7984, 0., 1.));
     noteConSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     noteConSlider->setPosition(x, y);
@@ -50,7 +51,7 @@ void SwarmGUI::setupInterface() {
     rhythmC2Slider->setPosition(x, y);
     algorithmComponents.push_back(rhythmC2Slider);
     y+=rhythmC2Slider->getHeight();
-    
+    */
     
     //GUI setup of toggle and sliders.
     playingToggle = new ofxDatGuiToggle("Playing", false);
@@ -156,6 +157,17 @@ void SwarmGUI::setupInterface() {
     motifComponents.push_back(desiredRhythmDistSlider);
     y+=desiredRhythmDistSlider->getHeight();
     
+    saveNewMotif = new ofxDatGuiButton("Save previous bar as new motif");
+    saveNewMotif->setPosition(x, y);
+    saveNewMotif->onButtonEvent(this, &SwarmGUI::onButtonEvent);
+    motifComponents.push_back(saveNewMotif);
+    y+=saveNewMotif->getHeight();
+    
+    restoreOriginalMotif = new ofxDatGuiButton("Restore original motif");
+    restoreOriginalMotif->setPosition(x, y);
+    restoreOriginalMotif->onButtonEvent(this, &SwarmGUI::onButtonEvent);
+    motifComponents.push_back(restoreOriginalMotif);
+    y+=restoreOriginalMotif->getHeight();
     
     
     
@@ -167,7 +179,7 @@ void SwarmGUI::setupInterface() {
 void SwarmGUI::updateInterface() {
     
     for (int i = 0; i < algorithmComponents.size(); i++) {
-        algorithmComponents[i]->update();
+        //algorithmComponents[i]->update();
     }
     
     for (int i = 0; i < swarmComponents.size(); i++) {
@@ -190,7 +202,7 @@ void SwarmGUI::updateInterface() {
 void SwarmGUI::drawInterface() {
     
     for (int i = 0; i < algorithmComponents.size(); i++) {
-        algorithmComponents[i]->draw();
+        //algorithmComponents[i]->draw();
     }
     
     for (int i = 0; i < swarmComponents.size(); i++) {
@@ -382,6 +394,25 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     
 }
 
+
+//--------------------------------------------------------------
+
+void SwarmGUI::onButtonEvent(ofxDatGuiButtonEvent e) {
+    
+    if (e.target == saveNewMotif) {
+        
+        for (int i = 0; i < 4; i++) {
+            swarm->noteMotif[i] = swarm->best.indFreqs[i];
+        }
+    }
+    
+    if (e.target == restoreOriginalMotif) {
+        
+        for (int i = 0; i < 4; i++) {
+            swarm->noteMotif[i] = swarm->originalMotif[i];
+        }
+    }
+}
 //--------------------------------------------------------------
 
 void SwarmGUI::resetParticleIntervals() {
@@ -480,6 +511,13 @@ void SwarmGUI::displaySwarmParameters() {
     
     string rhythmText = "Rhythm fitness: " + ofToString(swarm->bestFitnessRhythm);
     ofDrawBitmapStringHighlight(rhythmText, x, y+125);
+    
+    string originalMotif = "Original: " + ofToString(swarm->originalMotif[0]) + ", " + ofToString(swarm->originalMotif[1]) + ", " + ofToString(swarm->originalMotif[2]) + ", " + ofToString(swarm->originalMotif[3]);
+    string currentMotif = "Current: " + ofToString(swarm->noteMotif[0]) + ", " + ofToString(swarm->noteMotif[1]) + ", " + ofToString(swarm->noteMotif[2]) + ", " + ofToString(swarm->noteMotif[3]);
+    ofDrawBitmapStringHighlight(originalMotif, x, y+175);
+    ofDrawBitmapStringHighlight(currentMotif, x, y+200);
+
+    
 
     
 }

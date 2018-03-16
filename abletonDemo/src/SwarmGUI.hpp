@@ -46,6 +46,7 @@ public:
     void drawInterface();
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
+    void onButtonEvent(ofxDatGuiButtonEvent e);
     void resetParticleIntervals();
     void resetParticleRhythms();
     void resetParticleIntervalVelocity();
@@ -112,6 +113,9 @@ public:
     
     ofParameter<int> desiredNoteDistInt;
     ofParameter<int> desiredRhythmDistInt;
+    
+    ofxDatGuiButton* saveNewMotif;
+    ofxDatGuiButton* restoreOriginalMotif;
 
 };
 

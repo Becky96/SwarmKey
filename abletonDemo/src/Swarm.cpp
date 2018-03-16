@@ -74,6 +74,7 @@ void Swarm::inputMotif(int nMotif[4], int rMotif[16]) {
     //Assigning note motif as swarm note motif
     for (int i = 0; i < 4; i++) {
         noteMotif[i] = nMotif[i];
+        originalMotif[i] = noteMotif[i];
     }
     
     //Assigning rhythm motif as swarm rhythm motif

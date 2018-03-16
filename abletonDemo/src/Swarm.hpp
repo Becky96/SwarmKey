@@ -146,6 +146,7 @@ public:
     
     //Note motif of continuous tonic of whatever key currently in.
     int noteMotif[4] = {28, 30, 32, 30};
+    int originalMotif[4];
     int rhythmMotif[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
     int dimensionalityMotif = 0;
     
