@@ -171,6 +171,10 @@ public:
     
     
     
+    //Octave
+    int noteMotifOctaves[4];
+    int distMotifOctave;
+    
     
 };
 

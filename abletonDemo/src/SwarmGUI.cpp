@@ -303,6 +303,8 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
         
         
         swarm->chosenOctave = e.value;
+        swarm->distMotifOctave = swarm->chosenOctave - swarm->noteMotifOctaves[0];
+
         resetParticleIntervals();
 
     }

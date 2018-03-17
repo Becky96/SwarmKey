@@ -65,6 +65,7 @@ void Swarm::setup(int _channel) {
     prevBestIndFreqs[2] = 100;
     prevBestIndFreqs[3] = 100;
     
+    
 
     
 }
@@ -88,6 +89,13 @@ void Swarm::inputMotif(int nMotif[4], int rMotif[16]) {
     
     targetDimensionality = dimensionalityMotif;
 
+    noteMotifOctaves[0] = ((noteMotif[0]-3)/7)+1;
+    noteMotifOctaves[1] = ((noteMotif[1]-3)/7)+1;
+    noteMotifOctaves[2] = ((noteMotif[2]-3)/7)+1;
+    noteMotifOctaves[3] = ((noteMotif[3]-3)/7)+1;
+    
+    distMotifOctave = chosenOctave - noteMotifOctaves[0];
+
 }
 
 
@@ -106,6 +114,10 @@ void Swarm::calculateKey(int start) {
     availableNotes.push_back((start+(i*12))+9);
     availableNotes.push_back((start+(i*12))+11);
     
+    }
+    
+    for (int i = 0; i < availableNotes.size(); i++) {
+        cout << i << ": " << availableNotes[i] << endl;
     }
 
 }
@@ -273,7 +285,7 @@ void Swarm::fitness() {
         for (int j = 0; j < 4; j++) {
             
           //  cout << "Particle freq: " << particles[i]->indFreqs[j] << endl;
-            noteDistance += (noteMotif[j] - particles[i]->indFreqs[j]) * (noteMotif[j] - particles[i]->indFreqs[j]);
+            noteDistance += ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]) * ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]);
            // cout << "Current note distance: " << noteDistance << endl;
         }
        // cout << "Overall note distance: " << noteDistance;
@@ -355,7 +367,8 @@ void Swarm::fitness() {
         
         
         //Calculating fitness from desired octave
-        /*for (int j = 0; j < 4; j++) {
+        /*
+        for (int j = 0; j < 4; j++) {
             
             int octave = determineParticleOctave(particles[i]->indFreqs[j]);
             fitnessSum += (abs(chosenOctave-octave)*abs(chosenOctave-octave)) * 10000.;
