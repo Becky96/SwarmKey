@@ -41,19 +41,34 @@ void ofApp::setup(){
     int x = 400;
     int y = 600;
     
+    
+    
+    playSwarmsToggle = new ofxDatGuiToggle("Start playing both swarms", false);
+    playSwarmsToggle->onToggleEvent(this, &ofApp::onToggleEvent);
+    playSwarmsToggle->setPosition(x, y);
+    playSwarmsToggle->setChecked(false);
+    globalSwarmComponents.push_back(playSwarmsToggle);
+    y+=playSwarmsToggle->getHeight();
+    
+    
+    key = new ofxDatGuiDropdown("Select key", options);
+    key->setPosition(x, y);
+    key->onDropdownEvent(this, &ofApp::onDropdownEvent);
+    globalSwarmComponents.push_back(key);
+    y+=key->getHeight();
+    
     //Swarm global controls (controlling both swarms)
     tempoSlider = new ofxDatGuiSlider(tempoInt.set("Tempo", 240, 1, 480));
     tempoSlider->setPosition(x, y);
     tempoSlider->onSliderEvent(this, &ofApp::onSliderEvent);
+    globalSwarmComponents.push_back(tempoSlider);
     y+=tempoSlider->getHeight();
     
     
     
     
     
-    key = new ofxDatGuiDropdown("Select key", options);
-    key->setPosition(x, y);
-    key->onDropdownEvent(this, &ofApp::onDropdownEvent);
+
     
     
     sampleRate = 44100;
@@ -68,8 +83,10 @@ void ofApp::setup(){
 void ofApp::update(){
 
 
-    tempoSlider->update();
-    key->update();
+    for (int i = 0; i < globalSwarmComponents.size(); i++) {
+    globalSwarmComponents[i]->update();
+    }
+   
     
     left->updateInterface();
     right->updateInterface();
@@ -83,12 +100,11 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
     if (startSwarm) {
     
         if (swarms[1].readyToPlay == true && changeRhythmInt % 4 == 0) {
-            //cout << "REACHED" << endl;
             swarms[1].play = true;
             swarms[1].readyToPlay = false;
             swarms[1].notePlayhead = 0;
             
-           // cout << "Beginning note playhead: " << swarms[1].notePlayhead << endl;
+
         }
         
         if (swarms[2].readyToPlay == true && changeRhythmInt % 4 == 0) {
@@ -114,6 +130,7 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
             if (swarms[1].play == true) {
                 
                 
+                if (swarms[1].playFinalNote == false) {
                 if (swarms[1].bestRhythm.hits[playHead% 16] == 1) {
             
                     if (playHead % 16 == 0) {
@@ -155,6 +172,21 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
                     noteChangeLeft = true;
 
                 }
+                } else if (swarms[1].readyToPlay == false) {
+                    cout << "REACHED " << endl;
+
+                    if (swarms[1].bestRhythm.hits[playHead% 16] == 1) {
+                        cout << "TRUE2 Swarm 1" << endl;
+                        swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].tonic, swarms[1].bestParticleSwarmVelocity);
+                        
+                        swarms[1].playFinalNote = false;
+                        swarms[1].play = false;
+                        swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].tonic);
+                        
+                    }
+
+   
+                }
                 
                 
             }
@@ -163,7 +195,8 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
             //Determine whether to play second swarm
             if (swarms[2].play == true) {
                 
-                
+                if (swarms[2].playFinalNote == false) {
+
                 if (swarms[2].bestRhythm.hits[playHead% 16] == 1) {
                     
                     if (playHead % 16 == 0) {
@@ -207,10 +240,25 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
                 }
                 
                 
+                } else if (swarms[2].readyToPlay == false) {
+                    cout << "REACHED " << endl;
+                    if (swarms[2].bestRhythm.hits[playHead% 16] == 1) {
+                        cout << "TRUE2 Swarm 2" << endl;
+                        swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].tonic, swarms[2].bestParticleSwarmVelocity);
+                        
+                        swarms[2].playFinalNote = false;
+                        swarms[2].play = false;
+                        
+                          swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].tonic);
+                    }
+                }
             }
+
+
 
             playHead++;
             lastCount = 0;
+            
             
         
         }
@@ -226,11 +274,18 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
 void ofApp::draw(){
     
     
-    tempoSlider->draw();
-    key->draw();
+    for (int i = 0; i < globalSwarmComponents.size(); i++) {
+        globalSwarmComponents[i]->draw();
+    }
+    
     
     left->drawInterface();
     right->drawInterface();
+    
+    if (swarms[1].readyToPlay == false && swarms[2].readyToPlay == false && swarms[1].play == false && swarms[2].play == false && swarms[1].playFinalNote == false && swarms[2].playFinalNote == false) {
+        //cout << "OFF" << endl;
+        startSwarm = false;
+    }
   
     
     if (startSwarm == true) {
@@ -261,23 +316,19 @@ void ofApp::draw(){
             
             if (swarms[2].play == true) {
     
-                
-                //if (swarms[2].bestRhythm.dimensionality != swarms[2].chosenDimension) {
+
                 swarms[2].runRhythm();
-               // }
                 
                 swarms[2].run(&swarms[1], playHead, swarms[2].notePlayhead, swarms[1].notePlayhead);
                 
-                //swarms[2].runChord(swarms[2].notePlayhead);
-                
-                //cout << "playing rhythm" << endl;
+
             }
             
             
             if (swarms[1].play == true) {
                 
-                cout << "Dimension: " << swarms[1].bestRhythm.dimensionality << endl;
-                //if (swarms[1].bestRhythm->dimensionality != swarms[1].chosenDimension) {
+     
+
 
                 swarms[1].runRhythm();
                 //}
@@ -305,6 +356,48 @@ void ofApp::draw(){
     
     }
 
+
+
+//--------------------------------------------------------------
+
+void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
+    
+    //Set swarm to play.
+    if (e.target == playSwarmsToggle && e.checked == true && startSwarm == false) {
+        
+        cout << "Playing" << endl;
+        startSwarm = true;
+        lastCount = 0;
+        currentCount = 0;
+        playHead = 0;
+        changeRhythmInt = 0;
+        
+        left->playingToggle->setChecked(true);
+        right->playingToggle->setChecked(true);
+        swarms[1].readyToPlay = true;
+        swarms[1].playFinalNote = false;
+        swarms[1].notePlayhead = 0;
+        
+        swarms[2].readyToPlay = true;
+        swarms[2].playFinalNote = false;
+        swarms[2].notePlayhead = 0;
+    }
+    
+    //Set swarm to stop playing.
+    if (e.target == playSwarmsToggle && e.checked == false && startSwarm == true) {
+        //startSwarm = false;
+        cout << startSwarm << endl;
+        swarms[1].playFinalNote = true;
+        swarms[2].playFinalNote = true;
+        
+        left->playingToggle->setChecked(false);
+        right->playingToggle->setChecked(false);
+
+        
+    }
+    
+    
+}
 
 //--------------------------------------------------------------
 //Handler for sliders
@@ -392,27 +485,12 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
  
-    cout << "Potential: " << swarms[1].chordPotential << endl;
-    cout << "Best: " << endl;
-    cout << swarms[1].bestChord[0] << endl;
-    cout << swarms[1].bestChord[1] << endl;
-    cout << swarms[1].bestChord[2] << endl;
+
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
     
-    if (key == 's' && startSwarm == false) {
-        cout << "Playing" << endl;
-        startSwarm = true;
-        lastCount = 0;
-        currentCount = 0;
-        playHead = 0;
-        changeRhythmInt = 0;
-    } else if (key == 's' && startSwarm == true) {
-        startSwarm = false;
-    }
-
 }
 
 //--------------------------------------------------------------

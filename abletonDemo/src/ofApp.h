@@ -44,6 +44,11 @@ class ofApp : public ofBaseApp{
     SwarmGUI * right;
     
     
+    
+    vector<ofxDatGuiComponent*> globalSwarmComponents;
+    ofxDatGuiToggle* playSwarmsToggle;
+    
+    //Tempo variables
     float tempo = 4.;
     ofxDatGuiSlider* tempoSlider;
     ofParameter<int> tempoInt;
@@ -64,6 +69,7 @@ class ofApp : public ofBaseApp{
     bool noteChangeLeft = false;
     bool noteChangeRight = false;
 
+    void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onDropdownEvent(ofxDatGuiDropdownEvent e);
     

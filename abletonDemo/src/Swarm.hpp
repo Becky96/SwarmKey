@@ -30,6 +30,7 @@ public:
     
 
     
+    int tonic = 67;
     
     ofxMidiOut midiOut;
     
@@ -175,7 +176,7 @@ public:
     int noteMotifOctaves[4];
     int distMotifOctave;
     
-    
+    bool playFinalNote = false;
 };
 
 #endif /* Swarm_hpp */

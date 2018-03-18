@@ -57,7 +57,7 @@ void Swarm::setup(int _channel) {
     velocityC1 = velocityCon * (4.1/2.);
     velocityC2 = velocityC1;
     
-    calculateKey(67);
+    calculateKey(tonic);
     
     //Initialising prevBestIndFreqs
     prevBestIndFreqs[0] = 100;
@@ -102,6 +102,8 @@ void Swarm::inputMotif(int nMotif[4], int rMotif[16]) {
 //--------------------------------------------------------------
 //Determine viable keys to play
 void Swarm::calculateKey(int start) {
+    
+    tonic = start;
     
     availableNotes.clear();
     
@@ -637,10 +639,10 @@ void Swarm::fitnessRhythm() {
 
         double rhythmDistance = 0;
 
-        cout << targetDimensionality << endl;
-        cout << "particle's dimension: " << particles[i]->dimensionality << endl;
+        //cout << targetDimensionality << endl;
+        //cout << "particle's dimension: " << particles[i]->dimensionality << endl;
         rhythmDistance = abs(targetDimensionality-particles[i]->dimensionality);
-        cout << "rhythm fitness: " << rhythmDistance << endl;
+        //cout << "rhythm fitness: " << rhythmDistance << endl;
         fitnessSum = (rhythmDistance);
    
 

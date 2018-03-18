@@ -57,6 +57,7 @@ void SwarmGUI::setupInterface() {
     playingToggle = new ofxDatGuiToggle("Playing", false);
     playingToggle->onToggleEvent(this, &SwarmGUI::onToggleEvent);
     playingToggle->setPosition(x, y);
+    playingToggle->setChecked(false);
     swarmComponents.push_back(playingToggle);
     y+=playingToggle->getHeight();
     
@@ -225,17 +226,20 @@ void SwarmGUI::drawInterface() {
 void SwarmGUI::onToggleEvent(ofxDatGuiToggleEvent e) {
 
     //Set swarm to play.
-    if (e.target == playingToggle && e.checked == false) {
+    if (e.target == playingToggle && e.checked == true) {
         
         swarm->readyToPlay = true;
+        swarm->playFinalNote = false;
         swarm->notePlayhead = 0;
         cout << swarm->play << endl;
     }
     
     //Set swarm to stop playing.
-    if (e.target == playingToggle && e.checked == true) {
-        swarm->play = false;
+    if (e.target == playingToggle && e.checked == false) {
+        swarm->playFinalNote = true;
+        //swarm->play = false;
         cout << swarm->play << endl;
+        cout << swarm->tonic << endl;
 
     }
     
