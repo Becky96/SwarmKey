@@ -27,12 +27,11 @@ public:
     void inputMotif(int nMotif[4], int rMotif[16]);
     void exit();
     
-    
-
-    
-    int tonic = 67;
-    
     ofxMidiOut midiOut;
+
+
+    //Starting scale is C major
+    int tonic = 60;
     
     int channel, note, velocity;
     
@@ -73,7 +72,8 @@ public:
     float dt = 0.2; //Like DFO
 
 
-    void calculateKey(int start);
+    void calculateKey(int start, int type);
+   
     vector<int> availableNotes;
     
     
@@ -128,12 +128,12 @@ public:
     void calculateBestVelocity();
     void updateParticleVelocity();
     
-    int desiredVelocity = 100;
+    int desiredVelocity = 40;
 
     int bestParticleSwarmVelocity;
     float bestVelocityFitness = 999;
     
-    float velocityCon = 0.78;
+    float velocityCon = 0.7;
     float velocityC1, velocityC2;
 
     int notePlayhead = 0;

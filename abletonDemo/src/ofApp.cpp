@@ -20,7 +20,7 @@ void ofApp::setup(){
     
     
     //Note and rhythm motif for swarm one
-    int nMotif1[4] = {24, 22, 17, 22};
+    int nMotif1[4] = {21, 23, 25, 23};
     int rMotif1[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
     swarms[1].inputMotif(nMotif1, rMotif1);
     
@@ -49,13 +49,21 @@ void ofApp::setup(){
     playSwarmsToggle->setChecked(false);
     globalSwarmComponents.push_back(playSwarmsToggle);
     y+=playSwarmsToggle->getHeight();
+    x+=100;
     
+    keyTypes = new ofxDatGuiDropdown("Select key type", types);
+    keyTypes->setPosition(x, y);
+    keyTypes->onDropdownEvent(this, &ofApp::onDropdownEvent);
+    globalSwarmComponents.push_back(keyTypes);
+    y+=keyTypes->getHeight();
+    x+=100;
     
     key = new ofxDatGuiDropdown("Select key", options);
     key->setPosition(x, y);
     key->onDropdownEvent(this, &ofApp::onDropdownEvent);
     globalSwarmComponents.push_back(key);
     y+=key->getHeight();
+    x+=100;
     
     //Swarm global controls (controlling both swarms)
     tempoSlider = new ofxDatGuiSlider(tempoInt.set("Tempo", 240, 1, 480));
@@ -369,11 +377,7 @@ void ofApp::draw(){
             
             if (swarms[1].play == true) {
                 
-     
-
-
                 swarms[1].runRhythm();
-                //}
                 swarms[1].run(&swarms[2], playHead, swarms[1].notePlayhead, swarms[2].notePlayhead);
                 
                 //pianoRoll.resetCells(&swarms[1], &swarms[2]);
@@ -447,7 +451,8 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
 //Handler for sliders
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
     
-    
+    //Tempo is converted from bpm to hertz for the oscillator to time the program.
+    //1 hertz = 60 bpm
     if (e.target == tempoSlider) {
         tempo = (e.value/60);
     }
@@ -460,67 +465,96 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
     
     cout << options[e.child] << endl;
     
+    if (types[e.child] == "Major") {
+        getKeyType = 1;
+    }
+    
+    if (types[e.child] == "Minor") {
+        
+        getKeyType = 2;
+        
+    }
     if (options[e.child] == "C") {
-        swarms[1].calculateKey(60);
-        swarms[2].calculateKey(60);
+        keyNum = 60;
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (options[e.child] == "C#") {
-        swarms[1].calculateKey(61);
-        swarms[2].calculateKey(61);
+        keyNum = 61;
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (options[e.child] == "D") {
-        swarms[1].calculateKey(62);
-        swarms[2].calculateKey(62);
+        keyNum = 62;
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (options[e.child] == "D#") {
-        swarms[1].calculateKey(63);
-        swarms[2].calculateKey(63);
+        keyNum = 63;
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (options[e.child] == "E") {
-        swarms[1].calculateKey(64);
-        swarms[2].calculateKey(64);
+        keyNum = 64;
+
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (options[e.child] == "F") {
-        swarms[1].calculateKey(65);
-        swarms[2].calculateKey(65);
+        keyNum = 65;
+
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (options[e.child] == "F#") {
-        swarms[1].calculateKey(66);
-        swarms[2].calculateKey(66);
+        keyNum = 66;
+
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (options[e.child] == "G") {
-        swarms[1].calculateKey(67);
-        swarms[2].calculateKey(67);
+        keyNum = 67;
+
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     
     if (options[e.child] == "G#") {
-        swarms[1].calculateKey(68);
-        swarms[2].calculateKey(68);
+        keyNum = 68;
+
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (options[e.child] == "A") {
-        swarms[1].calculateKey(69);
-        swarms[2].calculateKey(69);
+        keyNum = 69;
+
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     
     if (options[e.child] == "A#") {
-        swarms[1].calculateKey(70);
-        swarms[2].calculateKey(70);
+        keyNum = 70;
+
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     
     if (options[e.child] == "B") {
-        swarms[1].calculateKey(71);
-        swarms[2].calculateKey(71);
+        keyNum = 71;
+
+        swarms[1].calculateKey(keyNum, getKeyType);
+        swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     

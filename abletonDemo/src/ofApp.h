@@ -45,6 +45,7 @@ class ofApp : public ofBaseApp{
     SwarmGUI * right;
     
     
+    //Object responsible for the 
     PianoRoll pianoRoll;
     
     vector<ofxDatGuiComponent*> globalSwarmComponents;
@@ -55,9 +56,14 @@ class ofApp : public ofBaseApp{
     ofxDatGuiSlider* tempoSlider;
     ofParameter<int> tempoInt;
     
+    vector<string> types = {"Major", "Minor"};
+    ofxDatGuiDropdown* keyTypes;
+    int getKeyType = 1;
+    
+    
     vector<string> options = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     ofxDatGuiDropdown* key;
-    int getKey(string _key);
+    int keyNum = 60;
     
     maxiOsc timer;
     int currentCount, lastCount;

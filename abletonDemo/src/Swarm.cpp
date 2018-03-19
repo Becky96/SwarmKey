@@ -57,7 +57,7 @@ void Swarm::setup(int _channel) {
     velocityC1 = velocityCon * (4.1/2.);
     velocityC2 = velocityC1;
     
-    calculateKey(tonic);
+    calculateKey(tonic, 1);
     
     //Initialising prevBestIndFreqs
     prevBestIndFreqs[0] = 100;
@@ -100,13 +100,15 @@ void Swarm::inputMotif(int nMotif[4], int rMotif[16]) {
 
 
 //--------------------------------------------------------------
-//Determine viable keys to play
-void Swarm::calculateKey(int start) {
+//Determine viable keys to play in major scale
+void Swarm::calculateKey(int start, int type) {
     
     tonic = start;
     
     availableNotes.clear();
     
+    //If major key
+    if (type == 1) {
     for (int i = -4; i < 4; i++) {
     availableNotes.push_back((start+(i*12)));
     availableNotes.push_back((start+(i*12))+2);
@@ -117,12 +119,29 @@ void Swarm::calculateKey(int start) {
     availableNotes.push_back((start+(i*12))+11);
     
     }
+    }
+    
+    //If minor key
+    if (type == 2) {
+        for (int i = -4; i < 4; i++) {
+            availableNotes.push_back((start+(i*12)));
+            availableNotes.push_back((start+(i*12))+2);
+            availableNotes.push_back((start+(i*12))+3);
+            availableNotes.push_back((start+(i*12))+5);
+            availableNotes.push_back((start+(i*12))+7);
+            availableNotes.push_back((start+(i*12))+8);
+            availableNotes.push_back((start+(i*12))+10);
+            
+        }
+        
+    }
     
     for (int i = 0; i < availableNotes.size(); i++) {
         cout << i << ": " << availableNotes[i] << endl;
     }
 
 }
+
 //--------------------------------------------------------------
 //Algorithm functions to determine pitch sequence
 void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, int alternateNotePlayhead) {
@@ -132,15 +151,18 @@ void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, in
     checkPersonalBest();
     checkSwarmBest();
     
-   if (channel == 1) {
-
-       if (desiredNoteDistance != 0) {
-           harmonicIntervalFitness(alternateSwarm, rhythmPlayhead, notePlayhead, alternateNotePlayhead);
-    fitness();
-    checkPersonalBest();
-    checkSwarmBest();
+    
+    //Only calculate harmonic interval fitness for one swarm.
+   if (channel == 1 && desiredNoteDistance != 0) {
        
-       }
+       
+            //Calculate fitness taking into account harmonic intervals with alternate swarm
+            harmonicIntervalFitness(alternateSwarm, rhythmPlayhead, notePlayhead, alternateNotePlayhead);
+            //Calculate original fitness value (melodic intervals, distance from motif, etc) and reassess the particle's personal best candidate soltuion and best candidate solution of the swarm.
+            fitness();
+            checkPersonalBest();
+            checkSwarmBest();
+   
     }
     
     disturb();
@@ -166,13 +188,6 @@ void Swarm::harmonicIntervalFitness(Swarm *alternateSwarm, int rhythmPlayhead, i
     
     int tempNotePlayhead;
     int tempAlternateNotePlayhead;
-    
-    //Check rhythm is current
-    /*
-    cout << "NEW: " << endl;
-    for (int i = 0; i < 16; i++) {
-        cout << alternateSwarm->bestRhythm->hits[i] << ", ";
-    }*/
     
     
     //Loop through all particles to compare harmonic intervals between itself and the best particle of the alternate swarm.
@@ -205,7 +220,7 @@ void Swarm::harmonicIntervalFitness(Swarm *alternateSwarm, int rhythmPlayhead, i
                     //8 - 7
                     //Add penalty to intervals of 1, 2, 6, and 7 between swarms.
                     if (interval % 7 == 1 || interval % 7 == 3 || interval % 7 == 6 ) {
-                        harmonicIntervalSum += 500;
+                        harmonicIntervalSum += 5000;
                     } else if (interval % 7 == 0 || interval % 7 == 2 || interval % 7 == 4) {
                         harmonicIntervalSum -= 1000;
                     }
@@ -301,12 +316,11 @@ void Swarm::fitness() {
         //Calculating interval fitness
         
         if (desiredNoteDistance != 0) {
+            
+            
+            //Array to store intervals between 4 note sequence that particle offers.
         int intervals[3];
-        //Determine whether the bar is ascending or descending in pitch.
-        //sign = -1 if descending
-        //sign = 0 if there is no change between note 1 and note 2
-        //sign = 1 if ascending
-      
+
         //Determine distance of notes 2, 3, and 4 from note 1.
         for (int j = 0; j < 3; j++) {
 
@@ -366,6 +380,8 @@ void Swarm::fitness() {
    
         }
             
+            
+            //Determine fitness based on whether particle candidate solution adheres to an ascending or descending contour. 
             int barSign = ofSign(intervals[0]);
             for (int j = 0; j < 2; j++) {
                 if (barSign == 0) {
@@ -385,6 +401,10 @@ void Swarm::fitness() {
                         fitnessSum+=100000;
                 
                     }
+                }
+                
+                if (intervals[j+1] > 7) {
+                    fitnessSum+=500000;
                 }
             }
         
@@ -1074,7 +1094,7 @@ void Swarm::updateParticleChord() {
             particles[i]->chordVel[j] = chordCon * (particles[i]->chordVel[j] + (chordC1 * r1 * (particles[i]->bestChord[j] - particles[i]->chord[j]) + chordC2 * r2 * (bestChord[j]-particles[i]->chord[j])));
             
             //Chord update
-            particles[i]->chord[j] = ofClamp(int(particles[i]->chord[j]+particles[i]->chordVel[j]), particles[i]->indFreqs[j]-8,  particles[i]->indFreqs[j]+8);
+            particles[i]->chord[j] = ofClamp(int(particles[i]->chord[j]+particles[i]->chordVel[j]), particles[i]->indFreqs[j],  particles[i]->indFreqs[j]+8);
         }
     }
     

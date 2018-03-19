@@ -202,7 +202,9 @@ void Particle::determineRhythm() {
             }
         }
          
-         
+
+//--------------------------------------------------------------
+
 void Particle::fillRhythm(float duration) {
              
              if (duration == 4) {
@@ -221,8 +223,7 @@ void Particle::fillRhythm(float duration) {
                  
                  
              }
-             
-             
+    
              if (duration == 2) {
                  
                  rhythm.push_back(2);
@@ -287,3 +288,6 @@ void Particle::fillRhythm(float duration) {
              }
              
          }
+
+//--------------------------------------------------------------
+

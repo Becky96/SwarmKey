@@ -387,7 +387,6 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     
     if (e.target == desiredRhythmDistSlider) {
         swarm->targetDimensionality = e.value;
-      //  swarm->desiredRhythmDistance = e.value;
         resetParticleRhythms();
     }
     
