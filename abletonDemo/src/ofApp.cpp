@@ -7,7 +7,7 @@ void ofApp::setup(){
 
     ofSetVerticalSync(true);
     
-    ofBackground(255);
+    ofBackground(0);
     
     ofSetLogLevel(OF_LOG_VERBOSE);
     
@@ -32,14 +32,14 @@ void ofApp::setup(){
     
     
     //Set up of interfaces for swarms.
-    left = new SwarmGUI(1, 1000, 200, &swarms[1]);
-    right = new SwarmGUI(2, 1300, 200, &swarms[2]);
+    left = new SwarmGUI(1, 50, 200, &swarms[1]);
+    right = new SwarmGUI(2, 350, 200, &swarms[2]);
     
     left->setupInterface();
     right->setupInterface();
     
-    int x = 400;
-    int y = 600;
+    int x = 50;
+    int y = 50;
     
     
     
@@ -69,7 +69,7 @@ void ofApp::setup(){
     
     
 
-    
+    pianoRoll.setup(700, 100);
     
     sampleRate = 44100;
     bufferSize = 1025;
@@ -129,10 +129,12 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
             //Determine whether to play first swarm
             if (swarms[1].play == true) {
                 
-                
+                float valR1, valR2;
                 if (swarms[1].playFinalNote == false) {
                 if (swarms[1].bestRhythm.hits[playHead% 16] == 1) {
             
+                    
+                    //Send MIDI on messages
                     if (playHead % 16 == 0) {
                         swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]], swarms[1].bestParticleSwarmVelocity);
                     } else {
@@ -140,27 +142,43 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
                     
                     }
                     
-                    
-                    if (swarms[1].chordPotential == 1) {
-                     swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[0]], swarms[1].bestParticleSwarmVelocity-20);
-
+                  
+                    if (swarms[1].chordPotential > 5) {
+                        float r = ofRandom(100);
+                        
+                        if (r < swarms[1].chordPotential) {
+//                     swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[0]], swarms[1].bestParticleSwarmVelocity-20);
+                        swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+3], swarms[1].bestParticleSwarmVelocity-20);
+                        }
+                        
+                        valR1 = r;
                     }
                     
-                    if (swarms[1].chordPotential == 2) {
+                    if (swarms[1].chordPotential > 50) {
+                        float r = ofRandom(100);
                         
-                         swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[1]], swarms[1].bestParticleSwarmVelocity-20);
-                        
-                        
+                        if (r < swarms[1].chordPotential) {
+                        // swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[1]], swarms[1].bestParticleSwarmVelocity-20);
+                        swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+5], swarms[1].bestParticleSwarmVelocity-20);
+                        }
+                        valR2 = r;
                     }
+                    
+                    //Send MIDI off messages
                     swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]]);
 
-                    if (swarms[1].chordPotential == 1) {
-                    swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[0]]);
+                    if (swarms[1].chordPotential > 5) {
+                    //swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[0]]);
+                        if (valR1 < swarms[1].chordPotential) {
+                        swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+3]);
+                        }
                     }
                     
-                    if (swarms[1].chordPotential == 2) {
-                        swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[1]]);
-
+                    if (swarms[1].chordPotential > 50) {
+                        if (valR2 < swarms[2].chordPotential) {
+                        //swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[1]]);
+                        swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+5]);
+                        }
                     }
                     
                     lastNotePlayheadLeft = swarms[1].notePlayhead;
@@ -194,11 +212,14 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
             
             //Determine whether to play second swarm
             if (swarms[2].play == true) {
+                float val1R, val2R;
                 
                 if (swarms[2].playFinalNote == false) {
 
                 if (swarms[2].bestRhythm.hits[playHead% 16] == 1) {
                     
+                    
+                    //Send MIDI on messages
                     if (playHead % 16 == 0) {
                         swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]], swarms[2].bestParticleSwarmVelocity);
                     } else {
@@ -207,25 +228,44 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
                     }
                     
                     
-                    if (swarms[2].chordPotential == 1) {
-                        swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[0]], swarms[2].bestParticleSwarmVelocity-20);
+                    if (swarms[2].chordPotential > 5) {
+                        float r = ofRandom(100);
                         
+                        if (r < swarms[2].chordPotential) {
+                        //swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[0]], swarms[2].bestParticleSwarmVelocity-20);
+                        swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+3], swarms[2].bestParticleSwarmVelocity-20);
+                        }
+                        val1R = r;
                     }
                     
-                    if (swarms[2].chordPotential == 2) {
-                        
-                        swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[1]], swarms[2].bestParticleSwarmVelocity-20);
-                        
-                        
+                    if (swarms[2].chordPotential > 50) {
+                        float r = ofRandom(100);
+                        if (r < swarms[2].chordPotential) {
+                        //swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[1]], swarms[2].bestParticleSwarmVelocity-20);
+                        swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+5], swarms[2].bestParticleSwarmVelocity-20);
+                        }
+                        val2R = r;
                     }
+                    
+                    
+                    //Send MIDI off messages
                     swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]]);
                     
-                    if (swarms[2].chordPotential == 1) {
-                        swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[0]]);
+                    if (swarms[2].chordPotential > 5) {
+                        
+                        if (val1R < swarms[2].chordPotential) {
+                      //  swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[0]]);
+                            swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+3]);
+                        }
                     }
                     
-                    if (swarms[2].chordPotential == 2) {
-                        swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[1]]);
+                    if (swarms[2].chordPotential > 50) {
+                       // swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[1]]);
+                        
+                        if (val2R < swarms[2].chordPotential) {
+                            swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+5]);
+                        }
+
                         
                     }
                     
@@ -273,6 +313,8 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
+    
+    //pianoRoll.displayRoll();
     
     for (int i = 0; i < globalSwarmComponents.size(); i++) {
         globalSwarmComponents[i]->draw();
@@ -334,6 +376,8 @@ void ofApp::draw(){
                 //}
                 swarms[1].run(&swarms[2], playHead, swarms[1].notePlayhead, swarms[2].notePlayhead);
                 
+                //pianoRoll.resetCells(&swarms[1], &swarms[2]);
+                
             }
 
             
@@ -341,14 +385,14 @@ void ofApp::draw(){
         }
     }
     
-
+/*
     swarms[1].display();
 
     ofPushMatrix();
     ofTranslate(0, 200);
     swarms[2].display();
     ofPopMatrix();
-    
+    */
     
     left->displaySwarmParameters();
     right->displaySwarmParameters();

@@ -134,13 +134,16 @@ void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, in
     
    if (channel == 1) {
 
-    harmonicIntervalFitness(alternateSwarm, rhythmPlayhead, notePlayhead, alternateNotePlayhead);
+       if (desiredNoteDistance != 0) {
+           harmonicIntervalFitness(alternateSwarm, rhythmPlayhead, notePlayhead, alternateNotePlayhead);
     fitness();
     checkPersonalBest();
     checkSwarmBest();
+       
+       }
     }
     
-    //disturb();
+    disturb();
     updateParticles();
     
     if (desiredNoteDistance != 0) {
@@ -202,13 +205,13 @@ void Swarm::harmonicIntervalFitness(Swarm *alternateSwarm, int rhythmPlayhead, i
                     //8 - 7
                     //Add penalty to intervals of 1, 2, 6, and 7 between swarms.
                     if (interval % 7 == 1 || interval % 7 == 3 || interval % 7 == 6 ) {
-                        harmonicIntervalSum += 1000;
+                        harmonicIntervalSum += 500;
                     } else if (interval % 7 == 0 || interval % 7 == 2 || interval % 7 == 4) {
-                        harmonicIntervalSum -= 0;
+                        harmonicIntervalSum -= 1000;
                     }
                     
-                    if (interval > 13) {
-                        harmonicIntervalSum+=10000;
+                    if (interval > 8) {
+                   //     harmonicIntervalSum+=1000;
                     }
                     //Increment the note playheads to calculate other harmonic intervals within the particle sequences.
                     tempAlternateNotePlayhead++;
@@ -291,7 +294,7 @@ void Swarm::fitness() {
            // cout << "Current note distance: " << noteDistance << endl;
         }
        // cout << "Overall note distance: " << noteDistance;
-        fitnessSum = abs(desiredNoteDistance - noteDistance);
+        fitnessSum = (abs(desiredNoteDistance - noteDistance)*1000);
         
         
         
@@ -312,74 +315,82 @@ void Swarm::fitness() {
             int dist = (particles[i]->indFreqs[j+1] - particles[i]->indFreqs[j]);
             int sign = ofSign(particles[i]->indFreqs[j+1] - particles[i]->indFreqs[j]);
             
-            //cout << "distance and sign: " << dist << " and " << sign << endl;
-
+            intervals[j] = (particles[i]->indFreqs[0] - particles[i]->indFreqs[j+1])*ofSign( (particles[i]->indFreqs[0] - particles[i]->indFreqs[j+1]));
             
             if (dist == 0) {    //Same note = perfect unison - slight weight for this note
                 
-                fitnessSum += firstPen;
-                intervals[j] = 0;
+                fitnessSum += firstPen/10;
+               
             }
             else if (dist == sign*1 || dist == (-sign)*1) {    //Second - heavy weight, do not want occurances of this.
                 
-                fitnessSum += secondPen;
-                intervals[j] = 1;
+                fitnessSum += secondPen/10;
+                
             }
-            
             
             else if (dist == sign*2 || dist == (-sign)*2) {    //Third - no weight, do want occurrences of this interval.
                 
-                fitnessSum += thirdPen;
-                intervals[j] = 2;
+                fitnessSum += thirdPen/10;
+             
             }
             else if (dist == sign*3 || dist == (-sign)*3) {    //Fourth - slightly penalty, want slight occurences of this
                 
-                fitnessSum += fourthPen;
-                intervals[j] = 3;
+                fitnessSum += fourthPen/10;
+                
             }
             else if (dist == sign*4 || dist == (-sign)*4) {    //Fifth - no weight
                 
-                fitnessSum += fifthPen;
-                intervals[j] = 4;
+                fitnessSum += fifthPen/10;
+             
             }
             else if (dist == sign*5 || dist == (-sign)*5) {    //Sixth - slight weight
                 
-                fitnessSum += sixthPen;
-                intervals[j] = 5;
+                fitnessSum += sixthPen/10;
+                
             }
             else if (dist == sign*6 || dist == (-sign)*6) {    //Seventh - heavy weight, do not want this
                 
-                fitnessSum += seventhPen;
-                intervals[j] = 6;
+                fitnessSum += seventhPen/10;
+            
             }
             else if (dist == sign*7 || dist == (-sign)*7) {    //Octave - slight weight, would like occurrences
                 
-                fitnessSum += eighthPen;
-                intervals[j] = 7;
+                fitnessSum += eighthPen/10;
+              
                 
             } else {
                 
-                fitnessSum+=elsePen;  //Moderaly heavy weight for any notes that escape the boundary of a distance of an octave. Occurrences of this are okay but in very slight moderation.
+                fitnessSum+=elsePen/10;  //Moderaly heavy weight for any notes that escape the boundary of a distance of an octave. Occurrences of this are okay but in very slight moderation.
             }
             
    
         }
+            
+            int barSign = ofSign(intervals[0]);
+            for (int j = 0; j < 2; j++) {
+                if (barSign == 0) {
+                    
+                    if (intervals[j+1] == 0) {
+                        fitnessSum+=100000;
+                    }
+                }
+                
+                if (barSign == -1) {
+                    if (intervals[j+1] > intervals[j]) {
+                        fitnessSum+=100000;
+                    }
+                    
+                } else if (barSign == 1) {
+                    if (intervals[j+1] < intervals[j]) {
+                        fitnessSum+=100000;
+                
+                    }
+                }
+            }
         
         }
-        
-        
-        //Calculating fitness from desired octave
-        /*
-        for (int j = 0; j < 4; j++) {
-            
-            int octave = determineParticleOctave(particles[i]->indFreqs[j]);
-            fitnessSum += (abs(chosenOctave-octave)*abs(chosenOctave-octave)) * 10000.;
-            
-        }*/
-        
     
-        particles[i]->fitness = fitnessSum;
-        
+        particles[i]->fitness += fitnessSum;
         
     }
     
@@ -440,7 +451,7 @@ void Swarm::updateParticles() {
             
         
             //Position update
-            particles[i]->indFreqs[j] = ofClamp(int(((particles[i]->indFreqs[j]+particles[i]->indFreqsVel[j]))), 0, availableNotes.size()-1);
+            particles[i]->indFreqs[j] = ofClamp(int(((particles[i]->indFreqs[j]+particles[i]->indFreqsVel[j]))), 10, 38);
 
         }
         
@@ -464,7 +475,6 @@ void Swarm::checkRepeat() {
         }
         
     }
-    
     
     //if all indexes matched, increment 'repeated' by 1. Allow 2 repetitions before forcing best particle to randomise or vary
     if (indexCheck == 4) {
@@ -651,6 +661,8 @@ void Swarm::fitnessRhythm() {
         
     }
 }
+
+//--------------------------------------------------------------
 
 void Swarm::checkPersonalBestRhythm() {
     
@@ -960,7 +972,7 @@ void Swarm::updateParticleVelocity() {
         
         particles[i]->velocityVel = velocityCon * (particles[i]->velocityVel + (velocityC1*r1*(particles[i]->bestParticleVelocity - particles[i]->velocity) + (velocityC2*r2*(bestParticleSwarmVelocity - particles[i]->velocity))));
         
-        particles[i]->velocity = ofClamp(int(particles[i]->velocity + particles[i]->velocityVel), 1, 125);
+        particles[i]->velocity = ofClamp(int(particles[i]->velocity + particles[i]->velocityVel), 1, maxVelocity);
     }
 }
 
@@ -983,7 +995,7 @@ void Swarm::runChord(int notePlayhead) {
 void Swarm::randomiseParticleChord(int p) {
 
     for (int i = 0; i < particles.size(); i++) {
-        for (int j = chordPotential; j < p; j++) {
+        for (int j = 3; j < p; j++) {
          
             particles[i]->chord[j] = int(ofRandom(0, availableNotes.size()-1));
             particles[i]->chordVel[j] = ofRandom(-2, 2);
@@ -1006,16 +1018,15 @@ void Swarm::fitnessChord() {
     
     for (int i = 0; i < particles.size(); i++) {
         particles[i]->chordFitness = 0;
-        for (int j = 0; j < chordPotential; j++) {
+        for (int j = 0; j < 3; j++) {
             
             int interval = abs(best.indFreqs[currentNotePlayhead%4] - particles[i]->chord[j]);
 
-            if (interval % 8 == 0 || interval % 8 == 7 || interval > 8) {
+            if (interval % 7 == 0 || interval % 7 == 1 || interval >= 8) {
                 particles[i]->chordFitness+=1000;
             } else {
                 particles[i]->chordFitness -= 100;
             }
-            //cout << "fitness: " << particles[i]->chordFitness << endl;
             
         }
     }
@@ -1044,7 +1055,7 @@ void Swarm::checkBestChord() {
 
         if (particles[i]->chordFitness < chordBestFitness) {
             chordBestFitness = particles[i]->fitness;
-            for (int j = 0; j < chordPotential; j++) {
+            for (int j = 0; j < 3; j++) {
                 bestChord[j] = particles[i]->chord[j];
             }
             
@@ -1059,11 +1070,11 @@ void Swarm::updateParticleChord() {
     for (int i = 0; i < particles.size(); i++) {
         r1 = ofRandom(1);
         r2 = ofRandom(2);
-        for (int j = 0; j < chordPotential; j++) {
+        for (int j = 0; j < 3; j++) {
             particles[i]->chordVel[j] = chordCon * (particles[i]->chordVel[j] + (chordC1 * r1 * (particles[i]->bestChord[j] - particles[i]->chord[j]) + chordC2 * r2 * (bestChord[j]-particles[i]->chord[j])));
             
             //Chord update
-            particles[i]->chord[j] = ofClamp(int(particles[i]->chord[j]+particles[i]->chordVel[j]), 0, availableNotes.size()-1);
+            particles[i]->chord[j] = ofClamp(int(particles[i]->chord[j]+particles[i]->chordVel[j]), particles[i]->indFreqs[j]-8,  particles[i]->indFreqs[j]+8);
         }
     }
     

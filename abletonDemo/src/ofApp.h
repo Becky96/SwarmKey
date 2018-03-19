@@ -5,6 +5,7 @@
 #include "Swarm.hpp"
 #include "ofxDatGui.h"
 #include "SwarmGUI.hpp"
+#include "PianoRoll.hpp"
 
 //Number of swarms
 #define SWARM_NUM 2
@@ -44,6 +45,7 @@ class ofApp : public ofBaseApp{
     SwarmGUI * right;
     
     
+    PianoRoll pianoRoll;
     
     vector<ofxDatGuiComponent*> globalSwarmComponents;
     ofxDatGuiToggle* playSwarmsToggle;
@@ -88,5 +90,9 @@ class ofApp : public ofBaseApp{
     
     int lastNotePlayheadRight;
     bool calculateChordRight = false;
+    
+    
+    //Temporary variable for recording with Disklavier 
+    int maxVelocity = 80;
    
 };

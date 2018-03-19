@@ -83,15 +83,15 @@ public:
     
     int target = 24;
     
-    int firstPen = 100;         //Interval of one (same note)
-    int secondPen = 10000;      //Interval of two
-    int thirdPen = 100;        //Interval of three
-    int fourthPen = 10000;      //Interval of four
-    int fifthPen = 100;         //Interval of five
-    int sixthPen = 1000;        //Interval of six
-    int seventhPen = 10000;       //Interval of seven
-    int eighthPen = 100;          //Octave
-    int elsePen = 10000;                //Other inval
+    int firstPen = 10;         //Interval of one (same note)
+    int secondPen = 100;      //Interval of two
+    int thirdPen = 0;        //Interval of three
+    int fourthPen = 50;      //Interval of four
+    int fifthPen = 0;         //Interval of five
+    int sixthPen = 50;        //Interval of six
+    int seventhPen = 100;       //Interval of seven
+    int eighthPen = 0;          //Octave
+    int elsePen = 100;                //Other inval
 
     
     
@@ -138,7 +138,7 @@ public:
 
     int notePlayhead = 0;
     
-    
+    int maxVelocity = 80;
     
     //Motif/Phrase
     int desiredRhythmDistance = 0;

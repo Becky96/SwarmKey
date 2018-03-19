@@ -60,15 +60,9 @@ void SwarmGUI::setupInterface() {
     playingToggle->setChecked(false);
     swarmComponents.push_back(playingToggle);
     y+=playingToggle->getHeight();
+
     
-    
-    rhythmSlider = new ofxDatGuiSlider(rhythmInt.set("Rhythm Speed", 4, 1, 16));
-    rhythmSlider->setPosition(x, y);
-    rhythmSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
-    swarmComponents.push_back(rhythmSlider);
-    y+=rhythmSlider->getHeight();
-    
-    velocitySlider = new ofxDatGuiSlider(velocityInt.set("Velocity Level", 100, 0, 125));
+    velocitySlider = new ofxDatGuiSlider(velocityInt.set("Velocity Level", maxVelocity/2., 0, maxVelocity));
     velocitySlider->setPosition(x, y);
     velocitySlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     swarmComponents.push_back(velocitySlider);
@@ -80,7 +74,7 @@ void SwarmGUI::setupInterface() {
     swarmComponents.push_back(octaveSlider);
     y+=octaveSlider->getHeight();
     
-    chordSlider = new ofxDatGuiSlider(chordInt.set("Chord potential", 0, 0, 3));
+    chordSlider = new ofxDatGuiSlider(chordInt.set("Chord potential", 0, 0, 100));
     chordSlider->setPosition(x, y);
     chordSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     swarmComponents.push_back(chordSlider);
@@ -88,56 +82,56 @@ void SwarmGUI::setupInterface() {
     
     //Interval penalties for specific swarm
     //First
-    firstPen = new ofxDatGuiSlider(firstInt.set("Interval of 1", 100, 0, 10000));
+    firstPen = new ofxDatGuiSlider(firstInt.set("Interval of 1", 10, 0, 100));
     firstPen->setPosition(x, y);
     firstPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(firstPen);
     y+=firstPen->getHeight();
     
     //Second
-    secondPen = new ofxDatGuiSlider(secondInt.set("Interval of 2", 10000, 0, 10000));
+    secondPen = new ofxDatGuiSlider(secondInt.set("Interval of 2", 100, 0, 100));
     secondPen->setPosition(x, y);
     secondPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(secondPen);
     y+=secondPen->getHeight();
     
-    thirdPen = new ofxDatGuiSlider(thirdInt.set("Interval of 3", 100, 0, 10000));
+    thirdPen = new ofxDatGuiSlider(thirdInt.set("Interval of 3", 0, 0, 100));
     thirdPen->setPosition(x, y);
     thirdPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(thirdPen);
     y+=thirdPen->getHeight();
     
-    fourthPen = new ofxDatGuiSlider(fourthInt.set("Interval of 4", 1000, 0, 10000));
+    fourthPen = new ofxDatGuiSlider(fourthInt.set("Interval of 4", 50, 0, 100));
     fourthPen->setPosition(x, y);
     fourthPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(fourthPen);
     y+=fourthPen->getHeight();
     
-    fifthPen = new ofxDatGuiSlider(fifthInt.set("Interval of 5", 100, 0, 10000));
+    fifthPen = new ofxDatGuiSlider(fifthInt.set("Interval of 5", 0, 0, 100));
     fifthPen->setPosition(x, y);
     fifthPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(fifthPen);
     y+=fifthPen->getHeight();
     
-    sixthPen = new ofxDatGuiSlider(sixthInt.set("Interval of 6", 1000, 0, 10000));
+    sixthPen = new ofxDatGuiSlider(sixthInt.set("Interval of 6", 50, 0, 100));
     sixthPen->setPosition(x, y);
     sixthPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(sixthPen);
     y+=sixthPen->getHeight();
     
-    seventhPen = new ofxDatGuiSlider(seventhInt.set("Interval of 7", 10000, 0, 10000));
+    seventhPen = new ofxDatGuiSlider(seventhInt.set("Interval of 7", 100, 0, 100));
     seventhPen->setPosition(x, y);
     seventhPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(seventhPen);
     y+=seventhPen->getHeight();
     
-    eighthPen = new ofxDatGuiSlider(eighthInt.set("Interval of 8", 100, 0, 10000));
+    eighthPen = new ofxDatGuiSlider(eighthInt.set("Interval of 8", 0, 0, 100));
     eighthPen->setPosition(x, y);
     eighthPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(eighthPen);
     y+=eighthPen->getHeight();
     
-    elsePen = new ofxDatGuiSlider(elseInt.set("Intervals 9 or above", 10000, 0, 10000));
+    elsePen = new ofxDatGuiSlider(elseInt.set("Intervals 9 or above", 100, 0, 100));
     elsePen->setPosition(x, y);
     elsePen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(elsePen);
@@ -315,14 +309,14 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     
     if (e.target == chordSlider) {
         
-        if (e.value > swarm->chordPotential) {
-            swarm->randomiseParticleChord(e.value);
-        }
+        //if (e.value > swarm->chordPotential) {
+          //  swarm->randomiseParticleChord(e.value);
+       // }
         
-        if (e.value < swarm->chordPotential) {
-            swarm->removeParticleChordIndex();
-        }
-        swarm->prevChordPotential = swarm->chordPotential;
+        //if (e.value < swarm->chordPotential) {
+          //  swarm->removeParticleChordIndex();
+       // }
+        //swarm->prevChordPotential = swarm->chordPotential;
         swarm->chordPotential = e.value;
 
     }

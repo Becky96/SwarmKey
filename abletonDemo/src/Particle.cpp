@@ -51,7 +51,7 @@ void Particle::setupParticle() {
     }
     
     
-    velocity = int(ofRandom(40, 100));
+    velocity = int(ofRandom(20, maxVelocity));
 }
 
 
