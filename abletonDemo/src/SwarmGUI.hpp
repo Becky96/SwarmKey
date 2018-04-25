@@ -117,7 +117,7 @@ public:
     ofxDatGuiButton* saveNewMotif;
     ofxDatGuiButton* restoreOriginalMotif;
     
-    int maxVelocity = 80;
+    int maxVelocity = 120;
 
 };
 

@@ -19,6 +19,7 @@ void Swarm::openVirtualPort(string portName) {
     
     //Opening port to Ableton with 'IAC Driver Swarm1'
     midiOut.openVirtualPort(portName);
+    //midiOut.openPort(0);
     
     
 }
@@ -28,8 +29,8 @@ void Swarm::openVirtualPort(string portName) {
 void Swarm::setup(int _channel) {
     
     channel = _channel;
-        //Default note and velocity
-
+    
+    //Default note and velocity
     stressedVelocity = 100;
     notStressedVelocity = 80;
     
@@ -89,13 +90,20 @@ void Swarm::inputMotif(int nMotif[4], int rMotif[16]) {
     
     targetDimensionality = dimensionalityMotif;
 
-    noteMotifOctaves[0] = ((noteMotif[0]-3)/7)+1;
-    noteMotifOctaves[1] = ((noteMotif[1]-3)/7)+1;
-    noteMotifOctaves[2] = ((noteMotif[2]-3)/7)+1;
-    noteMotifOctaves[3] = ((noteMotif[3]-3)/7)+1;
+    
+    //Calculating octaves of phrases
+    noteMotifOctaves[0] = (floor(noteMotif[0])/7)+1;
+    noteMotifOctaves[1] = (floor(noteMotif[1])/7)+1;
+    noteMotifOctaves[2] = (floor(noteMotif[2])/7)+1;
+    noteMotifOctaves[3] = (floor(noteMotif[3])/7)+1;
+    
+    cout << "Octave of note: " << noteMotif[0] << "is: " << noteMotifOctaves[0] << endl;
+    cout << "Octave of note: " << noteMotif[1] << "is: " << noteMotifOctaves[1] << endl;
+    cout << "Octave of note: " << noteMotif[2] << "is: " << noteMotifOctaves[2] << endl;
+    cout << "Octave of note: " << noteMotif[3] << "is: " << noteMotifOctaves[3] << endl;
     
     distMotifOctave = chosenOctave - noteMotifOctaves[0];
-
+    cout << "octave distance: " << distMotifOctave << endl;
 }
 
 
@@ -109,21 +117,21 @@ void Swarm::calculateKey(int start, int type) {
     
     //If major key
     if (type == 1) {
-    for (int i = -4; i < 4; i++) {
-    availableNotes.push_back((start+(i*12)));
-    availableNotes.push_back((start+(i*12))+2);
-    availableNotes.push_back((start+(i*12))+4);
-    availableNotes.push_back((start+(i*12))+5);
-    availableNotes.push_back((start+(i*12))+7);
-    availableNotes.push_back((start+(i*12))+9);
-    availableNotes.push_back((start+(i*12))+11);
+        for (int i = -3; i < 3; i++) {
+            availableNotes.push_back((start+(i*12)));
+            availableNotes.push_back((start+(i*12))+2);
+            availableNotes.push_back((start+(i*12))+4);
+            availableNotes.push_back((start+(i*12))+5);
+            availableNotes.push_back((start+(i*12))+7);
+            availableNotes.push_back((start+(i*12))+9);
+            availableNotes.push_back((start+(i*12))+11);
     
     }
     }
     
     //If minor key
     if (type == 2) {
-        for (int i = -4; i < 4; i++) {
+        for (int i = -3; i < 3; i++) {
             availableNotes.push_back((start+(i*12)));
             availableNotes.push_back((start+(i*12))+2);
             availableNotes.push_back((start+(i*12))+3);
@@ -136,8 +144,10 @@ void Swarm::calculateKey(int start, int type) {
         
     }
     
+    
+    
     for (int i = 0; i < availableNotes.size(); i++) {
-        cout << i << ": " << availableNotes[i] << endl;
+      //  cout << i << ": " << availableNotes[i] << endl;
     }
 
 }
@@ -167,6 +177,7 @@ void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, in
     
     disturb();
     updateParticles();
+    
     
     if (desiredNoteDistance != 0) {
         checkRepeat();
@@ -296,85 +307,109 @@ void Swarm::fitness() {
     for (int i = 0; i < particles.size(); i++) {
         
         
+        //Variable to store overall fitness of current particle
         float fitnessSum = 0;
-        //cout << " " << endl;
-        //cout << "Particle number: " << i << endl;
+
         
-        //Calculating motif fitness
+        //Variable to store the overall note distance of the particle's candidate solution against the current phrase
         double noteDistance = 0;
+        
+        
         for (int j = 0; j < 4; j++) {
             
-          //  cout << "Particle freq: " << particles[i]->indFreqs[j] << endl;
             noteDistance += ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]) * ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]);
-           // cout << "Current note distance: " << noteDistance << endl;
+
         }
-       // cout << "Overall note distance: " << noteDistance;
+
+        //The fitness sum of the particle becomes the desired distance (that the user would like) f
         fitnessSum = (abs(desiredNoteDistance - noteDistance)*1000);
         
         
         
-        //Calculating interval fitness
-        
+        //If the desired note distance is not 0 (the particle is not aiming towards the current inputted phrase, then the melodic intervals that the user would like is
+        //evaluated using the interactive penalties that the user can alter.
         if (desiredNoteDistance != 0) {
             
             
-            //Array to store intervals between 4 note sequence that particle offers.
+        //Array to store melodic intervals of the candidate solution.
         int intervals[3];
 
         //Determine distance of notes 2, 3, and 4 from note 1.
         for (int j = 0; j < 3; j++) {
 
             
-            //Distance between current note and note 1
+            //Distance between successive note and the current note that j indexes.
             int dist = (particles[i]->indFreqs[j+1] - particles[i]->indFreqs[j]);
+            
+            
+            //Variable to determine the sign of the distance between the two notes.
             int sign = ofSign(particles[i]->indFreqs[j+1] - particles[i]->indFreqs[j]);
             
+            
+            //Assigning interval to array of intervals.
             intervals[j] = (particles[i]->indFreqs[0] - particles[i]->indFreqs[j+1])*ofSign( (particles[i]->indFreqs[0] - particles[i]->indFreqs[j+1]));
             
-            if (dist == 0) {    //Same note = perfect unison - slight weight for this note
+            
+            
+            //If distance is 0, this evaluates to an interval of 1 (perfect unison)
+            if (dist == 0) {
                 
                 fitnessSum += firstPen/10;
                
             }
-            else if (dist == sign*1 || dist == (-sign)*1) {    //Second - heavy weight, do not want occurances of this.
+            
+            //If distance is 1, this evaluates to an interval of 2 (slight disonnance)
+            else if (dist == sign*1 || dist == (-sign)*1) {
                 
                 fitnessSum += secondPen/10;
                 
             }
             
-            else if (dist == sign*2 || dist == (-sign)*2) {    //Third - no weight, do want occurrences of this interval.
+            //If distance is 2, this evaluates to an interval of 3 (third)
+            else if (dist == sign*2 || dist == (-sign)*2) {
                 
                 fitnessSum += thirdPen/10;
              
             }
-            else if (dist == sign*3 || dist == (-sign)*3) {    //Fourth - slightly penalty, want slight occurences of this
+            
+            //If ditance is 3, this evaluates to an interval of 4
+            else if (dist == sign*3 || dist == (-sign)*3) {
                 
                 fitnessSum += fourthPen/10;
                 
             }
-            else if (dist == sign*4 || dist == (-sign)*4) {    //Fifth - no weight
+            
+            //If distance is 4, this evaluates to an interval of 5
+            else if (dist == sign*4 || dist == (-sign)*4) {
                 
                 fitnessSum += fifthPen/10;
              
             }
-            else if (dist == sign*5 || dist == (-sign)*5) {    //Sixth - slight weight
+            
+            //If distance is 5, this evaluates to an interval of 6
+            else if (dist == sign*5 || dist == (-sign)*5) {
                 
                 fitnessSum += sixthPen/10;
                 
             }
-            else if (dist == sign*6 || dist == (-sign)*6) {    //Seventh - heavy weight, do not want this
+            
+            //If distance is 6, this evaluates to an interval of 7
+            else if (dist == sign*6 || dist == (-sign)*6) {
                 
                 fitnessSum += seventhPen/10;
             
             }
-            else if (dist == sign*7 || dist == (-sign)*7) {    //Octave - slight weight, would like occurrences
+            
+            //If distance is 7, this evaluates to an interval of 8 (octave)
+            else if (dist == sign*7 || dist == (-sign)*7) {
                 
                 fitnessSum += eighthPen/10;
               
-                
+            
+            //Else statement evaluates to distances above 7, so any intervals higher than an octave.
             } else {
                 
-                fitnessSum+=elsePen/10;  //Moderaly heavy weight for any notes that escape the boundary of a distance of an octave. Occurrences of this are okay but in very slight moderation.
+                fitnessSum+=elsePen/10;  
             }
             
    
@@ -471,7 +506,7 @@ void Swarm::updateParticles() {
             
         
             //Position update
-            particles[i]->indFreqs[j] = ofClamp(int(((particles[i]->indFreqs[j]+particles[i]->indFreqsVel[j]))), 10, 38);
+            particles[i]->indFreqs[j] = ofClamp(int(((particles[i]->indFreqs[j]+particles[i]->indFreqsVel[j]))), particles[i]->indFreqs[j]-8, particles[i]->indFreqs[j]+8);
 
         }
         
@@ -724,10 +759,6 @@ void Swarm::calculateBestRhythm() {
             bestRhythm.bestRhythm = particles[i]->rhythm;
             bestRhythm.bestDimensionality = particles[i]->dimensionality;
             
-           // cout << "New best rhythm value" << endl;
-            //for (int j = 0; j < 16; j++) {
-              //  cout << bestRhythm.hits[j] << ", ";
-           // }
         }
         
     }

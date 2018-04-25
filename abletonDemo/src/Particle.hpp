@@ -78,7 +78,7 @@ public:
     
     int bestNeighbour[4];
     
-    int maxVelocity = 80;
+    int maxVelocity = 120;
     
     
     

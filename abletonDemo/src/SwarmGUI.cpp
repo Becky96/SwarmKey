@@ -152,7 +152,7 @@ void SwarmGUI::setupInterface() {
     motifComponents.push_back(desiredRhythmDistSlider);
     y+=desiredRhythmDistSlider->getHeight();
     
-    saveNewMotif = new ofxDatGuiButton("Save previous bar as new motif");
+    saveNewMotif = new ofxDatGuiButton("Save current bar as new motif");
     saveNewMotif->setPosition(x, y);
     saveNewMotif->onButtonEvent(this, &SwarmGUI::onButtonEvent);
     motifComponents.push_back(saveNewMotif);
@@ -165,6 +165,8 @@ void SwarmGUI::setupInterface() {
     y+=restoreOriginalMotif->getHeight();
     
     
+    
+    y+=50;
     
     
 }
@@ -303,6 +305,8 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
         swarm->chosenOctave = e.value;
         swarm->distMotifOctave = swarm->chosenOctave - swarm->noteMotifOctaves[0];
 
+        
+        cout << "new octave distance from motif: " << swarm->distMotifOctave << endl;
         resetParticleIntervals();
 
     }
@@ -486,6 +490,8 @@ void SwarmGUI::resetParticleVelocity() {
 //--------------------------------------------------------------
 
 void SwarmGUI::displaySwarmParameters() {
+    
+   
     string sequence = "Note sequence: " + ofToString(swarm->best.indFreqs[0]) + ", " + ofToString(swarm->best.indFreqs[1]) + ", " + ofToString(swarm->best.indFreqs[2]) + ", " + ofToString(swarm->best.indFreqs[3]);
     ofDrawBitmapStringHighlight(sequence, x, y);
     

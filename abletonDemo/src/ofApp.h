@@ -33,6 +33,7 @@ class ofApp : public ofBaseApp{
 
     void audioRequested (float * input, int bufferSize, int nChannels); // Adapted from Maximilan examples
 
+    void sendMIDI();
     
     int sampleRate;
     
@@ -99,6 +100,6 @@ class ofApp : public ofBaseApp{
     
     
     //Temporary variable for recording with Disklavier 
-    int maxVelocity = 80;
+    int maxVelocity = 120;
    
 };
