@@ -54,25 +54,10 @@ public:
     void resetParticleVelocity();
     void displaySwarmParameters();
     
-    //PSO algorithm components - will not be visible to the user
-    //but is used in the meantime for designing the project.
-    vector<ofxDatGuiComponent*> algorithmComponents;
-    ofxDatGuiSlider* noteConSlider;
-    ofxDatGuiSlider* noteC1Slider;
-    ofxDatGuiSlider* noteC2Slider;
-    ofxDatGuiSlider* rhythmConSlider;
-    ofxDatGuiSlider* rhythmC1Slider;
-    ofxDatGuiSlider* rhythmC2Slider;
-    
-    ofParameter<float> noteConFloat;
-    ofParameter<float> noteC1Float;
-    ofParameter<float> noteC2Float;
-    ofParameter<float> rhythmConFloat;
-    ofParameter<float> rhythmC1Float;
-    ofParameter<float> rhythmC2Float;
-    
+
+    //Vector containing interface components for individual components of swarm.
     vector<ofxDatGuiComponent*> swarmComponents;
-    ofxDatGuiToggle* playingToggle;
+    ofxDatGuiToggle* playingToggle;                 //Toggle to play/stop swarm processes
     ofxDatGuiSlider* rhythmSlider;
     ofxDatGuiSlider* velocitySlider;
     ofxDatGuiSlider* octaveSlider;
@@ -83,7 +68,7 @@ public:
     ofParameter<int> octaveInt;
     ofParameter<int> chordInt;
     
-    //Interval penalties
+    //Vector containing the individual sliders for the desired intervals that the user wants.
     vector<ofxDatGuiComponent*> intervalPenalties;
     ofxDatGuiSlider* firstPen;
     ofxDatGuiSlider* secondPen;
@@ -105,8 +90,7 @@ public:
     ofParameter<int> eighthInt;
     ofParameter<int> elseInt;
     
-    int playHead;
-    
+   
     vector<ofxDatGuiComponent*> motifComponents;
     ofxDatGuiSlider* desiredRhythmDistSlider;
     ofxDatGuiSlider* desiredNoteDistSlider;
@@ -119,6 +103,8 @@ public:
     
     int maxVelocity = 120;
 
+    int playHead;
+    
 };
 
 #endif /* SwarmGUI_hpp */

@@ -14,8 +14,9 @@
 		22F21CE3B902225374BA1CA2 /* maximilian.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87D3A0051CCB2C0F0ECA139E /* maximilian.cpp */; };
 		3AEFE4FA8AD5C72671AD07F8 /* ofxRtMidiOut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 712B183BC00EBFFB1EEA5AB8 /* ofxRtMidiOut.cpp */; };
 		3F1123E44796C08BA1BBFF4D /* ofxDatGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 48505C0D9DE942237364716F /* ofxDatGui.cpp */; };
-		551E0517205E974A00036243 /* PianoRoll.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551E0515205E974A00036243 /* PianoRoll.cpp */; settings = {ASSET_TAGS = (); }; };
-		551E051A205EB7DD00036243 /* PianoRollCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551E0518205EB7DD00036243 /* PianoRollCell.cpp */; settings = {ASSET_TAGS = (); }; };
+		559A2AE02090B159009DF5D7 /* Phrase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 559A2ADE2090B159009DF5D7 /* Phrase.cpp */; settings = {ASSET_TAGS = (); }; };
+		559A2AE32090B1D8009DF5D7 /* PhraseCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 559A2AE12090B1D8009DF5D7 /* PhraseCell.cpp */; settings = {ASSET_TAGS = (); }; };
+		559A2AE62090B864009DF5D7 /* PhraseUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 559A2AE42090B864009DF5D7 /* PhraseUI.cpp */; settings = {ASSET_TAGS = (); }; };
 		55C4888C20210C2D00972154 /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55C4888A20210C2D00972154 /* Particle.cpp */; settings = {ASSET_TAGS = (); }; };
 		55C488902040488800972154 /* SwarmGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55C4888E2040488800972154 /* SwarmGUI.cpp */; settings = {ASSET_TAGS = (); }; };
 		55D52FC7201F5BDA00639726 /* Swarm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D52FC5201F5BDA00639726 /* Swarm.cpp */; settings = {ASSET_TAGS = (); }; };
@@ -80,10 +81,12 @@
 		470CF04F1D4D1B38D5AA1797 /* ofxRtMidiOut.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxRtMidiOut.h; path = ../../../addons/ofxMidi/src/desktop/ofxRtMidiOut.h; sourceTree = SOURCE_ROOT; };
 		48505C0D9DE942237364716F /* ofxDatGui.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxDatGui.cpp; path = "../../../addons/ofxDatGui-master/src/ofxDatGui.cpp"; sourceTree = SOURCE_ROOT; };
 		4CFB659E40D3D3DC5A3E9478 /* maxiGrains.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = maxiGrains.h; path = ../../../addons/ofxMaxim/libs/maxiGrains.h; sourceTree = SOURCE_ROOT; };
-		551E0515205E974A00036243 /* PianoRoll.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PianoRoll.cpp; sourceTree = "<group>"; };
-		551E0516205E974A00036243 /* PianoRoll.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PianoRoll.hpp; sourceTree = "<group>"; };
-		551E0518205EB7DD00036243 /* PianoRollCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PianoRollCell.cpp; sourceTree = "<group>"; };
-		551E0519205EB7DD00036243 /* PianoRollCell.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PianoRollCell.hpp; sourceTree = "<group>"; };
+		559A2ADE2090B159009DF5D7 /* Phrase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Phrase.cpp; sourceTree = "<group>"; };
+		559A2ADF2090B159009DF5D7 /* Phrase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Phrase.hpp; sourceTree = "<group>"; };
+		559A2AE12090B1D8009DF5D7 /* PhraseCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhraseCell.cpp; sourceTree = "<group>"; };
+		559A2AE22090B1D8009DF5D7 /* PhraseCell.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PhraseCell.hpp; sourceTree = "<group>"; };
+		559A2AE42090B864009DF5D7 /* PhraseUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhraseUI.cpp; sourceTree = "<group>"; };
+		559A2AE52090B864009DF5D7 /* PhraseUI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PhraseUI.hpp; sourceTree = "<group>"; };
 		55C4888A20210C2D00972154 /* Particle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Particle.cpp; sourceTree = "<group>"; };
 		55C4888B20210C2D00972154 /* Particle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Particle.hpp; sourceTree = "<group>"; };
 		55C4888E2040488800972154 /* SwarmGUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwarmGUI.cpp; sourceTree = "<group>"; };
@@ -384,10 +387,12 @@
 				55C4888B20210C2D00972154 /* Particle.hpp */,
 				55C4888E2040488800972154 /* SwarmGUI.cpp */,
 				55C4888F2040488800972154 /* SwarmGUI.hpp */,
-				551E0515205E974A00036243 /* PianoRoll.cpp */,
-				551E0516205E974A00036243 /* PianoRoll.hpp */,
-				551E0518205EB7DD00036243 /* PianoRollCell.cpp */,
-				551E0519205EB7DD00036243 /* PianoRollCell.hpp */,
+				559A2AE42090B864009DF5D7 /* PhraseUI.cpp */,
+				559A2AE52090B864009DF5D7 /* PhraseUI.hpp */,
+				559A2ADE2090B159009DF5D7 /* Phrase.cpp */,
+				559A2ADF2090B159009DF5D7 /* Phrase.hpp */,
+				559A2AE12090B1D8009DF5D7 /* PhraseCell.cpp */,
+				559A2AE22090B1D8009DF5D7 /* PhraseCell.hpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -511,10 +516,9 @@
 				0FCED26D40D46CF89A58E54C /* fft.cpp in Sources */,
 				5C4A4AA5D4784DF23EA43038 /* maxiAtoms.cpp in Sources */,
 				ABA8875AF0C06690CC0B92B1 /* maxiBark.cpp in Sources */,
-				551E051A205EB7DD00036243 /* PianoRollCell.cpp in Sources */,
 				96084990AF216648B8B98E00 /* maxiFFT.cpp in Sources */,
 				AF0580829426DC6BCA135A5C /* maxiGrains.cpp in Sources */,
-				551E0517205E974A00036243 /* PianoRoll.cpp in Sources */,
+				559A2AE32090B1D8009DF5D7 /* PhraseCell.cpp in Sources */,
 				083FB2094A4DE99F5A60397A /* maxiMFCC.cpp in Sources */,
 				22F21CE3B902225374BA1CA2 /* maximilian.cpp in Sources */,
 				9514C2D90467055B1447D074 /* stb_vorbis.c in Sources */,
@@ -524,9 +528,11 @@
 				63F9FE1D90234FA6DE6F509E /* ofxMidi.cpp in Sources */,
 				0BFC9C20FD7E3C8D5873AA97 /* ofxMidiIn.cpp in Sources */,
 				55C488902040488800972154 /* SwarmGUI.cpp in Sources */,
+				559A2AE62090B864009DF5D7 /* PhraseUI.cpp in Sources */,
 				C6FE64F74F1EA1D98C8F9847 /* ofxMidiMessage.cpp in Sources */,
 				83D9F930112E0944444124EE /* ofxMidiOut.cpp in Sources */,
 				63D0FD8734D5760B8080C901 /* RtMidi.cpp in Sources */,
+				559A2AE02090B159009DF5D7 /* Phrase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -52,9 +52,7 @@ void Swarm::setup(int _channel) {
     rhythmC1 = rhythmCon * (4.1/2.);
     rhythmC2 = rhythmC1;
     
-    chordC1 = chordCon * (4.1/2);
-    chordC2 = chordC1;
-    
+
     velocityC1 = velocityCon * (4.1/2.);
     velocityC2 = velocityC1;
     
@@ -409,7 +407,7 @@ void Swarm::fitness() {
             //Else statement evaluates to distances above 7, so any intervals higher than an octave.
             } else {
                 
-                fitnessSum+=elsePen/10;  
+                fitnessSum+=elsePen/10;
             }
             
    
@@ -567,7 +565,6 @@ void Swarm::checkRepeat() {
             }
         }
         
-        //bestFitness = 20000000;
         repeated = 0;
         
         
@@ -604,79 +601,6 @@ void Swarm::disturb() {
 }
 
 //--------------------------------------------------------------
-void Swarm::display() {
-    
-    
-    //1st index
-    ofFill();
-    ofSetColor(0);
-    for (int i = 0; i < availableNotes.size(); i++) {
-        ofDrawRectangle(10+ (i*20), 50, 10, 10);
-    }
-    
-    ofSetColor(200, 100, 20, 80);
-    for (int i = 0; i < particles.size(); i++) {
-        ofSetColor(particles[i]->col);
-
-        ofDrawEllipse(10+(particles[i]->indFreqs[0]*20), 50, 10, 10);
-    }
-    
-    ofSetColor(255, 0, 0);
-    ofDrawEllipse(10+(best.indFreqs[0]*20), 50, 20, 20);
-    
-    //2nd index
-    ofFill();
-    ofSetColor(0);
-    for (int i = 0; i < availableNotes.size(); i++) {
-        ofDrawRectangle(10+ (i*20), 75, 10, 10);
-    }
-    
-    for (int i = 0; i < particles.size(); i++) {
-        ofSetColor(particles[i]->col);
-
-        ofDrawEllipse(10+(particles[i]->indFreqs[1]*20), 75, 10, 10);
-    }
-    
-    ofSetColor(255, 0, 0);
-    ofDrawEllipse(10+(best.indFreqs[1]*20), 75, 20, 20);
-    
-    //3rd index
-    ofFill();
-    ofSetColor(0);
-    for (int i = 0; i < availableNotes.size(); i++) {
-        ofDrawRectangle(10+ (i*20), 100, 10, 10);
-    }
-    
-    ofSetColor(200, 100, 20, 80);
-    for (int i = 0; i < particles.size(); i++) {
-        ofSetColor(particles[i]->col);
-
-        ofDrawEllipse(10+(particles[i]->indFreqs[2]*20), 100, 10, 10);
-    }
-    
-    ofSetColor(255, 0, 0);
-    ofDrawEllipse(10+(best.indFreqs[2]*20), 100, 20, 20);
-    
-    //4th index
-    ofFill();
-    ofSetColor(0);
-    for (int i = 0; i < availableNotes.size(); i++) {
-        ofDrawRectangle(10+ (i*20), 125, 10, 10);
-    }
-    
-    ofSetColor(200, 100, 20, 80);
-    for (int i = 0; i < particles.size(); i++) {
-        ofSetColor(particles[i]->col);
-
-        ofDrawEllipse(10+(particles[i]->indFreqs[3]*20), 125, 10, 10);
-    }
-    
-    ofSetColor(255, 0, 0);
-    ofDrawEllipse(10+(best.indFreqs[3]*20), 125, 20, 20);
-    
-}
-
-//--------------------------------------------------------------
 
 void Swarm::exit() {
     
@@ -685,53 +609,69 @@ void Swarm::exit() {
 
 
 //--------------------------------------------------------------
-////////////RHYTHM////////////
+////////////RHYTHM////////////////////
 void Swarm::runRhythm() {
+    
+    //Check fitness of particle's candidate solutions
     fitnessRhythm();
+    
+    //Evaluate if candidate solution is particle's new personal best
     checkPersonalBestRhythm();
+    
+    //Evaluate if candidate solution is best solution of the swarm
     calculateBestRhythm();
+    
+    //Perform update process on candidate soltuion
     updateParticlesRhythm();
 }
 
 //--------------------------------------------------------------
-
+//Fitness function of rhythm component
 void Swarm::fitnessRhythm() {
     
+    //Checking each particle's rhythm candidate solution
     for (int i = 0; i < N; i++) {
         
+        //Variable to store overall fitness
         float fitnessSum = 0;
-      
 
+        
+        //Rhythm distance evaluates as the particle's distance from the chosen dimensionality
         double rhythmDistance = 0;
-
-        //cout << targetDimensionality << endl;
-        //cout << "particle's dimension: " << particles[i]->dimensionality << endl;
         rhythmDistance = abs(targetDimensionality-particles[i]->dimensionality);
-        //cout << "rhythm fitness: " << rhythmDistance << endl;
+        
+        //Fitness sum evaluates as the particle's distance from the target rhythm dimensionality
         fitnessSum = (rhythmDistance);
    
-
-      
+        //Evaluate particle's fitness for rhythm component as overall fitness sum.
         particles[i]->fitnessRhythm = fitnessSum;
         
     }
 }
 
 //--------------------------------------------------------------
-
+//Determine if particle's rhythm candidate solution is it's new personal best.
 void Swarm::checkPersonalBestRhythm() {
     
     for (int i = 0; i < N; i++) {
         
+        
+        //If the particle's current fitness for it's rhythm candidate solution is less than it's overall best rhythm fitness,
+        //clear the vector 'bestRhythm' storing it's previous best rhythm sequence, and the variable storing the number
+        //for it's previous best rhythm dimensionality and replace with it's current rhythm sequence and rhythm dimensionality.
         if (particles[i]->fitnessRhythm < particles[i]->bestFitnessRhythm) {
             
+            //Clearing previous bestRhythm vector and bestDimensionality with current rhythm sequence and dimensionality.
             particles[i]->bestRhythm.clear();
             particles[i]->bestDimensionality = particles[i]->dimensionality;
             
+            
+            //Storing value of current rhythm sequence into personal best rhythm sequence.
             for (int j = 0; j < particles[i]->rhythm.size(); j++) {
                 particles[i]->bestRhythm.push_back(particles[i]->rhythm[j]);
             }
             
+            //Best rhythm fitness now becomes the current rhythm fitness of the particle.
             particles[i]->bestFitnessRhythm = particles[i]->fitnessRhythm;
             
         }
@@ -740,16 +680,15 @@ void Swarm::checkPersonalBestRhythm() {
 }
 
 //--------------------------------------------------------------
-
+//Determine if any particle offers a rhythm candidate solution that is 'stronger' than any previous candidate solutions.
 void Swarm::calculateBestRhythm() {
     
-    for (int i = 0; i < particles.size(); i++) {
+    for (int i = 0; i < N; i++) {
         
-        
+        //If rhythm fitness is lower than the previous global best rhythm fitness of the swarm, assign the 'bestRhythm' particle
+        //to point at the particle offer the new fittest solution.
         if (particles[i]->fitnessRhythm < bestFitnessRhythm) {
             
-        
-        
             bestFitnessRhythm = particles[i]->fitnessRhythm;
             
             
@@ -767,27 +706,33 @@ void Swarm::calculateBestRhythm() {
 }
 
 //--------------------------------------------------------------
-
+//Rhythm update process for each particle. The velocity is calculated using the PSO algorithm equation, and then added to the particle's 'dimensionality' value.
+//Based upon the new 'dimensionality' number, which is clamped between 1 and 16 to allow for valid rhythm sequences, the particle's 'rhythm' and 'hit' vectors
+//are recalculated.
 void Swarm::updateParticlesRhythm() {
     
     for (int i = 0; i < particles.size(); i++) {
+        
+        //Clear particle vectors that store the numeric rhythm values and hits of the rhythm to update their dimensionality and create new rhythm and hit sequences.
         particles[i]->rhythm.clear();
         particles[i]->hits.clear();
         
+        
+        //Algorithm stochastic variables
         r1 = ofRandom(1);
         r2 = ofRandom(1);
         
+        //Calculating new velocity for the dimensionality update process of the individual particle.
         particles[i]->dimensionalityVel = (rhythmCon * (particles[i]->dimensionalityVel + (rhythmC1*r1*(particles[i]->bestDimensionality-particles[i]->dimensionality) + (rhythmC2*r2*(bestRhythm.bestDimensionality - particles[i]->dimensionality)))))*5.;
         
+        //Adding velocity to current dimensionality
         particles[i]->dimensionality = (particles[i]->dimensionality + particles[i]->dimensionalityVel);
         
-        //if (targetDimensionality <= dimensionalityMotif) {
-        //particles[i]->dimensionality = int(ofClamp(particles[i]->dimensionality, 1, dimensionalityMotif));
-        //} else if (targetDimensionality >= dimensionalityMotif) {
-            particles[i]->dimensionality = int(ofClamp(particles[i]->dimensionality, 1, 16));
-
-       // }
+        //As the rhythm can only contain the range of a 4-beat, to 1/16 beats, the range of hits that can be contained in the hit vector ranges from 1 to 16.
+        particles[i]->dimensionality = int(ofClamp(particles[i]->dimensionality, 1, 16));
         
+        
+        //Create new rhythm and hit sequence for the particle.
         createSequenceRhythm(particles[i]->dimensionality, particles[i]);
     }
     
@@ -1025,109 +970,5 @@ void Swarm::updateParticleVelocity() {
         
         particles[i]->velocity = ofClamp(int(particles[i]->velocity + particles[i]->velocityVel), 1, maxVelocity);
     }
-}
-
-//--------------------------------------------------------------
-//------Chord functionality------------------------
-//--------------------------------------------------------------
-
-void Swarm::runChord(int notePlayhead) {
-    
-    currentNotePlayhead = notePlayhead;
-    
-    fitnessChord();
-    checkPersonalBestChord();
-    checkBestChord();
-    updateParticleChord();
-}
-
-//--------------------------------------------------------------
-
-void Swarm::randomiseParticleChord(int p) {
-
-    for (int i = 0; i < particles.size(); i++) {
-        for (int j = 3; j < p; j++) {
-         
-            particles[i]->chord[j] = int(ofRandom(0, availableNotes.size()-1));
-            particles[i]->chordVel[j] = ofRandom(-2, 2);
-                                        
-        }
-    }
-    
-    
-}
-//--------------------------------------------------------------
-
-void Swarm::removeParticleChordIndex() {
-    
-    
-}
-
-//--------------------------------------------------------------
-
-void Swarm::fitnessChord() {
-    
-    for (int i = 0; i < particles.size(); i++) {
-        particles[i]->chordFitness = 0;
-        for (int j = 0; j < 3; j++) {
-            
-            int interval = abs(best.indFreqs[currentNotePlayhead%4] - particles[i]->chord[j]);
-
-            if (interval % 7 == 0 || interval % 7 == 1 || interval >= 8) {
-                particles[i]->chordFitness+=1000;
-            } else {
-                particles[i]->chordFitness -= 100;
-            }
-            
-        }
-    }
-    
-}
-
-//--------------------------------------------------------------
-
-void Swarm::checkPersonalBestChord() {
-    
-    for (int i = 0; i < particles.size(); i++) {
-     
-        if (particles[i]->chordFitness < particles[i]->chordBestFitness) {
-            particles[i]->chordBestFitness = particles[i]->chordFitness;
-            particles[i]->bestChord[0] = particles[i]->chord[0];
-             particles[i]->bestChord[1] = particles[i]->chord[1];
-             particles[i]->bestChord[2] = particles[i]->chord[2];
-        }
-    }
-}
-//--------------------------------------------------------------
-
-void Swarm::checkBestChord() {
-    
-    for (int i = 0; i < particles.size(); i++) {
-
-        if (particles[i]->chordFitness < chordBestFitness) {
-            chordBestFitness = particles[i]->fitness;
-            for (int j = 0; j < 3; j++) {
-                bestChord[j] = particles[i]->chord[j];
-            }
-            
-        }
-    }
-    
-}
-//--------------------------------------------------------------
-
-void Swarm::updateParticleChord() {
-    
-    for (int i = 0; i < particles.size(); i++) {
-        r1 = ofRandom(1);
-        r2 = ofRandom(2);
-        for (int j = 0; j < 3; j++) {
-            particles[i]->chordVel[j] = chordCon * (particles[i]->chordVel[j] + (chordC1 * r1 * (particles[i]->bestChord[j] - particles[i]->chord[j]) + chordC2 * r2 * (bestChord[j]-particles[i]->chord[j])));
-            
-            //Chord update
-            particles[i]->chord[j] = ofClamp(int(particles[i]->chord[j]+particles[i]->chordVel[j]), particles[i]->indFreqs[j],  particles[i]->indFreqs[j]+8);
-        }
-    }
-    
 }
 

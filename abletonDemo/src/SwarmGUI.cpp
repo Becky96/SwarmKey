@@ -14,44 +14,6 @@ void SwarmGUI::setupInterface() {
     
     textY = y;
     
-    //Algorithm component sliders
-    /*
-    noteConSlider = new ofxDatGuiSlider(noteConFloat.set("Note Constriction Rate", 0.7984, 0., 1.));
-    noteConSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
-    noteConSlider->setPosition(x, y);
-    algorithmComponents.push_back(noteConSlider);
-    y+=noteConSlider->getHeight();
-    
-    noteC1Slider = new ofxDatGuiSlider(noteC1Float.set("Note C1 Value", 1.4, 0., 4.));
-    noteC1Slider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
-    noteC1Slider->setPosition(x, y);
-    algorithmComponents.push_back(noteC1Slider);
-    y+=noteC1Slider->getHeight();
-    
-    noteC2Slider = new ofxDatGuiSlider(noteC2Float.set("Note C2 Value", 1.4, 0., 4.));
-    noteC2Slider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
-    noteC2Slider->setPosition(x, y);
-    algorithmComponents.push_back(noteC2Slider);
-    y+=noteC2Slider->getHeight();
-    
-    rhythmConSlider = new ofxDatGuiSlider(rhythmConFloat.set("Rhythm Constriction Rate", 0.4, 0., 1.));
-    rhythmConSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
-    rhythmConSlider->setPosition(x, y);
-    algorithmComponents.push_back(rhythmConSlider);
-    y+=rhythmConSlider->getHeight();
-    
-    rhythmC1Slider = new ofxDatGuiSlider(rhythmC1Float.set("Rhythm C1 Value", 1.4, 0., 4.));
-    rhythmC1Slider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
-    rhythmC1Slider->setPosition(x, y);
-    algorithmComponents.push_back(rhythmC1Slider);
-    y+=rhythmC1Slider->getHeight();
-    
-    rhythmC2Slider = new ofxDatGuiSlider(rhythmC2Float.set("Rhythm C2 Value", 1.4, 0., 4.));
-    rhythmC2Slider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
-    rhythmC2Slider->setPosition(x, y);
-    algorithmComponents.push_back(rhythmC2Slider);
-    y+=rhythmC2Slider->getHeight();
-    */
     
     //GUI setup of toggle and sliders.
     playingToggle = new ofxDatGuiToggle("Playing", false);
@@ -174,11 +136,7 @@ void SwarmGUI::setupInterface() {
 //--------------------------------------------------------------
 
 void SwarmGUI::updateInterface() {
-    
-    for (int i = 0; i < algorithmComponents.size(); i++) {
-        //algorithmComponents[i]->update();
-    }
-    
+
     for (int i = 0; i < swarmComponents.size(); i++) {
         swarmComponents[i]->update();
     }
@@ -198,9 +156,6 @@ void SwarmGUI::updateInterface() {
 
 void SwarmGUI::drawInterface() {
     
-    for (int i = 0; i < algorithmComponents.size(); i++) {
-        //algorithmComponents[i]->draw();
-    }
     
     for (int i = 0; i < swarmComponents.size(); i++) {
         swarmComponents[i]->draw();
@@ -247,41 +202,7 @@ void SwarmGUI::onToggleEvent(ofxDatGuiToggleEvent e) {
 
 void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     
-    ///////////////////////////////
-    //Algorithm components
-    //Intervals
-    if (e.target == noteConSlider) {
-        swarm->noteCon = e.value;
-        resetParticleIntervalVelocity();
-        
-    }
-    
-    if (e.target == noteC1Slider) {
-        swarm->noteC1 = e.value;
-        resetParticleIntervalVelocity();
-    }
-    
-    if (e.target == noteC2Slider) {
-        swarm->noteC2 = e.value;
-        resetParticleIntervalVelocity();
-    }
-    
-    //Rhythm
-    if (e.target == rhythmConSlider) {
-        swarm->rhythmCon = e.value;
-        resetParticleRhythmVelocity();
-    }
-    
-    if (e.target == rhythmC1Slider) {
-        swarm->rhythmC1 = e.value;
-        resetParticleRhythmVelocity();
-    }
-    
-    if (e.target == rhythmC2Slider) {
-        swarm->rhythmC2 = e.value;
-        resetParticleRhythmVelocity();
-    }
-    
+
     
     ///////////////////////////////
     if (e.target == rhythmSlider) {
@@ -305,22 +226,12 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
         swarm->chosenOctave = e.value;
         swarm->distMotifOctave = swarm->chosenOctave - swarm->noteMotifOctaves[0];
 
-        
-        cout << "new octave distance from motif: " << swarm->distMotifOctave << endl;
         resetParticleIntervals();
 
     }
     
     if (e.target == chordSlider) {
         
-        //if (e.value > swarm->chordPotential) {
-          //  swarm->randomiseParticleChord(e.value);
-       // }
-        
-        //if (e.value < swarm->chordPotential) {
-          //  swarm->removeParticleChordIndex();
-       // }
-        //swarm->prevChordPotential = swarm->chordPotential;
         swarm->chordPotential = e.value;
 
     }

@@ -18,28 +18,29 @@ public:
     
     void setupParticle();
     
+    //////////////////////////////
+    //////////NOTES///////////////
+    //////////////////////////////
+
     //Variables for following intervals
     int bestIndFreqs[4];
     int indFreqs[4];
     float indFreqsVel[4];
     
     
-    
-    //CHORD
-    int chord[3];
-    int chordVel[3];
-    int bestChord[3];                       //Best chord generated (from personal best fitness)
-    int chordFitness = 9999;                //Current fitness
-    int chordBestFitness = 9999;            //Personal best fitness
+
     
     int start = int(ofRandom(29, 36));
     
     int fitness;
     int bestFit = 200000;
+    int currentOctave;
+
     
-    ofColor col = ofColor(ofRandom(100, 255), ofRandom(10, 255), ofRandom(100, 255));
     
-    //Rhythm
+    //////////////////////////////
+    //////////RHYTHM//////////////
+    //////////////////////////////
     vector<float> rhythm;
     vector<float> rhythmVels;
     vector<int> hits;
@@ -54,7 +55,6 @@ public:
     
     int dimensionality;
     float dimensionalityVel = ofRandom(-2, 2);
-    
     int bestDimensionality;
     
     
@@ -66,10 +66,10 @@ public:
     void fillRhythm(float duration);
 
     
-    int currentOctave;
     
-    
-    //Velocity
+    /////////////////////////////////
+    ////////////VELOCITY/////////////
+    /////////////////////////////////
     int velocityFitness;                    //Rate strength of particle's velocity
     int velocity;                           //Specific particle velocity
     float velocityVel = ofRandom(-0.5, 0.5);      //Rate to accelerate particle's velocity

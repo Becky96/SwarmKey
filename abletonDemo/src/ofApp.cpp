@@ -3,6 +3,8 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
+    
+    //Assigning correct path for ofxDatGui addon to assets folder.
     gui->setAssetPath("");
 
     ofSetVerticalSync(true);
@@ -12,7 +14,10 @@ void ofApp::setup(){
     ofSetLogLevel(OF_LOG_VERBOSE);
     
     
+    ////////////////////////////////////////////////////////////////
+    //MIDI PORT SETUP
     //Setting up MIDI port for swarms
+    ////////////////////////////////////////////////////////////////
     for (int i = 1; i < SWARM_NUM+1; i++) {
         
         swarms[i].openVirtualPort("Swarm");
@@ -21,6 +26,7 @@ void ofApp::setup(){
     }
     
     
+    //CURRENT PHRASE INPUT//
     //Note and rhythm motif for swarm one
     int nMotif1[4] = {14, 16, 18, 16};
     int rMotif1[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
@@ -33,10 +39,17 @@ void ofApp::setup(){
     swarms[2].inputMotif(nMotif2, rMotif2);
     
     
-    //Set up of interfaces for swarms.
+    
+    ////////////////////////////////////////////////////////////////
+    //INDIVIDUAL SWARM INTERFACES
+    ////////////////////////////////////////////////////////////////
+    
+    //Set up of individual interfaces for swarms.
     left = new SwarmGUI(1, 50, 200, &swarms[1]);
     right = new SwarmGUI(2, 350, 200, &swarms[2]);
     
+    
+    //Set up of individual interfaces for swarms.
     left->setupInterface();
     right->setupInterface();
     
@@ -44,9 +57,8 @@ void ofApp::setup(){
     int y = 50;
     
     
-    
     ////////////////////////////////////////////////////////////////
-    //USER INTERFACE
+    //GLOBAL USER INTERFACE
     ////////////////////////////////////////////////////////////////
     
     //Toggle to start/stop playing swarms
@@ -77,14 +89,11 @@ void ofApp::setup(){
     globalSwarmComponents.push_back(key);
     x+=key->getWidth();
     
+    
+    phraseUI = new PhraseUI();
+    phraseUI->setupPhraseUI();
+    
 
-    
-    
-    
-    
-
-    pianoRoll.setup(700, 100);
-    
     sampleRate = 44100;
     bufferSize = 1025;
     
@@ -96,30 +105,30 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 
-
+    //Updating global swarm user interface components
     for (int i = 0; i < globalSwarmComponents.size(); i++) {
-    globalSwarmComponents[i]->update();
+        globalSwarmComponents[i]->update();
     }
    
     
+    //Updating individual swarm user interface components
     left->updateInterface();
     right->updateInterface();
 
-
+    phraseUI->updatePhraseUI();
 }
 
 
-void ofApp::audioRequested(float * output, int bufferSize, int nChannels){
-    
-    
-    
-    
-}   // end audioRequested
-
 void ofApp::sendMIDI() {
     
+    //If global 'playSwarms' has been toggled to on, startSwarm becomes true and so begins the PSO
+    //algorithmic process and the sending of MIDI messages to Ableton.
     if (startSwarm) {
         
+        //Each swarm has an individual 'readyToPlay' boolean that is toggled on whenever the
+        //global 'playSwarms' toggle is turned on or it's individual 'playSwarm' toggle
+        //is turned on. This readyToPlay boolean ensures that the swarms will play in time with
+        //each other, by resetting the individual notePlayheads to 0 and changeRhythmInt to 0.
         if (swarms[1].readyToPlay == true && changeRhythmInt % 4 == 0) {
             swarms[1].play = true;
             swarms[1].readyToPlay = false;
@@ -135,22 +144,28 @@ void ofApp::sendMIDI() {
         }
         
         
+        
         for (int i = 0; i < bufferSize; i++){
             
             currentCount = (int)timer.phasor(tempo);
             
             if (lastCount != currentCount) {
                 
+                
+                //Once the playHead has a modulo value of 0, changeRhythm becomes true
+                //to indicate to perform the PSO algorithmic process on the rhythm
+                //candidate solutions.
                 if (playHead % 16 == 0) {
                     
                     changeRhythm = true;
                     changeRhythmInt++;
                 }
                 
-                //Determine whether to play first swarm
+                //Sending MIDI messages for swarm 1 if boolean 'play' is true.
                 if (swarms[1].play == true) {
                     
                     float valR1, valR2;
+                    
                     if (swarms[1].playFinalNote == false) {
                         if (swarms[1].bestRhythm.hits[playHead% 16] == 1) {
                             
@@ -168,7 +183,6 @@ void ofApp::sendMIDI() {
                                 float r = ofRandom(100);
                                 
                                 if (r < swarms[1].chordPotential) {
-                                    //                     swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[0]], swarms[1].bestParticleSwarmVelocity-20);
                                     swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+2], swarms[1].bestParticleSwarmVelocity-20);
                                 }
                                 
@@ -179,7 +193,6 @@ void ofApp::sendMIDI() {
                                 float r = ofRandom(100);
                                 
                                 if (r < swarms[1].chordPotential) {
-                                    // swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[1]], swarms[1].bestParticleSwarmVelocity-20);
                                     swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+4], swarms[1].bestParticleSwarmVelocity-20);
                                 }
                                 valR2 = r;
@@ -189,7 +202,7 @@ void ofApp::sendMIDI() {
                             swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]]);
                             
                             if (swarms[1].chordPotential > 5) {
-                                //swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[0]]);
+
                                 if (valR1 < swarms[1].chordPotential) {
                                     swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+2]);
                                 }
@@ -197,7 +210,6 @@ void ofApp::sendMIDI() {
                             
                             if (swarms[1].chordPotential > 50) {
                                 if (valR2 < swarms[2].chordPotential) {
-                                    //swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].bestChord[1]]);
                                     swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+4]);
                                 }
                             }
@@ -211,11 +223,11 @@ void ofApp::sendMIDI() {
                             noteChangeLeft = true;
                             
                         }
+                        
+                    //When
                     } else if (swarms[1].readyToPlay == false) {
-                        cout << "REACHED " << endl;
                         
                         if (swarms[1].bestRhythm.hits[playHead% 16] == 1) {
-                            cout << "TRUE2 Swarm 1" << endl;
                             swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].tonic, swarms[1].bestParticleSwarmVelocity);
                             
                             swarms[1].playFinalNote = false;
@@ -253,7 +265,6 @@ void ofApp::sendMIDI() {
                                 float r = ofRandom(100);
                                 
                                 if (r < swarms[2].chordPotential) {
-                                    //swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[0]], swarms[2].bestParticleSwarmVelocity-20);
                                     swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+2], swarms[2].bestParticleSwarmVelocity-20);
                                 }
                                 val1R = r;
@@ -262,7 +273,6 @@ void ofApp::sendMIDI() {
                             if (swarms[2].chordPotential > 50) {
                                 float r = ofRandom(100);
                                 if (r < swarms[2].chordPotential) {
-                                    //swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[1]], swarms[2].bestParticleSwarmVelocity-20);
                                     swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+4], swarms[2].bestParticleSwarmVelocity-20);
                                 }
                                 val2R = r;
@@ -275,13 +285,11 @@ void ofApp::sendMIDI() {
                             if (swarms[2].chordPotential > 5) {
                                 
                                 if (val1R < swarms[2].chordPotential) {
-                                    //  swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[0]]);
                                     swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+2]);
                                 }
                             }
                             
                             if (swarms[2].chordPotential > 50) {
-                                // swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].bestChord[1]]);
                                 
                                 if (val2R < swarms[2].chordPotential) {
                                     swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+4]);
@@ -302,9 +310,7 @@ void ofApp::sendMIDI() {
                         
                         
                     } else if (swarms[2].readyToPlay == false) {
-                        cout << "REACHED " << endl;
                         if (swarms[2].bestRhythm.hits[playHead% 16] == 1) {
-                            cout << "TRUE2 Swarm 2" << endl;
                             swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].tonic, swarms[2].bestParticleSwarmVelocity);
                             
                             swarms[2].playFinalNote = false;
@@ -334,54 +340,64 @@ void ofApp::draw(){
     
     //pianoRoll.displayRoll();
     
+    
+    //Drawing the global swarm user interfaces
     for (int i = 0; i < globalSwarmComponents.size(); i++) {
         globalSwarmComponents[i]->draw();
     }
     
     
+    //Drawing the individial swarm user interfaces
     left->drawInterface();
     right->drawInterface();
     
+    //Outputting swarm parameter information
+    left->displaySwarmParameters();
+    right->displaySwarmParameters();
+    
+    
+    
+    //PHRASE UI
+    phraseUI->displayPhraseList();
+    phraseUI->displayPhraseUI();
+    phraseUI->displaySelectedPhrase();
+    
+    //Checking if all booleans 'readyToPlay', 'play', and 'playFinalNote' of individual swarms
+    //are false. If all are false, this indicates that startSwarm is now false to stop
+    //all algorithmic functions.
     if (swarms[1].readyToPlay == false && swarms[2].readyToPlay == false && swarms[1].play == false && swarms[2].play == false && swarms[1].playFinalNote == false && swarms[2].playFinalNote == false) {
-        //cout << "OFF" << endl;
         startSwarm = false;
     }
   
     
     if (startSwarm == true) {
         
+        
+        
+        //VELOCITY//
+        //If swarm one has played a note, run the PSO algorithmic process to update the swarm's velocity.
         if (noteChangeLeft == true) {
-            
             swarms[1].runVelocity();
             noteChangeLeft = false;
-            if (calculateChordLeft == true) {
-                swarms[1].runChord(swarms[1].notePlayhead);
-                calculateChordLeft = false;
-            }
             
+        //If swarm two has played a note, run the PSO algorithmic process to update the swarm's velocity.
         } if (noteChangeRight == true) {
             swarms[2].runVelocity();
             noteChangeRight = false;
-            if (calculateChordRight == true) {
-                swarms[2].runChord(swarms[2].notePlayhead);
-                calculateChordRight = false;
-            }
             
         }
 
+        
+        //RHYTHM AND NOTE SEQUENCES//
         //Determine whether to change rhythm sequences
         if (changeRhythm == true && changeRhythmInt % 2 == 0) {
-            
-            
+
             
             if (swarms[2].play == true) {
     
-
                 swarms[2].runRhythm();
-                
                 swarms[2].run(&swarms[1], playHead, swarms[2].notePlayhead, swarms[1].notePlayhead);
                 
-
             }
             
             
@@ -389,8 +405,6 @@ void ofApp::draw(){
                 
                 swarms[1].runRhythm();
                 swarms[1].run(&swarms[2], playHead, swarms[1].notePlayhead, swarms[2].notePlayhead);
-                
-                //pianoRoll.resetCells(&swarms[1], &swarms[2]);
                 
             }
 
@@ -400,8 +414,7 @@ void ofApp::draw(){
     }
     
 
-    left->displaySwarmParameters();
-    right->displaySwarmParameters();
+    
 
     
     }
@@ -435,8 +448,6 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
     
     //Set swarm to stop playing.
     if (e.target == playSwarmsToggle && e.checked == false && startSwarm == true) {
-        //startSwarm = false;
-        cout << startSwarm << endl;
         swarms[1].playFinalNote = true;
         swarms[2].playFinalNote = true;
         
@@ -450,7 +461,7 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
 }
 
 //--------------------------------------------------------------
-//Handler for sliders
+//Handler for UI sliders
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
     
     //Tempo is converted from bpm to hertz for the oscillator to time the swarm's playing.
@@ -461,32 +472,31 @@ void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
     
 }
 
-
-
+//--------------------------------------------------------------
+//Handler for UI dropdown menus
 void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
     
-    
-    cout << "VALUE: " << e.child << endl;
-    cout << "PARENT: " << e.parent << endl;
-    cout << "label: " << e.target->getLabel() << endl;
-
-    //cout << "parent: " << types[e.child] << endl;
-    
+    ////////////////////////
+    //Key type dropdown menu
+    //If statements select which key type has been selected from the dropdown, Major or Minor.
+    //getKeyType is assigned as either 1 (Major), or 2 (Minor) and the swarms available notes are then recalculated to generate notes in the specific key.
     if (e.target->getLabel() == "Major") {
-       getKeyType = 1;
+        getKeyType = 1;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
-        cout << "reached major" << endl;
+
     }
     
     if (e.target->getLabel() == "Minor") {
-        
        getKeyType = 2;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
-        cout << "recahed minor" << endl;
-        
     }
+    
+    //////////////////////////
+    //Key tonic dropdown menu
+    //If statements select which tonic has been selected, and will assign 'keyNum' as the corresponding MIDI number of the tonic in octave 4.
+    //The swarm's available notes are then recalculated to generate notes in the specific key.
     if (e.target->getLabel() == "C") {
         keyNum = 60;
         swarms[1].calculateKey(keyNum, getKeyType);
@@ -513,28 +523,24 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
     
     if (e.target->getLabel() == "E") {
         keyNum = 64;
-
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (e.target->getLabel() == "F") {
         keyNum = 65;
-
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (e.target->getLabel() == "F#") {
         keyNum = 66;
-
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (e.target->getLabel() == "G") {
         keyNum = 67;
-
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
     }
@@ -542,14 +548,12 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
     
     if (e.target->getLabel() == "G#") {
         keyNum = 68;
-
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
     }
     
     if (e.target->getLabel() == "A") {
         keyNum = 69;
-
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
     }
@@ -557,7 +561,6 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
     
     if (e.target->getLabel() == "A#") {
         keyNum = 70;
-
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
     }
@@ -565,7 +568,6 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
     
     if (e.target->getLabel() == "B") {
         keyNum = 71;
-
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
     }
@@ -601,6 +603,12 @@ void ofApp::mousePressed(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
 
+    if (phraseUI->phrases.size() >= 1) {
+
+            phraseUI->phrases[phraseUI->selectedPhrase]->checkGridPressed();
+      
+    }
+    
 }
 
 //--------------------------------------------------------------

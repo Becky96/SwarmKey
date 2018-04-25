@@ -5,7 +5,7 @@
 #include "Swarm.hpp"
 #include "ofxDatGui.h"
 #include "SwarmGUI.hpp"
-#include "PianoRoll.hpp"
+#include "PhraseUI.hpp"
 
 //Number of swarms
 #define SWARM_NUM 2
@@ -31,12 +31,10 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		
 
-    void audioRequested (float * input, int bufferSize, int nChannels); // Adapted from Maximilan examples
 
     void sendMIDI();
     
     int sampleRate;
-    
     int bufferSize;
     
     Swarm swarms[SWARM_NUM];
@@ -44,11 +42,7 @@ class ofApp : public ofBaseApp{
     
     SwarmGUI * left;
     SwarmGUI * right;
-    
-    
-    //Object responsible for the 
-    PianoRoll pianoRoll;
-    
+
     vector<ofxDatGuiComponent*> globalSwarmComponents;
     ofxDatGuiToggle* playSwarmsToggle;
     
@@ -57,18 +51,24 @@ class ofApp : public ofBaseApp{
     ofxDatGuiSlider* tempoSlider;
     ofParameter<int> tempoInt;
     
+    
+    //User dropdown menu for selecting key type
     vector<string> types = {"Major", "Minor"};
     ofxDatGuiDropdown* keyTypes;
     int getKeyType = 1;
     
-    
+    //User dropdown menu for selecting key tonic
     vector<string> options = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     ofxDatGuiDropdown* key;
     int keyNum = 60;
     
+    
+    //Oscillator used to time the composition based upon the rhythms of the swarms
     maxiOsc timer;
     int currentCount, lastCount;
     int playHead = 0;
+    
+    
     
     bool changeNotesLeft = true;
     bool changeNotesRight = true;
@@ -102,4 +102,8 @@ class ofApp : public ofBaseApp{
     //Temporary variable for recording with Disklavier 
     int maxVelocity = 120;
    
+    
+    
+    //PHRASE USER INTERFACE
+    PhraseUI * phraseUI;
 };

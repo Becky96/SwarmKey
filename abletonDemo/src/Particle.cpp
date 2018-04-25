@@ -12,6 +12,10 @@
 void Particle::setupParticle() {
     
     
+    //////////////////////////////
+    //////////NOTES///////////////
+    //////////////////////////////
+    
     //Variables for following intervals
     indFreqs[0] = start;
     indFreqs[1] = start+int(ofRandom(0, 8));
@@ -30,20 +34,17 @@ void Particle::setupParticle() {
     indFreqsVel[2] = ofRandom(-2, 2);
     indFreqsVel[3] = ofRandom(-2, 2);
 
-    
-    chord[0] = 0;
-    chord[1] = 0;
-    chord[2] = 0;
-    
-    chordVel[0] = ofRandom(-2, 2);
-    chordVel[1] = ofRandom(-2, 2);
-    chordVel[2] = ofRandom(-2, 2);
-    
+
     
     for (int i = 0; i < 16; i++) {
         compareBestRhythm.push_back(0);
     }
     
+    
+    
+    //////////////////////////////
+    //////////RHYTHM//////////////
+    //////////////////////////////
     determineRhythm();
     
     for (int i = 0; i < rhythm.size(); i++) {
@@ -51,6 +52,11 @@ void Particle::setupParticle() {
     }
     
     
+    
+    
+    //////////////////////////////
+    //////////VELOCITY////////////
+    //////////////////////////////
     velocity = int(ofRandom(20, maxVelocity));
 }
 
@@ -67,34 +73,28 @@ void Particle::determineRhythm() {
             
             
             rhythm.push_back(validDurations[r]);
-            cout << r << endl;
-            cout << rhythm[0] << endl;
+
             
             float sum = rhythm[0];
             
             while (sum != 4) {
                 
-                //cout << "Current sum: " << sum << endl;
-                
                 if (sum >= 3.75) {
                     
                     r = 4;
                     rhythm.push_back(validDurations[r]);
-                    // cout << "3.75 picked" << endl;
                     
                     
                 } else if (sum > 3 && sum <= 3.5) {
                     
                     r = int(ofRandom(3, 5));
                     rhythm.push_back(validDurations[r]);
-                    // cout << "3.5 picked" << endl;
                     
                     
                 } else if (sum > 2 && sum <= 3) {
                     
                     r = int(ofRandom(2, 5));
                     rhythm.push_back(validDurations[r]);
-                    // cout << "3 picked" << endl;
                     
                     
                     
@@ -102,7 +102,6 @@ void Particle::determineRhythm() {
                     
                     r = int(ofRandom(1, 5));
                     rhythm.push_back(validDurations[r]);
-                    
                     
                 }
 
