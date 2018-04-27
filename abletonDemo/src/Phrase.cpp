@@ -22,7 +22,7 @@ void Phrase::setupPhrase(int _id, int _buttonX, int _buttonY) {
             
             
             PhraseCell * pC = new PhraseCell;
-            pC->setupCell(x+(i*cellWidth), y+(j*cellHeight), cellWidth, cellHeight, 1, j+1, i+1);
+            pC->setupCell(x+(i*cellWidth), y+(j*cellHeight), cellWidth, cellHeight, 1, ofMap(j, 0, 15, 15, 0), i+1 );
             phraseCells.push_back(pC);
             
         }
@@ -79,6 +79,18 @@ void Phrase::checkGridPressed() {
                 //Highlighting the selected cell
                 phraseCells[i]->highlighted = true;
                 
+                //phraseCells[i]->row-1  (index in midi Note vector)
+                //phraseCells[i]->col-1 (index in phrase array)
+                
+                phraseList[phraseCells[i]->col-1] = phraseCells[i]->row-1;
+                
+                
+                
+                
+                cout << " " << endl;
+                for (int j = 0; j < 16; j++) {
+                    cout << phraseList[j] << ", ";
+                }
                 
                 //Looping through all other cells and checking whether they lie within the same column, and if they are not the cell that has been selected then they will be unselected if they currently are selected.
                 for (int j = 0; j < phraseCells.size(); j++) {
@@ -113,9 +125,16 @@ void Phrase::checkGridPressed() {
 void Phrase::onButtonEvent(ofxDatGuiButtonEvent e) {
     
     if (displayGrid == false) {
+        
+        //Set stripe colour to white if currently selected phrase
+        selectCell->setStripeColor(255);
         displayGrid = true;
         buttonPressed = true;
     } else if (displayGrid == true) {
+
+        //Set stripe colour to black if not currently selected phrase
+        selectCell->setStripeColor(0);
+        
         displayGrid = false;
     }
 }

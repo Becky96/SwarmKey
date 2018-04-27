@@ -34,7 +34,7 @@ public:
     int cellWidth = 25;
     int cellHeight = 25;
     
-    int x = 400;
+    int x = 1200;
     int y = 700;
     
     int buttonX, buttonY;
@@ -42,13 +42,16 @@ public:
     vector<PhraseCell*> phraseCells;
     
     ofxDatGuiButton* selectCell;
-    ofxDatGuiButton* deleteCell;
     
     void onButtonEvent(ofxDatGuiButtonEvent e);
     
     bool displayGrid = false;
 
     bool buttonPressed;
+    
+    
+   vector<int> phraseList = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
+    
 };
 
 #endif /* Phrase_hpp */

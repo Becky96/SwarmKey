@@ -145,7 +145,7 @@ void Swarm::calculateKey(int start, int type) {
     
     
     for (int i = 0; i < availableNotes.size(); i++) {
-      //  cout << i << ": " << availableNotes[i] << endl;
+        cout << i << ": " << availableNotes[i] << endl;
     }
 
 }
@@ -313,13 +313,64 @@ void Swarm::fitness() {
         double noteDistance = 0;
         
         
-        for (int j = 0; j < 4; j++) {
+        
+        /*distMotifOctave is the difference between octave defined by the 'octave' slider (the octave the user and the octave of the inputted phrase notes.
+        wants the swarm to operate in.)
+         As there are 7 viable notes in the current scale per octave, 
+         The distMotifOctave is calculated by the determining which octave the currently selected phrase mainly occupies, and depending on the distMotifOctave, this influences what octave the swarm should stive towards.
+         For example, for a noteMotifOctave of 14, 16, 14, 16, this lies in octave 3.
+         If the distMotifOctave is 4, the difference between the original phrase octave and the desired octave is 1 (4-3). 
+         
+         As an example equation:
+         noteMotif = [14, 16, 18, 16] 
+         particles[0]->indFreqs = [21, 28, 22, 20]
+         octave of phrase = 3
+         chosen octave = 4
+         distMotifOctave = 4-3 = 1
+         
+         iteration 1:
+         noteDistance += ( (14 + (1*7)) - 21) * ( (14 + (1*7)) - 21)
+                      += ( 21 - 21 ) * (21 - 21)
+                      += 0 * 0
+                      += 0
+         
+         iteration 2: 
+         noteDistance += (16 + (1*7)) - 28) * ( (16 + (1*7)) - 28)
+                      += (23 - 28 ) * (23 - 28)
+                      += (-5) * (-5)
+                      += 25
+         
+         iteration 3:
+         noteDistance += (18 + (1*7)) - 22) * ( (18 + (1*7)) - 22)
+                      += (25 - 22 ) * (25 - 22)
+                      += (3 * 3)
+                      += 9
+         
+         iteration 4:
+         noteDistance += (16 + (1*7)) - 20) * ( (16 + (1*7)) - 20)
+                      += (23 - 20 ) * (23 - 20)
+                      += (3 * 3)
+                      += 9
+         
+         Total noteDistance = 0 + 25 + 9 + 9 = 43
+         
+
+         This calculates an overall distance of the note sequence that the particle offers and the inputted phrase by the user.
+         
+         */
+         for (int j = 0; j < 4; j++) {
             
             noteDistance += ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]) * ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]);
 
         }
 
-        //The fitness sum of the particle becomes the desired distance (that the user would like) f
+        
+        
+        
+        //The total noteDistance from the particles' offered solution and the inputted phrase (according to the octave that the user would like it be searched for)
+        //The fitness sum of the particle becomes the desired distance (that the user would like) subtracted from the desired phrase ditance the user would like.
+        //For example, if the desired phrase distance is 0, the user would like the swarm to search for the precise phrase notes (in the desired octave). The larger the distance inputted by the user, the further away from the original phrase they would like the current output to sound.
+        //Melodic intervals are not accounted for when the desiredNoteDistance is 0, as the swarm should only search for the direct notes inputted in the phrase.
         fitnessSum = (abs(desiredNoteDistance - noteDistance)*1000);
         
         
@@ -537,8 +588,6 @@ void Swarm::checkRepeat() {
     
     //If sequence has been repeated 4 times, loop through all particles and randomly reset some of them based upon random variable r. Also using a random variable, alter some of the values of the best particle's indFreq array to hopefully create some variation of the sequence.
     if (repeated == 2) {
-        
-        //cout << "REPEATED " << endl;
         
         //Reset particles so they may discover other possible viable solutions
         for (int i= 0; i < N; i++) {

@@ -106,4 +106,8 @@ class ofApp : public ofBaseApp{
     
     //PHRASE USER INTERFACE
     PhraseUI * phraseUI;
+    
+    void playCurrentPhrase();
+    int playHeadPhrase = 0;
+
 };

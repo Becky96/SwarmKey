@@ -86,13 +86,14 @@ void ofApp::setup(){
     key = new ofxDatGuiDropdown("Select key", options);
     key->setPosition(x, y);
     key->onDropdownEvent(this, &ofApp::onDropdownEvent);
+    key->select(0);
     globalSwarmComponents.push_back(key);
     x+=key->getWidth();
     
     
     phraseUI = new PhraseUI();
     phraseUI->setupPhraseUI();
-    
+    phraseUI->calculatePhraseKey(1, 60);
 
     sampleRate = 44100;
     bufferSize = 1025;
@@ -117,6 +118,59 @@ void ofApp::update(){
 
     phraseUI->updatePhraseUI();
 }
+
+
+void ofApp::playCurrentPhrase() {
+    
+    
+        
+        int phraseHits[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        
+        for (int i = 0; i < bufferSize; i++){
+            
+            currentCount = (int)timer.phasor(tempo);
+            
+            if (playHeadPhrase == 16) {
+                cout << "REACHED " << endl;
+                phraseUI->playPhraseBool = false;
+                playHeadPhrase = 0;
+            }
+            
+            if (lastCount != currentCount) {
+                
+     
+                
+         
+                
+                        if (phraseHits[playHeadPhrase% 16] == 1) {
+                            
+                            
+                            phraseUI->currentPhrase[playHeadPhrase%16];
+                            
+                                swarms[1].midiOut.sendNoteOn(swarms[1].channel, phraseUI->currentPhrase[playHeadPhrase%16], 80);
+                                                                                                        
+                                                                                                        
+                        }
+                
+                        swarms[1].midiOut.sendNoteOff(swarms[1].channel, phraseUI->currentPhrase[playHeadPhrase%16]);
+                
+                            
+                
+                
+                playHeadPhrase++;
+                lastCount = 0;
+                
+                cout << playHeadPhrase << endl;
+                
+                
+            }
+         
+            
+            
+    }
+}
+
+
 
 
 void ofApp::sendMIDI() {
@@ -337,6 +391,9 @@ void ofApp::sendMIDI() {
 void ofApp::draw(){
     
     sendMIDI();
+    if (phraseUI->playPhraseBool == true) {
+        playCurrentPhrase();
+    }
     
     //pianoRoll.displayRoll();
     
@@ -361,6 +418,7 @@ void ofApp::draw(){
     phraseUI->displayPhraseList();
     phraseUI->displayPhraseUI();
     phraseUI->displaySelectedPhrase();
+    
     
     //Checking if all booleans 'readyToPlay', 'play', and 'playFinalNote' of individual swarms
     //are false. If all are false, this indicates that startSwarm is now false to stop
@@ -484,13 +542,15 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
         getKeyType = 1;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
-
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
     }
     
     if (e.target->getLabel() == "Minor") {
        getKeyType = 2;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     //////////////////////////
@@ -501,48 +561,64 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
         keyNum = 60;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     if (e.target->getLabel() == "C#") {
         keyNum = 61;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     if (e.target->getLabel() == "D") {
         keyNum = 62;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     if (e.target->getLabel() == "D#") {
         keyNum = 63;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     if (e.target->getLabel() == "E") {
         keyNum = 64;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     if (e.target->getLabel() == "F") {
         keyNum = 65;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     if (e.target->getLabel() == "F#") {
         keyNum = 66;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     if (e.target->getLabel() == "G") {
         keyNum = 67;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     
@@ -550,12 +626,16 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
         keyNum = 68;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     if (e.target->getLabel() == "A") {
         keyNum = 69;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     
@@ -563,6 +643,8 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
         keyNum = 70;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     
@@ -570,6 +652,8 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
         keyNum = 71;
         swarms[1].calculateKey(keyNum, getKeyType);
         swarms[2].calculateKey(keyNum, getKeyType);
+        phraseUI->calculatePhraseKey(getKeyType, keyNum);
+
     }
     
     
@@ -594,6 +678,11 @@ void ofApp::mouseMoved(int x, int y ){
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
 
+    if (phraseUI->phrases.size() >= 1) {
+        
+        phraseUI->phrases[phraseUI->selectedPhrase]->checkGridPressed();
+        
+    }
 }
 
 //--------------------------------------------------------------
@@ -605,7 +694,7 @@ void ofApp::mouseReleased(int x, int y, int button){
 
     if (phraseUI->phrases.size() >= 1) {
 
-            phraseUI->phrases[phraseUI->selectedPhrase]->checkGridPressed();
+         //  phraseUI->phrases[phraseUI->selectedPhrase]->checkGridPressed();
       
     }
     

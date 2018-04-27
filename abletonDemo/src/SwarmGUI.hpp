@@ -98,6 +98,12 @@ public:
     ofParameter<int> desiredNoteDistInt;
     ofParameter<int> desiredRhythmDistInt;
     
+    
+    ofxDatGuiDropdown* phrasesDropdown;
+    vector<string> phraseOptions;
+    void onDropdownEvent(ofxDatGuiDropdownEvent e);
+
+    
     ofxDatGuiButton* saveNewMotif;
     ofxDatGuiButton* restoreOriginalMotif;
     

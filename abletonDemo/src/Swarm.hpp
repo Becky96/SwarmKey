@@ -81,7 +81,6 @@ public:
     
     int bestIndex;
     
-    int target = 24;
     
     int firstPen = 10;         //Interval of one (same note)
     int secondPen = 100;      //Interval of two

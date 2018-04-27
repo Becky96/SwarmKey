@@ -114,6 +114,13 @@ void SwarmGUI::setupInterface() {
     motifComponents.push_back(desiredRhythmDistSlider);
     y+=desiredRhythmDistSlider->getHeight();
     
+    
+    
+    
+    //Drop down to choose between created phrases
+
+
+    
     saveNewMotif = new ofxDatGuiButton("Save current bar as new motif");
     saveNewMotif->setPosition(x, y);
     saveNewMotif->onButtonEvent(this, &SwarmGUI::onButtonEvent);
@@ -126,6 +133,11 @@ void SwarmGUI::setupInterface() {
     motifComponents.push_back(restoreOriginalMotif);
     y+=restoreOriginalMotif->getHeight();
     
+
+    phrasesDropdown = new ofxDatGuiDropdown("Select phrase", phraseOptions);
+    phrasesDropdown->setPosition(x, y);
+    phrasesDropdown->onDropdownEvent(this, &SwarmGUI::onDropdownEvent);
+    motifComponents.push_back(phrasesDropdown);
     
     
     y+=50;
@@ -240,55 +252,55 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     //Interval penalties
     if (e.target == firstPen) {
         
-        swarm->firstPen = e.value;
+        swarm->firstPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == secondPen) {
         
-        swarm->secondPen = e.value;
+        swarm->secondPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == thirdPen) {
         
-        swarm->thirdPen = e.value;
+        swarm->thirdPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == fourthPen) {
         
-        swarm->fourthPen = e.value;
+        swarm->fourthPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == fifthPen) {
         
-        swarm->fifthPen = e.value;
+        swarm->fifthPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == sixthPen) {
         
-        swarm->sixthPen = e.value;
+        swarm->sixthPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == seventhPen) {
         
-        swarm->seventhPen = e.value;
+        swarm->seventhPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == eighthPen) {
         
-        swarm->eighthPen = e.value;
+        swarm->eighthPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == elsePen) {
         
-        swarm->elsePen = e.value;
+        swarm->elsePen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
