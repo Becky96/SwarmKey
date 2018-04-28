@@ -59,11 +59,10 @@ void Swarm::setup(int _channel) {
     calculateKey(tonic, 1);
     
     //Initialising prevBestIndFreqs
-    prevBestIndFreqs[0] = 100;
-    prevBestIndFreqs[1] = 100;
-    prevBestIndFreqs[2] = 100;
-    prevBestIndFreqs[3] = 100;
-    
+    for (int i = 0; i < 16; i++) {
+        prevBestIndFreqs[i] = 100;
+    }
+
     
 
     
@@ -72,7 +71,7 @@ void Swarm::setup(int _channel) {
 void Swarm::inputMotif(int nMotif[16]) {
     
     //Assigning note motif as swarm note motif
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 16; i++) {
         noteMotif[i] = nMotif[i];
         originalMotif[i] = noteMotif[i];
     }
@@ -90,10 +89,11 @@ void Swarm::inputMotif(int nMotif[16]) {
     //targetDimensionality = 4;
     
     //Calculating octaves of phrases
-    noteMotifOctaves[0] = (floor(noteMotif[0])/7)+1;
-    noteMotifOctaves[1] = (floor(noteMotif[1])/7)+1;
-    noteMotifOctaves[2] = (floor(noteMotif[2])/7)+1;
-    noteMotifOctaves[3] = (floor(noteMotif[3])/7)+1;
+    for (int i = 0; i < 16; i++) {
+        noteMotifOctaves[i] = (floor(noteMotif[i])/7)+1;
+
+    }
+
     
     cout << "Octave of note: " << noteMotif[0] << "is: " << noteMotifOctaves[0] << endl;
     cout << "Octave of note: " << noteMotif[1] << "is: " << noteMotifOctaves[1] << endl;
@@ -358,7 +358,7 @@ void Swarm::fitness() {
          This calculates an overall distance of the note sequence that the particle offers and the inputted phrase by the user.
          
          */
-         for (int j = 0; j < 4; j++) {
+         for (int j = 0; j < 16; j++) {
             
             noteDistance += ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]) * ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]);
 
@@ -381,10 +381,10 @@ void Swarm::fitness() {
             
             
         //Array to store melodic intervals of the candidate solution.
-        int intervals[3];
+        int intervals[15];
 
         //Determine distance of notes 2, 3, and 4 from note 1.
-        for (int j = 0; j < 3; j++) {
+        for (int j = 0; j < 15; j++) {
 
             
             //Distance between successive note and the current note that j indexes.
@@ -511,7 +511,7 @@ void Swarm::checkPersonalBest() {
             
             particles[i]->bestFit = particles[i]->fitness;
             
-            for (int j = 0; j < 4; j++) {
+            for (int j = 0; j < 16; j++) {
                 
                 particles[i]->bestIndFreqs[j] = particles[i]->indFreqs[j];
                 
@@ -548,7 +548,7 @@ void Swarm::updateParticles() {
         r1 = ofRandom(1);
         r2 = ofRandom(1);
         
-        for (int j = 0; j < 4; j++) {
+        for (int j = 0; j < 16; j++) {
             
             //Velocity update
             particles[i]->indFreqsVel[j] = noteCon * (particles[i]->indFreqsVel[j] + (noteC1*r1*(particles[i]->bestIndFreqs[j]-particles[i]->indFreqs[j])+ noteC2*r2*(best.bestIndFreqs[j]-particles[i]->indFreqs[j])));
@@ -571,7 +571,7 @@ void Swarm::checkRepeat() {
     
     //Check if previous frequency indexes matches the current frequency indexes of the best particle.
     //If yes, increment for each
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 16; i++) {
         
         if (prevBestIndFreqs[i] == best.indFreqs[i]) {
             indexCheck++;
@@ -581,7 +581,7 @@ void Swarm::checkRepeat() {
     }
     
     //if all indexes matched, increment 'repeated' by 1. Allow 2 repetitions before forcing best particle to randomise or vary
-    if (indexCheck == 4) {
+    if (indexCheck == 2) {
         repeated++;
         
     }
@@ -595,7 +595,7 @@ void Swarm::checkRepeat() {
             float r = ofRandom(1);
             
             if (r > 0.75) {
-                for (int j = 0; j < 4; j++) {
+                for (int j = 0; j < 16; j++) {
                     if (particles[i]->indFreqs[j] >= 2 && particles[i]->indFreqs[j] <= availableNotes.size()-1) {
                     particles[i]->indFreqs[j] = particles[i]->indFreqs[j]+int(ofRandom(-1, 1));
                     }
@@ -605,7 +605,7 @@ void Swarm::checkRepeat() {
         
         
         
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 16; i++) {
             float r = ofRandom(1);
             
             if (r > 0.25) {
@@ -619,7 +619,7 @@ void Swarm::checkRepeat() {
         
     } else {
         
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 16; i++) {
             
             prevBestIndFreqs[i] = best.indFreqs[i];
             
@@ -636,7 +636,7 @@ void Swarm::disturb() {
         float r = ofRandom(1);
         if (r < dt) {
             
-            for (int j = 0; j < 4; j++) {
+            for (int j = 0; j < 16; j++) {
 
                 particles[i]->indFreqs[j] = int(ofRandom(0, availableNotes.size()));
                 particles[i]->indFreqsVel[j] = ofRandom(-2, 2);

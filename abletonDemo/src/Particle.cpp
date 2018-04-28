@@ -18,22 +18,17 @@ void Particle::setupParticle() {
     
     //Variables for following intervals
     indFreqs[0] = start;
-    indFreqs[1] = start+int(ofRandom(0, 8));
-    indFreqs[2] = start+int(ofRandom(0, 8));
-    indFreqs[3] = start+int(ofRandom(0, 8));
-    
-    
     bestIndFreqs[0] = start;
-    bestIndFreqs[1] = start+int(ofRandom(0, 8));
-    bestIndFreqs[2] = start+int(ofRandom(0, 8));
-    bestIndFreqs[3] = start+int(ofRandom(0, 8));
-    
-    //Frequency velocities
-    indFreqsVel[0] = ofRandom(-2, 2);
-    indFreqsVel[1] = ofRandom(-2, 2);
-    indFreqsVel[2] = ofRandom(-2, 2);
-    indFreqsVel[3] = ofRandom(-2, 2);
 
+    
+    for (int i = 1; i < 16; i++) {
+        indFreqs[i] = start+int(ofRandom(0, 8));
+        bestIndFreqs[i] = start+int(ofRandom(0, 8));
+        indFreqsVel[i] = ofRandom(-2, 2);
+    }
+
+    
+    
 
     
     for (int i = 0; i < 16; i++) {

@@ -23,9 +23,9 @@ public:
     //////////////////////////////
 
     //Variables for following intervals
-    int bestIndFreqs[4];
-    int indFreqs[4];
-    float indFreqsVel[4];
+    int bestIndFreqs[16];
+    int indFreqs[16];
+    float indFreqsVel[16];
     
     
 
@@ -76,7 +76,7 @@ public:
     int bestParticleVelocityFitness = 999;                       //Particle's personal best velocity
     int bestParticleVelocity;
     
-    int bestNeighbour[4];
+   // int bestNeighbour[4];
     
     int maxVelocity = 120;
     

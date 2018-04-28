@@ -66,7 +66,7 @@ public:
     float rhythmCon = 0.4;
     float rhythmC1, rhythmC2;
 
-    int prevBestIndFreqs[4];
+    int prevBestIndFreqs[16];
     
     
     float dt = 0.2; //Like DFO
@@ -145,8 +145,8 @@ public:
     int targetDimensionality;
     
     //Note motif of continuous tonic of whatever key currently in.
-    int noteMotif[4] = {28, 30, 32, 30};
-    int originalMotif[4];
+    int noteMotif[16] = {28, 30, 32, 30, 28, 30, 32, 30, 28, 30, 32, 30, 28, 30, 32, 30};
+    int originalMotif[16];
     int rhythmMotif[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
     int dimensionalityMotif = 0;
     
@@ -172,7 +172,7 @@ public:
     
     
     //Octave
-    int noteMotifOctaves[4];
+    int noteMotifOctaves[16];
     int distMotifOctave;
     
     bool playFinalNote = false;

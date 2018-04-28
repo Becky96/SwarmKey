@@ -26,19 +26,6 @@ void ofApp::setup(){
     }
     
     
-    //CURRENT PHRASE INPUT//
-    //Note and rhythm motif for swarm one
-    //int nMotif1[4] = {14, 16, 18, 16};
-    //fint rMotif1[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
-    //swarms[1].inputMotif(nMotif);
-    
-    
-    //Note and rhythm motif for swarm two
-    //int nMotif2[4] = {21, 23, 25, 23};
-    //int rMotif2[16] = {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
-    //swarms[2].inputMotif(nMotif2);
-    
-    
     
     ////////////////////////////////////////////////////////////////
     //INDIVIDUAL SWARM INTERFACES
@@ -222,9 +209,9 @@ void ofApp::sendMIDI() {
                             
                             //Send MIDI on messages
                             if (playHead % 16 == 0) {
-                                swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]], swarms[1].bestParticleSwarmVelocity);
+                                swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%16]], swarms[1].bestParticleSwarmVelocity);
                             } else {
-                                swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]], swarms[1].bestParticleSwarmVelocity-20);
+                                swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%16]], swarms[1].bestParticleSwarmVelocity-20);
                                 
                             }
                             
@@ -233,7 +220,7 @@ void ofApp::sendMIDI() {
                                 float r = ofRandom(100);
                                 
                                 if (r < swarms[1].chordPotential) {
-                                    swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+2], swarms[1].bestParticleSwarmVelocity-20);
+                                    swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%16]+2], swarms[1].bestParticleSwarmVelocity-20);
                                 }
                                 
                                 valR1 = r;
@@ -243,24 +230,24 @@ void ofApp::sendMIDI() {
                                 float r = ofRandom(100);
                                 
                                 if (r < swarms[1].chordPotential) {
-                                    swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+4], swarms[1].bestParticleSwarmVelocity-20);
+                                    swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%16]+4], swarms[1].bestParticleSwarmVelocity-20);
                                 }
                                 valR2 = r;
                             }
                             
                             //Send MIDI off messages
-                            swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]]);
+                            swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%16]]);
                             
                             if (swarms[1].chordPotential > 5) {
 
                                 if (valR1 < swarms[1].chordPotential) {
-                                    swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+2]);
+                                    swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%16]+2]);
                                 }
                             }
                             
                             if (swarms[1].chordPotential > 50) {
                                 if (valR2 < swarms[2].chordPotential) {
-                                    swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%4]+4]);
+                                    swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%16]+4]);
                                 }
                             }
                             
@@ -304,9 +291,9 @@ void ofApp::sendMIDI() {
                             
                             //Send MIDI on messages
                             if (playHead % 16 == 0) {
-                                swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]], swarms[2].bestParticleSwarmVelocity);
+                                swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%16]], swarms[2].bestParticleSwarmVelocity);
                             } else {
-                                swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]], swarms[2].bestParticleSwarmVelocity-20);
+                                swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%16]], swarms[2].bestParticleSwarmVelocity-20);
                                 
                             }
                             
@@ -315,7 +302,7 @@ void ofApp::sendMIDI() {
                                 float r = ofRandom(100);
                                 
                                 if (r < swarms[2].chordPotential) {
-                                    swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+2], swarms[2].bestParticleSwarmVelocity-20);
+                                    swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%16]+2], swarms[2].bestParticleSwarmVelocity-20);
                                 }
                                 val1R = r;
                             }
@@ -323,26 +310,26 @@ void ofApp::sendMIDI() {
                             if (swarms[2].chordPotential > 50) {
                                 float r = ofRandom(100);
                                 if (r < swarms[2].chordPotential) {
-                                    swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+4], swarms[2].bestParticleSwarmVelocity-20);
+                                    swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%16]+4], swarms[2].bestParticleSwarmVelocity-20);
                                 }
                                 val2R = r;
                             }
                             
                             
                             //Send MIDI off messages
-                            swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]]);
+                            swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%16]]);
                             
                             if (swarms[2].chordPotential > 5) {
                                 
                                 if (val1R < swarms[2].chordPotential) {
-                                    swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+2]);
+                                    swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%16]+2]);
                                 }
                             }
                             
                             if (swarms[2].chordPotential > 50) {
                                 
                                 if (val2R < swarms[2].chordPotential) {
-                                    swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%4]+4]);
+                                    swarms[2].midiOut.sendNoteOff(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%16]+4]);
                                 }
                                 
                                 
