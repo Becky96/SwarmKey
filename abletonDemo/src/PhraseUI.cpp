@@ -79,6 +79,15 @@ void PhraseUI::displaySelectedPhrase() {
     //if so, it will set all other boolean displayGrids to false so that it is the only one being displayed.
     for (int i = 0; i < phrases.size(); i++) {
         if (phrases[i]->buttonPressed == true) {
+            
+            phraseChanged = true;
+            
+            cout << "PHRASE IS CHANGED/NEW SELECTED" << endl;
+            
+            for (int j = 0; j < 16; j++) {
+                swarmNoteIndexes[j] = (phrases[i]->phraseList[j]+17);
+            }
+            
             for (int j = 0; j < phrases.size(); j++) {
                 if (j != i) {
                     phrases[j]->displayGrid = false;
@@ -101,7 +110,9 @@ void PhraseUI::displaySelectedPhrase() {
 
             ofDrawBitmapString(ofToString(currentMidiNotes[phrases[selectedPhrase]->phraseList[j]]), 600+(j*50), 500);
             currentPhrase[j] = currentMidiNotes[phrases[selectedPhrase]->phraseList[j]];
-            
+           //     swarmNoteIndexes[j] = phrases[selectedPhrase]->phraseList[j] + 17;
+           //     phraseChanged = true;
+                
             }
         } else {
             phrases[i]->selectCell->setStripeColor(0);
@@ -261,6 +272,8 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
             }
         }
         
+        phraseChanged = true;
+        
         id++;
 
     }
@@ -328,9 +341,6 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
             if (phrases.size() >= 1) {
             selectedPhrase = phrases[phrases.size()-1]->id-1;
             }
-            
-            
-           
 
         }
         

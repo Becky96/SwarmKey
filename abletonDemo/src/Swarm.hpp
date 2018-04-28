@@ -24,7 +24,7 @@ public:
     
     void setup(int _channel);
     
-    void inputMotif(int nMotif[4], int rMotif[16]);
+    void inputMotif(int nMotif[16]);
     void exit();
     
     ofxMidiOut midiOut;

@@ -73,13 +73,21 @@ class PhraseUI {
         84,	85,	86,	87,	88};
     
     
+    
+    //Numbers to show the available notes (vertically to the left of the grid)
     vector<string> currentKeyNotes;
+    
+    //Storing MIDI notes of available notes for the key
     vector<int> currentMidiNotes;
     
     ofxMidiOut midiOut; //To play phrases
     
     //List of currently made phrases
     vector<Phrase*> phrases;
+    
+    
+    vector<int> phraseUInoteIndexes;
+    int swarmNoteIndexes[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     
     
     void calculatePhraseKey(int keyType, int tonic);
@@ -89,11 +97,12 @@ class PhraseUI {
     
     
     int currentKey = 60;
-    //vector<int[]> phraseList;
     
     
     //Boolean function to play current phrase
     bool playPhraseBool = false;
+    
+    bool phraseChanged = false;
     
     vector<int> currentPhrase = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
 };

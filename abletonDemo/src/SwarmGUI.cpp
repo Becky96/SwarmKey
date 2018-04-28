@@ -132,12 +132,7 @@ void SwarmGUI::setupInterface() {
     restoreOriginalMotif->onButtonEvent(this, &SwarmGUI::onButtonEvent);
     motifComponents.push_back(restoreOriginalMotif);
     y+=restoreOriginalMotif->getHeight();
-    
-
-    phrasesDropdown = new ofxDatGuiDropdown("Select phrase", phraseOptions);
-    phrasesDropdown->setPosition(x, y);
-    phrasesDropdown->onDropdownEvent(this, &SwarmGUI::onDropdownEvent);
-    motifComponents.push_back(phrasesDropdown);
+   
     
     
     y+=50;

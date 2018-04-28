@@ -69,7 +69,7 @@ void Swarm::setup(int _channel) {
     
 }
 //--------------------------------------------------------------
-void Swarm::inputMotif(int nMotif[4], int rMotif[16]) {
+void Swarm::inputMotif(int nMotif[16]) {
     
     //Assigning note motif as swarm note motif
     for (int i = 0; i < 4; i++) {
@@ -79,15 +79,15 @@ void Swarm::inputMotif(int nMotif[4], int rMotif[16]) {
     
     //Assigning rhythm motif as swarm rhythm motif
     //Setting dimensionality to number of 1s counted in rhythm motid
-    for (int i = 0; i < 16; i++) {
+   /* for (int i = 0; i < 16; i++) {
         rhythmMotif[i] = rMotif[i];
         if (rhythmMotif[i] == 1) {
             dimensionalityMotif++;
         }
-    }
+    }*/
     
-    targetDimensionality = dimensionalityMotif;
-
+    //targetDimensionality = dimensionalityMotif;
+    //targetDimensionality = 4;
     
     //Calculating octaves of phrases
     noteMotifOctaves[0] = (floor(noteMotif[0])/7)+1;
@@ -100,7 +100,7 @@ void Swarm::inputMotif(int nMotif[4], int rMotif[16]) {
     cout << "Octave of note: " << noteMotif[2] << "is: " << noteMotifOctaves[2] << endl;
     cout << "Octave of note: " << noteMotif[3] << "is: " << noteMotifOctaves[3] << endl;
     
-    distMotifOctave = chosenOctave - noteMotifOctaves[0];
+    //distMotifOctave = chosenOctave - noteMotifOctaves[0];
     cout << "octave distance: " << distMotifOctave << endl;
 }
 

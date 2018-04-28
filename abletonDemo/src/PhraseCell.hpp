@@ -29,5 +29,7 @@ public:
     void setupCell(int _x, int _y, int _width, int _height, int _note, int _row, int _col);
     void displayCell();
     void checkCellPressed();
+    
+    bool pressed = false;
 };
 #endif /* PhraseCell_hpp */

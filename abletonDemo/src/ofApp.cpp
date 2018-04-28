@@ -28,15 +28,15 @@ void ofApp::setup(){
     
     //CURRENT PHRASE INPUT//
     //Note and rhythm motif for swarm one
-    int nMotif1[4] = {14, 16, 18, 16};
-    int rMotif1[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
-    swarms[1].inputMotif(nMotif1, rMotif1);
+    //int nMotif1[4] = {14, 16, 18, 16};
+    //fint rMotif1[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
+    //swarms[1].inputMotif(nMotif);
     
     
     //Note and rhythm motif for swarm two
-    int nMotif2[4] = {21, 23, 25, 23};
-    int rMotif2[16] = {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
-    swarms[2].inputMotif(nMotif2, rMotif2);
+    //int nMotif2[4] = {21, 23, 25, 23};
+    //int rMotif2[16] = {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
+    //swarms[2].inputMotif(nMotif2);
     
     
     
@@ -138,17 +138,13 @@ void ofApp::playCurrentPhrase() {
             
             if (lastCount != currentCount) {
                 
-     
-                
-         
-                
                         if (phraseHits[playHeadPhrase% 16] == 1) {
                             
                             
                             phraseUI->currentPhrase[playHeadPhrase%16];
                             
                                 swarms[1].midiOut.sendNoteOn(swarms[1].channel, phraseUI->currentPhrase[playHeadPhrase%16], 80);
-                                                                                                        
+                            
                                                                                                         
                         }
                 
@@ -397,6 +393,17 @@ void ofApp::draw(){
     
     //pianoRoll.displayRoll();
     
+    if (phraseUI->phraseChanged == true) {
+        
+        cout << "REACHED" << endl;
+        swarms[1].inputMotif(phraseUI->swarmNoteIndexes);
+        swarms[2].inputMotif(phraseUI->swarmNoteIndexes);
+        
+        left->resetParticleIntervals();
+        right->resetParticleIntervals();
+        
+        phraseUI->phraseChanged = false;
+    }
     
     //Drawing the global swarm user interfaces
     for (int i = 0; i < globalSwarmComponents.size(); i++) {
@@ -681,7 +688,11 @@ void ofApp::mouseDragged(int x, int y, int button){
     if (phraseUI->phrases.size() >= 1) {
         
         phraseUI->phrases[phraseUI->selectedPhrase]->checkGridPressed();
+        phraseUI->phraseChanged = true;
         
+        for (int j = 0; j < 16; j++) {
+            phraseUI->swarmNoteIndexes[j] = (phraseUI->phrases[phraseUI->selectedPhrase]->phraseList[j]+17);
+        }
     }
 }
 
