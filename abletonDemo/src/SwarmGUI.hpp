@@ -1,16 +1,8 @@
-//
-//  SwarmGUI.hpp
-//  abletonDemo
-//
-//  Created by Becky Johnson on 23/02/2018.
-//
-//
 
 #ifndef SwarmGUI_hpp
 #define SwarmGUI_hpp
 
 #include <stdio.h>
-//#include "ofMain.h"
 #include "ofxDatGui.h"
 #include "Swarm.hpp"
 
@@ -35,9 +27,10 @@ public:
     int textY;
     Swarm * swarm;
     int vel = 3;
+    string label;
     
     SwarmGUI() = default;
-    SwarmGUI(int _channel, int _x, int _y, Swarm * _swarm) : channel(_channel), x(_x), y(_y), swarm(_swarm) {}
+    SwarmGUI(int _channel, int _x, int _y, Swarm * _swarm, string _label) : channel(_channel), x(_x), y(_y), swarm(_swarm), label(_label) {}
 
 
     
@@ -46,7 +39,7 @@ public:
     void drawInterface();
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
-    void onButtonEvent(ofxDatGuiButtonEvent e);
+
     void resetParticleIntervals();
     void resetParticleRhythms();
     void resetParticleIntervalVelocity();
@@ -57,6 +50,7 @@ public:
 
     //Vector containing interface components for individual components of swarm.
     vector<ofxDatGuiComponent*> swarmComponents;
+    ofxDatGuiLabel* swarmLabel;
     ofxDatGuiToggle* playingToggle;                 //Toggle to play/stop swarm processes
     ofxDatGuiSlider* rhythmSlider;
     ofxDatGuiSlider* velocitySlider;
@@ -94,19 +88,25 @@ public:
     vector<ofxDatGuiComponent*> motifComponents;
     ofxDatGuiSlider* desiredRhythmDistSlider;
     ofxDatGuiSlider* desiredNoteDistSlider;
+    ofxDatGuiSlider* searchIntensitySlider;
+    ofxDatGuiToggle* selectMotifToggle;
+    ofxDatGuiLabel* currentMotifLabel;
+    
+    bool assignNewPhrase = false;
+
     
     ofParameter<int> desiredNoteDistInt;
     ofParameter<int> desiredRhythmDistInt;
-    
+    ofParameter<int> searchIntensityInt;
     
 
-    
-    ofxDatGuiButton* saveNewMotif;
-    ofxDatGuiButton* restoreOriginalMotif;
     
     int maxVelocity = 120;
 
     int playHead;
+    
+    int UIWidth = 300;
+    float sliderRatio = .45;
     
 };
 

@@ -30,6 +30,10 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
+    
+    ofTrueTypeFont titleFont;
+    ofTrueTypeFont smallFont;
+
 
 
     void sendMIDI();
@@ -110,4 +114,15 @@ class ofApp : public ofBaseApp{
     void playCurrentPhrase();
     int playHeadPhrase = 0;
 
+    
+    //WELCOME SCREEN
+    bool welcomePage = true;
+    
+    int UIWidth = 300;
+    float sliderRatio = .45;
+    
+    ofTrueTypeFont sectionFont;
+    ofTrueTypeFont infoFont;
+    
+    
 };

@@ -25,11 +25,14 @@ public:
     
     int row, col;
     
+    ofColor colour;
     
     void setupCell(int _x, int _y, int _width, int _height, int _note, int _row, int _col);
+    void changeColour();
     void displayCell();
     void checkCellPressed();
     
     bool pressed = false;
+    bool changedOnce = false;
 };
 #endif /* PhraseCell_hpp */

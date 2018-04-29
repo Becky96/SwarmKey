@@ -56,7 +56,7 @@ public:
     
     //Algoirthm variables
     vector<Particle*> particles;
-    int N = 50;                 //Number of particles
+    int N = 25;                 //Number of particles
     float noteCon = 0.7984;         //Constriction factor
     float noteC1, noteC2;               //Learning rates
     float r1, r2;               //Stochastic elements
@@ -92,7 +92,7 @@ public:
     int eighthPen = 0;          //Octave
     int elsePen = 100;                //Other inval
 
-    
+    int numOfIterations = 1;
     
     //Rhythm
     //Rhythm functionality
@@ -176,6 +176,10 @@ public:
     int distMotifOctave;
     
     bool playFinalNote = false;
+    
+    
+    void visualisation();
+    float vX = 800, vY = 300;
 };
 
 #endif /* Swarm_hpp */

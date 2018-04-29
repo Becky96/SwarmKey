@@ -14,11 +14,19 @@ void SwarmGUI::setupInterface() {
     
     textY = y;
     
+    swarmLabel = new ofxDatGuiLabel(label);
+    swarmLabel->setPosition(x, y);
+    swarmLabel->setWidth(UIWidth);
+    swarmLabel->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+    swarmComponents.push_back(swarmLabel);
+    y+=swarmLabel->getHeight();
+
     
     //GUI setup of toggle and sliders.
     playingToggle = new ofxDatGuiToggle("Playing", false);
     playingToggle->onToggleEvent(this, &SwarmGUI::onToggleEvent);
     playingToggle->setPosition(x, y);
+    playingToggle->setWidth(UIWidth);
     playingToggle->setChecked(false);
     swarmComponents.push_back(playingToggle);
     y+=playingToggle->getHeight();
@@ -26,18 +34,21 @@ void SwarmGUI::setupInterface() {
     
     velocitySlider = new ofxDatGuiSlider(velocityInt.set("Velocity Level", maxVelocity/2., 0, maxVelocity));
     velocitySlider->setPosition(x, y);
+    velocitySlider->setWidth(UIWidth, sliderRatio);
     velocitySlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     swarmComponents.push_back(velocitySlider);
     y+=velocitySlider->getHeight();
     
     octaveSlider = new ofxDatGuiSlider(octaveInt.set("Octave Level", 4, 1, 8));
     octaveSlider->setPosition(x, y);
+    octaveSlider->setWidth(UIWidth, sliderRatio);
     octaveSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     swarmComponents.push_back(octaveSlider);
     y+=octaveSlider->getHeight();
     
     chordSlider = new ofxDatGuiSlider(chordInt.set("Chord potential", 0, 0, 100));
     chordSlider->setPosition(x, y);
+    chordSlider->setWidth(UIWidth, sliderRatio);
     chordSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     swarmComponents.push_back(chordSlider);
     y+=chordSlider->getHeight();
@@ -46,6 +57,7 @@ void SwarmGUI::setupInterface() {
     //First
     firstPen = new ofxDatGuiSlider(firstInt.set("Interval of 1", 90, 0, 100));
     firstPen->setPosition(x, y);
+    firstPen->setWidth(UIWidth, sliderRatio);
     firstPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(firstPen);
     y+=firstPen->getHeight();
@@ -53,48 +65,56 @@ void SwarmGUI::setupInterface() {
     //Second
     secondPen = new ofxDatGuiSlider(secondInt.set("Interval of 2", 0, 0, 100));
     secondPen->setPosition(x, y);
+    secondPen->setWidth(UIWidth, sliderRatio);
     secondPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(secondPen);
     y+=secondPen->getHeight();
     
     thirdPen = new ofxDatGuiSlider(thirdInt.set("Interval of 3", 100, 0, 100));
     thirdPen->setPosition(x, y);
+    thirdPen->setWidth(UIWidth, sliderRatio);
     thirdPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(thirdPen);
     y+=thirdPen->getHeight();
     
     fourthPen = new ofxDatGuiSlider(fourthInt.set("Interval of 4", 50, 0, 100));
     fourthPen->setPosition(x, y);
+    fourthPen->setWidth(UIWidth, sliderRatio);
     fourthPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(fourthPen);
     y+=fourthPen->getHeight();
     
     fifthPen = new ofxDatGuiSlider(fifthInt.set("Interval of 5", 100, 0, 100));
     fifthPen->setPosition(x, y);
+    fifthPen->setWidth(UIWidth, sliderRatio);
     fifthPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(fifthPen);
     y+=fifthPen->getHeight();
     
     sixthPen = new ofxDatGuiSlider(sixthInt.set("Interval of 6", 50, 0, 100));
     sixthPen->setPosition(x, y);
+    sixthPen->setWidth(UIWidth, sliderRatio);
     sixthPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(sixthPen);
     y+=sixthPen->getHeight();
     
     seventhPen = new ofxDatGuiSlider(seventhInt.set("Interval of 7", 0, 0, 100));
     seventhPen->setPosition(x, y);
+    seventhPen->setWidth(UIWidth, sliderRatio);
     seventhPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(seventhPen);
     y+=seventhPen->getHeight();
     
     eighthPen = new ofxDatGuiSlider(eighthInt.set("Interval of 8", 100, 0, 100));
     eighthPen->setPosition(x, y);
+    eighthPen->setWidth(UIWidth, sliderRatio);
     eighthPen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(eighthPen);
     y+=eighthPen->getHeight();
     
-    elsePen = new ofxDatGuiSlider(elseInt.set("Intervals 9 or above", 0, 0, 100));
+    elsePen = new ofxDatGuiSlider(elseInt.set("Intervals above 8", 0, 0, 100));
     elsePen->setPosition(x, y);
+    elsePen->setWidth(UIWidth, sliderRatio);
     elsePen->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     intervalPenalties.push_back(elsePen);
     y+=elsePen->getHeight();
@@ -102,42 +122,69 @@ void SwarmGUI::setupInterface() {
     y+=20;
     
     
-    desiredNoteDistSlider = new ofxDatGuiSlider(desiredNoteDistInt.set("Desired note dist", 0, 0, 200));
+    desiredNoteDistSlider = new ofxDatGuiSlider(desiredNoteDistInt.set("Phrase distance", 0, 0, 100));
     desiredNoteDistSlider->setPosition(x, y);
+    desiredNoteDistSlider->setWidth(UIWidth, sliderRatio);
     desiredNoteDistSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     motifComponents.push_back(desiredNoteDistSlider);
     y+=desiredNoteDistSlider->getHeight();
     
-    desiredRhythmDistSlider = new ofxDatGuiSlider(desiredRhythmDistInt.set("Desired rhythm", swarm->dimensionalityMotif, 0, 16));
+    desiredRhythmDistSlider = new ofxDatGuiSlider(desiredRhythmDistInt.set("Rhythm speed", swarm->dimensionalityMotif, 0, 16));
     desiredRhythmDistSlider->setPosition(x, y);
+    desiredRhythmDistSlider->setWidth(UIWidth, sliderRatio);
     desiredRhythmDistSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     motifComponents.push_back(desiredRhythmDistSlider);
     y+=desiredRhythmDistSlider->getHeight();
     
+    searchIntensitySlider = new ofxDatGuiSlider(searchIntensityInt.set("Search intensity", 1, 1, 100));
+    searchIntensitySlider->setPosition(x, y);
+    searchIntensitySlider->setWidth(UIWidth, sliderRatio);
+    searchIntensitySlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
+    motifComponents.push_back(searchIntensitySlider);
+    y+=searchIntensitySlider->getHeight();
     
-    
-    
-    //Drop down to choose between created phrases
+    //GUI setup of toggle and sliders.
+    selectMotifToggle = new ofxDatGuiToggle("Select motif from list", false);
+    selectMotifToggle->onToggleEvent(this, &SwarmGUI::onToggleEvent);
+    selectMotifToggle->setPosition(x, y);
+    selectMotifToggle->setWidth(UIWidth);
+    selectMotifToggle->setChecked(false);
+    motifComponents.push_back(selectMotifToggle);
+    y+=playingToggle->getHeight();
 
-
-    
-    saveNewMotif = new ofxDatGuiButton("Save current bar as new motif");
-    saveNewMotif->setPosition(x, y);
-    saveNewMotif->onButtonEvent(this, &SwarmGUI::onButtonEvent);
-    motifComponents.push_back(saveNewMotif);
-    y+=saveNewMotif->getHeight();
-    
-    restoreOriginalMotif = new ofxDatGuiButton("Restore original motif");
-    restoreOriginalMotif->setPosition(x, y);
-    restoreOriginalMotif->onButtonEvent(this, &SwarmGUI::onButtonEvent);
-    motifComponents.push_back(restoreOriginalMotif);
-    y+=restoreOriginalMotif->getHeight();
-   
+    currentMotifLabel = new ofxDatGuiLabel("");
+    currentMotifLabel->setPosition(x, y);
+    currentMotifLabel->setWidth(UIWidth);
+    motifComponents.push_back(currentMotifLabel);
     
     
     y+=50;
     
     
+    for (int i = 0; i < swarmComponents.size(); i++) {
+         if (i % 2 == 1) {
+        swarmComponents[i]->setBackgroundColor(ofColor(25, 47, 55));
+         } else {
+             swarmComponents[i]->setBackgroundColor(ofColor(35, 57, 65));
+         }
+    }
+    for (int i = 0; i < intervalPenalties.size(); i++) {
+        if (i % 2 == 1) {
+        intervalPenalties[i]->setBackgroundColor(ofColor(25, 47, 55));
+        } else {
+            intervalPenalties[i]->setBackgroundColor(ofColor(35, 57, 65));
+        }
+    }
+    
+    for (int i = 0; i < motifComponents.size(); i++) {
+        if (i % 2 == 0) {
+            motifComponents[i]->setBackgroundColor(ofColor(25, 47, 55));
+        } else {
+            motifComponents[i]->setBackgroundColor(ofColor(35, 57, 65));
+        }
+        }
+    
+    swarmLabel->setBackgroundColor(ofColor(48, 68, 74));
 }
 
 //--------------------------------------------------------------
@@ -167,14 +214,16 @@ void SwarmGUI::drawInterface() {
     for (int i = 0; i < swarmComponents.size(); i++) {
         swarmComponents[i]->draw();
     }
+
+    for (int i = 0; i < motifComponents.size(); i++) {
+        motifComponents[i]->draw();
+    }
     
     for (int i = 0; i < intervalPenalties.size(); i++) {
         intervalPenalties[i]->draw();
     }
     
-    for (int i = 0; i < motifComponents.size(); i++) {
-        motifComponents[i]->draw();
-    }
+
     
     
 }
@@ -201,6 +250,16 @@ void SwarmGUI::onToggleEvent(ofxDatGuiToggleEvent e) {
 
     }
     
+    //If selectMotifToggle is set to true, when clicking on the phrase list it will
+    //assign the phrase to the swarm's current motif.
+    if (e.target == selectMotifToggle && e.checked == true) {
+        assignNewPhrase = true;
+    }
+    
+    //Setting the selectMotifToggle to false will not set any phrase clicked on the list to the new motif.
+    if (e.target == selectMotifToggle && e.checked == false) {
+        assignNewPhrase = false;
+    }
 
     
 }
@@ -312,28 +371,12 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
         resetParticleRhythms();
     }
     
-    
-}
-
-
-//--------------------------------------------------------------
-
-void SwarmGUI::onButtonEvent(ofxDatGuiButtonEvent e) {
-    
-    if (e.target == saveNewMotif) {
-        
-        for (int i = 0; i < 16; i++) {
-            swarm->noteMotif[i] = swarm->best.indFreqs[i];
-        }
-    }
-    
-    if (e.target == restoreOriginalMotif) {
-        
-        for (int i = 0; i < 16; i++) {
-            swarm->noteMotif[i] = swarm->originalMotif[i];
-        }
+    if (e.target == searchIntensitySlider) {
+        swarm->numOfIterations = int(e.value/2.);
     }
 }
+
+
 //--------------------------------------------------------------
 
 void SwarmGUI::resetParticleIntervals() {
@@ -409,7 +452,7 @@ void SwarmGUI::resetParticleVelocity() {
 
 void SwarmGUI::displaySwarmParameters() {
     
-   
+   /*
     string sequence = "Note sequence: " + ofToString(swarm->best.indFreqs[0]) + ", " + ofToString(swarm->best.indFreqs[1]) + ", " + ofToString(swarm->best.indFreqs[2]) + ", " + ofToString(swarm->best.indFreqs[3]) + ofToString(swarm->best.indFreqs[4]) + ", "+ ofToString(swarm->best.indFreqs[5]) + ", " + ofToString(swarm->best.indFreqs[6]) + ", " + ofToString(swarm->best.indFreqs[7]) + ", " + ofToString(swarm->best.indFreqs[8]) + ", " + ofToString(swarm->best.indFreqs[9]) + ", " + ofToString(swarm->best.indFreqs[10]) + ", " + ofToString(swarm->best.indFreqs[11]) + ", " + ofToString(swarm->best.indFreqs[12]) + ", " + ofToString(swarm->best.indFreqs[13]) + ", " + ofToString(swarm->best.indFreqs[14]) + ", " + ofToString(swarm->best.indFreqs[15]) + ", ";
     ofDrawBitmapStringHighlight(sequence, x, y);
     
@@ -435,13 +478,11 @@ void SwarmGUI::displaySwarmParameters() {
     string rhythmText = "Rhythm fitness: " + ofToString(swarm->bestFitnessRhythm);
     ofDrawBitmapStringHighlight(rhythmText, x, y+125);
     
-    string originalMotif = "Original: " + ofToString(swarm->originalMotif[0]) + ", " + ofToString(swarm->originalMotif[1]) + ", " + ofToString(swarm->originalMotif[2]) + ", " + ofToString(swarm->originalMotif[3]);
     string currentMotif = "Current: " + ofToString(swarm->noteMotif[0]) + ", " + ofToString(swarm->noteMotif[1]) + ", " + ofToString(swarm->noteMotif[2]) + ", " + ofToString(swarm->noteMotif[3]) + ", " + ofToString(swarm->noteMotif[4]) + ", " + ofToString(swarm->noteMotif[5]) + ", " + ofToString(swarm->noteMotif[6]) + ", " + ofToString(swarm->noteMotif[7]) + ", " + ofToString(swarm->noteMotif[8]) + ", " + ofToString(swarm->noteMotif[9]) + ", " + ofToString(swarm->noteMotif[10]) + ", " + ofToString(swarm->noteMotif[11]) + ", " + ofToString(swarm->noteMotif[12]) + ", " + ofToString(swarm->noteMotif[13]) + ", " + ofToString(swarm->noteMotif[14]) + ", " + ofToString(swarm->noteMotif[15]) + ", ";
-    ofDrawBitmapStringHighlight(originalMotif, x, y+175);
     ofDrawBitmapStringHighlight(currentMotif, x, y+200);
 
     
 
-    
+    */
 }
 

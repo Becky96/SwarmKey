@@ -155,6 +155,7 @@ void Swarm::calculateKey(int start, int type) {
 void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, int alternateNotePlayhead) {
    
     
+    for (int i = 0; i < numOfIterations; i++) {
     fitness();
     checkPersonalBest();
     checkSwarmBest();
@@ -184,6 +185,7 @@ void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, in
     
     for (int i = 0; i < particles.size(); i++) {
         particles[i]->fitness = 0;
+    }
     }
     
     
@@ -1020,4 +1022,27 @@ void Swarm::updateParticleVelocity() {
         particles[i]->velocity = ofClamp(int(particles[i]->velocity + particles[i]->velocityVel), 1, maxVelocity);
     }
 }
+
+//--------------------------------------------------------------
+
+void Swarm::visualisation() {
+    
+    for (int i = 0; i < N; i++) {
+        int pX, pY;
+        for (int j = 0; j < 16; j++) {
+            pX += particles[i]->indFreqs[j] + (particles[i]->velocity);
+            pY += particles[i]->indFreqsVel[j] + (particles[i]->velocity);
+        }
+        
+        
+        pX = pX % 500;
+        pY = pY % 500;
+        cout << pX << endl;
+        cout << pY << endl;
+        ofDrawEllipse(vX  + (pX), vY+ (pY), 15, 15);
+        
+        
+    }
+}
+
 

@@ -32,7 +32,9 @@ void Phrase::setupPhrase(int _id, int _buttonX, int _buttonY) {
     //to then edit the notes.
     selectCell = new ofxDatGuiButton(phrase + " " + ofToString(id));
     selectCell->setPosition(buttonX, buttonY);
+    selectCell->setWidth(225);
     selectCell->onButtonEvent(this, &Phrase::onButtonEvent);
+    selectCell->setBackgroundColor(ofColor(25, 47, 55));
     
 
 }
@@ -73,30 +75,28 @@ void Phrase::checkGridPressed() {
         if (ofGetMouseX() > phraseCells[i]->x && ofGetMouseX() < phraseCells[i]->x+cellWidth && ofGetMouseY() > phraseCells[i]->y && ofGetMouseY() < phraseCells[i]->y+cellHeight) {
             
             
+            
             //If the cell is not already highlighted, it will become clicked and unhighlight any cells in the same column as it that are highlighted as there cannot be more than 1 note playing at 1 time in the phrase generation.
-            if (phraseCells[i]->highlighted == false) {
+            if (phraseCells[i]->highlighted == false && phraseCells[i]->changedOnce == false) {
                 
                 //Highlighting the selected cell
                 phraseCells[i]->highlighted = true;
+                
+                phraseCells[i]->changedOnce = true;
                 
                 //phraseCells[i]->row-1  (index in midi Note vector)
                 //phraseCells[i]->col-1 (index in phrase array)
                 
                 phraseList[phraseCells[i]->col-1] = phraseCells[i]->row-1;
                 
-                
-                
-                
-                cout << " " << endl;
-                for (int j = 0; j < 16; j++) {
-                    cout << phraseList[j] << ", ";
-                }
-                
+
                 //Looping through all other cells and checking whether they lie within the same column, and if they are not the cell that has been selected then they will be unselected if they currently are selected.
                 for (int j = 0; j < phraseCells.size(); j++) {
                     if (phraseCells[j]->col == phraseCells[i]->col && i != j) {
                         if (phraseCells[j]->highlighted == true) {
                             phraseCells[j]->highlighted = false;
+                            phraseCells[j]->changeColour();
+
                         }
                     }
                 }
@@ -104,10 +104,15 @@ void Phrase::checkGridPressed() {
             
                 
                 //Unselects the cell if it has been pressed and is currently selected.
-            } else if (phraseCells[i]->highlighted == true) {
+            } else if (phraseCells[i]->highlighted == true && phraseCells[i]->changedOnce == false) {
                 phraseCells[i]->highlighted = false;
+                phraseCells[i]->changedOnce = true;
                 
             }
+            
+            phraseCells[i]->changeColour();
+
+            
         
             
         }

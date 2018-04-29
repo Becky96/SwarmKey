@@ -13,23 +13,40 @@ void PhraseUI::setupPhraseUI() {
 
     addPhrase = new ofxDatGuiButton("Add new phrase");
     addPhrase->setPosition(x, y);
+    addPhrase->setWidth(buttonWidth, buttonWidth);
+    addPhrase->setLabelAlignment(ofxDatGuiAlignment::CENTER);
     addPhrase->onButtonEvent(this, &PhraseUI::onButtonEvent);
     phraseUIComponents.push_back(addPhrase);
-    y+=addPhrase->getHeight();
+    x+=addPhrase->getWidth()+37;
     
     playPhrase = new ofxDatGuiButton("Play selected phrase");
     playPhrase->setPosition(x, y);
+    playPhrase->setWidth(buttonWidth, buttonWidth*20);
+    playPhrase->setLabelAlignment(ofxDatGuiAlignment::CENTER);
     playPhrase->onButtonEvent(this, &PhraseUI::onButtonEvent);
     phraseUIComponents.push_back(playPhrase);
-    y+=playPhrase->getHeight();
+    x+=playPhrase->getWidth()+37;
     
     deletePhrase = new ofxDatGuiButton("Delete selected phrase");
     deletePhrase->setPosition(x, y);
+    deletePhrase->setWidth(buttonWidth, buttonWidth);
+    deletePhrase->setLabelAlignment(ofxDatGuiAlignment::CENTER);
     deletePhrase->onButtonEvent(this, &PhraseUI::onButtonEvent);
     phraseUIComponents.push_back(deletePhrase);
-    y+=deletePhrase->getHeight();
+    x+=deletePhrase->getWidth();
     
+    phraseListLabel = new ofxDatGuiLabel("Phrase List");
+    phraseListLabel->setPosition(listX, listY);
+    phraseListLabel->setWidth(buttonWidth, buttonWidth);
+    phraseListLabel->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+    phraseUIComponents.push_back(phraseListLabel);
+    listY+=phraseListLabel->getHeight();
     
+    for (int i = 0; i < phraseUIComponents.size()-1; i++) {
+        phraseUIComponents[i]->setBackgroundColor(ofColor(25, 47, 55));
+    }
+    
+    phraseListLabel->setBackgroundColor(ofColor(48, 68, 74));
 }
 
 
@@ -48,15 +65,23 @@ void PhraseUI::updatePhraseUI() {
 
 //Display phrase UI (add phrase)
 void PhraseUI::displayPhraseUI() {
-    for (int i = 0; i < phraseUIComponents.size(); i++) {
+
+    for (int i = 0; i < phraseUIComponents.size()-1; i++) {
         phraseUIComponents[i]->draw();
+    }
+    
+    if (phrases.size() >= 1) {
+        phraseUIComponents[3]->draw();
     }
     
     
     ofFill();
     ofSetColor(255);
+    
+    if (phrases.size() >= 1) {
     for (int i = currentKeyNotes.size()-1; i > -1; i--) {
         ofDrawBitmapString((currentKeyNotes[i]), textX, textY + (14*25) - (i * 25));
+    }
     }
     
 }
@@ -82,8 +107,6 @@ void PhraseUI::displaySelectedPhrase() {
             
             phraseChanged = true;
             
-            cout << "PHRASE IS CHANGED/NEW SELECTED" << endl;
-            
             for (int j = 0; j < 16; j++) {
                 swarmNoteIndexes[j] = (phrases[i]->phraseList[j]+17);
             }
@@ -108,7 +131,7 @@ void PhraseUI::displaySelectedPhrase() {
             
             for (int j = 0; j < 16; j++) {
 
-            ofDrawBitmapString(ofToString(currentMidiNotes[phrases[selectedPhrase]->phraseList[j]]), 600+(j*50), 500);
+           // ofDrawBitmapString(ofToString(currentMidiNotes[phrases[selectedPhrase]->phraseList[j]]), listX+(j*50), 450);
             currentPhrase[j] = currentMidiNotes[phrases[selectedPhrase]->phraseList[j]];
            //     swarmNoteIndexes[j] = phrases[selectedPhrase]->phraseList[j] + 17;
            //     phraseChanged = true;
@@ -324,8 +347,9 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
             phrases.erase(phrases.begin() + selectedPhrase);
             
             
-            listY = 700;
-            
+            listY = 300;
+            listY+=phraseListLabel->getHeight();
+
             id = 1;
             
             for (int i = 0; i < phrases.size(); i++) {

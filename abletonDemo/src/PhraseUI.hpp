@@ -22,10 +22,15 @@ class PhraseUI {
     public:
     
     int x = 800;
-    int y = 800;
+    int y = 230;
     
     int listX = 800;
-    int listY = 700;
+    int listY = 300;
+    
+    int textX = 1120;
+    int textY = 315;
+    
+    int buttonWidth = 225;
     
     int id = 1;
     
@@ -33,6 +38,7 @@ class PhraseUI {
     ofxDatGuiButton* addPhrase;
     ofxDatGuiButton* playPhrase;
     ofxDatGuiButton* deletePhrase;
+    ofxDatGuiLabel* phraseListLabel;
     
     void onButtonEvent(ofxDatGuiButtonEvent e);
 
@@ -91,8 +97,7 @@ class PhraseUI {
     
     
     void calculatePhraseKey(int keyType, int tonic);
-    int textX = 1150;
-    int textY = 712;
+
     
     
     

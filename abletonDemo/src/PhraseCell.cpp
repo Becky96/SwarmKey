@@ -16,6 +16,25 @@ void PhraseCell::setupCell(int _x, int _y, int _width, int _height, int _note, i
     row = _row;
     col = _col;
     
+    colour.set(25, 47, 55);
+    
+}
+
+void PhraseCell::changeColour() {
+ 
+    
+    if (highlighted) {
+        
+        
+        colour.set(255, 208, 11);
+        
+    } else {
+        
+        colour.set(25, 47, 55);
+        
+    }
+
+    
 }
 
 
@@ -23,26 +42,13 @@ void PhraseCell::displayCell() {
 
     //Outline of cell
     ofNoFill();
-    ofSetColor(0);
+    ofSetColor(255);
     ofDrawRectangle(x, y, width, height);
     
-    if (highlighted) {
-        
-        
-        
-        ofFill();
-        ofSetColor(255, 0, 0);
-        
-        
-    } else {
-        
-
-        
-        ofFill();
-        ofSetColor(255);
-        
-    }
-
+    
+    //Main colour of cell
+    ofFill();
+    ofSetColor(colour);
     ofDrawRectangle(x, y, width, height);
     
 }

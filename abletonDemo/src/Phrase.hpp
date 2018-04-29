@@ -34,8 +34,8 @@ public:
     int cellWidth = 25;
     int cellHeight = 25;
     
-    int x = 1200;
-    int y = 700;
+    int x = 1150;
+    int y = 300;
     
     int buttonX, buttonY;
     
