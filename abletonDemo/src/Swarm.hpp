@@ -148,7 +148,7 @@ public:
     int noteMotif[16] = {28, 30, 32, 30, 28, 30, 32, 30, 28, 30, 32, 30, 28, 30, 32, 30};
     int originalMotif[16];
     int rhythmMotif[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
-    int dimensionalityMotif = 0;
+    int dimensionalityMotif = 4;
     
     
     int chordPotential = 0;

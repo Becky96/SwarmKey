@@ -51,7 +51,6 @@ public:
     //Vector containing interface components for individual components of swarm.
     vector<ofxDatGuiComponent*> swarmComponents;
     ofxDatGuiLabel* swarmLabel;
-    ofxDatGuiToggle* playingToggle;                 //Toggle to play/stop swarm processes
     ofxDatGuiSlider* rhythmSlider;
     ofxDatGuiSlider* velocitySlider;
     ofxDatGuiSlider* octaveSlider;

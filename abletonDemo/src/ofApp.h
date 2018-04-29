@@ -125,4 +125,6 @@ class ofApp : public ofBaseApp{
     ofTrueTypeFont infoFont;
     
     
+    void displayCorrectInfo();
+    
 };

@@ -42,7 +42,7 @@ void ofApp::setup(){
     right->setupInterface();
     
     int x = 160;
-    int y = 75;
+    int y = 82;
     
     
     ////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ void ofApp::setup(){
     
 
     sectionFont.load("Verdana.ttf", 12);
-    infoFont.load("Verdana.ttf", 12);
+    infoFont.load("Verdana.ttf", 10);
     
     //Fonts for starting screen loaded at different sizes
     titleFont.load("Verdana.ttf", 96);
@@ -408,6 +408,8 @@ void ofApp::draw(){
 //        
    // } else {
     
+    displayCorrectInfo();
+    
     ofNoFill();
     ofSetColor(255);
     ofDrawRectangle(25, 175, 700, 600);
@@ -557,9 +559,8 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
         currentCount = 0;
         playHead = 0;
         changeRhythmInt = 0;
+ 
         
-        left->playingToggle->setChecked(true);
-        right->playingToggle->setChecked(true);
         swarms[1].readyToPlay = true;
         swarms[1].playFinalNote = false;
         swarms[1].notePlayhead = 0;
@@ -574,8 +575,7 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
         swarms[1].playFinalNote = true;
         swarms[2].playFinalNote = true;
         
-        left->playingToggle->setChecked(false);
-        right->playingToggle->setChecked(false);
+  
 
         
     }
@@ -726,10 +726,7 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
 }
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
- 
 
-    cout << "X: " << ofGetMouseX() << endl;
-    cout << "Y: " << ofGetMouseY() << endl;
 }
 
 //--------------------------------------------------------------
@@ -775,10 +772,13 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
     
     
-
+    cout << "X: " << ofGetMouseX() << endl;
+    cout << "Y: " << ofGetMouseY() << endl;
+    
+    
+    
     if (phraseUI->phrases.size() >= 1) {
 
         for (int i = 0; i < phraseUI->phrases[phraseUI->selectedPhrase]->phraseCells.size(); i++) {
@@ -790,6 +790,156 @@ void ofApp::mouseReleased(int x, int y, int button){
     
 }
 
+
+void ofApp::displayCorrectInfo() {
+    
+    ofSetColor(255);
+    int x = ofGetMouseX();
+    int y = ofGetMouseY();
+    
+    string info;
+    
+    //Global swarm controls info
+    if (x >= 25 && x <= 25+1550 && y >= 25 && y <= 25+125) {
+        info = "GLOBAL SWARM CONTROLS : These controls affect both swarms when altered.";
+    }
+    
+    //Play swarms info
+    if (x >= 160 && x <= (160+UIWidth) && y >= 82 && y<= (82+playSwarmsToggle->getHeight())) {
+        
+        info = "PLAY SWARMS : Use this button to start and stop playing both swarms at the same time. Make a phrase in the Phrase Area for the swarms to use as targets before playing the swarms.";
+        
+    }
+    
+    //Tempo info
+    if (x >= 510 && x <= (510+UIWidth) && y >= 82 && y<= (82+playSwarmsToggle->getHeight())) {
+        
+        info = "TEMPO : This slider alters the tempo of the composition.";
+        
+    }
+    
+    //Key type info
+    if (x >= 830 && x <= (830+UIWidth) && y >= 82 && y<= (82+playSwarmsToggle->getHeight())) {
+        
+        info = "KEY TYPE : Use this menu to alter the key type you want the swarms to compose in.";
+    }
+    
+    //Key tonic info
+    if (x >= 1150 && x <= (1150+UIWidth) && y >= 82 && y<= (82+playSwarmsToggle->getHeight())) {
+        
+        info = "KEY TONIC : Use this menu to alter the tonic of the key you want the swarms to compose in.";
+    }
+    
+    
+    //INDEPENDENT SWARM CONTROLS
+    
+    if (x >= 25 && x <= (25+700) && y >= 175 && y<= (175+600)) {
+        
+        info = "INDEPENDENT SWARM CONTROLS : These controls alter the individual swarms, with the left block altering the Left swarm and the right block altering the Right swarm.";
+    }
+    
+    
+    //Swarm Labels
+    //Left swarm
+    if (x >= 50 && x <= 50+300 && y >= 230 && y <= 256) {
+        
+        info = "LEFT SWARM : User interface panel for the Left swarmÕs composition controls.";
+    }
+    
+    //Right swarm
+    if (x >= 400 && x <= 700 && y >= 230 && y <= 256) {
+        
+        info = "RIGHT SWARM : User interface panel for the Right swarmÕs composition controls.";
+    }
+    
+    //Select Phrase
+    if (((x >= 50 && x <= 350) || (x >= 400 && x<= 700)) && (y >= 256 && y<= 282)) {
+            info = "SELECT PHRASE FROM LIST : Turn this toggle on, the circle will become highlighted when it is on, and press the phrase you wish to use as the input phrase for this swarm. Then press the toggle to deactivate this mechanism, \nand repeat this process whenever you would like to change the selected input phrase.";
+    }
+    
+    //Current Phrase Label
+    if (((x >= 50 && x <= 350) || (x >= 400 && x<= 700)) && (y >= 282 && y<= 308)) {
+        info = "CURRENT PHRASE : This is the current phrase that the swarm is using as its target.";
+    }
+    
+    //Phrase Distance
+    if (((x >= 50 && x <= 350) || (x >= 400 && x<= 700)) && (y >= 308 && y<= 334)) {
+        info = "PHRASE DISTANCE : This slider controls whether you want the swarm to locate the phrase exactly as you have entered it, or if you would like the swarm to search for variations of the selected phrase. A value of 0 means \nthat the swarm will try locate the exact phrase, whereas a value of 100 means that the swarm will find phrases largely dissimilar to the original input phrase. When the PHRASE DISTANCE value is larger than 0, the interval likelihoods that you have controlled will come into play, as the swarm will find variations of the phrase utilising the intervals you have chosen.";
+    }
+    
+    //Search Intensity
+    if (((x >= 50 && x <= 350) || (x >= 400 && x<= 700)) && (y >= 334 && y<= 360)) {
+        info = "SEARCH INTENSITY : This slider controls the intensity of the swarmÕs search towards the inputted phrase. If the preferred phrase distance is 0, and you would like the swarm to reach the exact inputted phrase quickly, \na higher search intensity means that swarm is more likely to find the exact phrase in a quicker time.";
+    }
+    
+    //Rhythm Speed
+    if (((x >= 50 && x <= 350) || (x >= 400 && x<= 700)) && (y >= 380 && y<= 406)) {
+      info = "RHYTHM SPEED : This slider controls the ÒspeedÓ of the rhythm. It is not equivalent to the global tempo slider, but instead decides how many notes to divide the bar of 4 beats into. A value of 1 means that the bar \ncontains 1 note, a semibreve or whole note. A value of 16 means that the bar is divided into 16 beats, which equates to 16 semiquavers per bar. Values in between 1 and 16 will create different rhythms composed of beats will values: 4, 2, 1, 1/2, and 1/4.";
+    }
+    
+    //Velocity Level
+    if (((x >= 50 && x <= 350) || (x >= 400 && x<= 700)) && (y >= 406 && y<= 432)) {
+        info = "VELOCITY LEVEL : This slider alters the velocity, (the strength of the notes pressed), of the swarm. A higher number equals a higher, or stronger, velocity.";
+    }
+    
+    //Octave Level
+    if (((x >= 50 && x <= 350) || (x >= 400 && x<= 700)) && (y >= 432 && y<= 458)) {
+        info = "OCTAVE LEVEL :  This slider determines what octave you would like the swarm to strive towards. At default this is placed at middle C (octave 4). When you change the octave level you want, the phrase selected \nfor the swarm to use as a target is transposed to octave level you have set.";
+    }
+    
+    //Chord Potential
+    if (((x >= 50 && x <= 350) || (x >= 400 && x<= 700)) && (y >= 458 && y<= 484)) {
+        info = "CHORD POTENTIAL : This slider determines the likelihood of the swarm playing a chord. A value of 100 means the swarm is 100% likely to play a chord. ";
+    }
+    
+    //Intervals
+    
+    if (((x >= 50 && x <= 350) || (x >= 400 && x<= 700)) && (y >= 504 && y<= 738)) {
+        info = "INTERVALS : These sliders determine what intervals you would like your swarm to target if the PHRASE DISTANCE is more than 0. A higher slider value means that the swarm will show preference to these intervals.";
+    }
+    
+    //PHRASE AREA
+    if (x >= 775 && x <= 1575 && y >= 175 && y <= 775) {
+        info = "PHRASE CONTROLS : This area allows you to create, edit, delete, and play your own phrases, which you can then set the swarm to use as ÔtargetsÕ in your composition. When you make a phrase that you wish to be \nused by the swarms, select the ÔSELECT PHRASE FROM LISTÕ option in the Independent Swarm Controls area, and click on the phrase you would like to use in the Phrase List.";
+    }
+    
+    //Add phrase
+    if (x >= 800 && x <= 1025 && y >= 230 && y <= 256) {
+        info = "ADD NEW PHRASE : Click to create a new phrase.";
+    }
+    
+    //Play phrase
+    if (x >= 1062 && x <= 1287 && y >= 230 && y <= 256) {
+        info = "PLAY SELECTED PHRASE : Click to hear what the currently selected phrase sounds likes.";
+    }
+    
+    //Delete phrase
+    if (x >= 1324 && x <= 1549 && y >= 230 && y <= 256) {
+        info = "DELETE SELECTED PHRASE : Click to delete the currently selected phrase.";
+    }
+    
+    //Phrase List
+    if (phraseUI->phrases.size() > 0) {
+        if (x >= 800 && x <= 1025 && y >= 300 && y <= 326) {
+            info = "PHRASE LIST : List of currently available phrases.";
+        }
+        
+        
+        //Grid area
+        if (x >= 1150 && x <= 1550 && y >= 300 && y <= 675) {
+            info = "PHRASE EDITOR : Press the grid to create notes for your phrase. The rows of the grid square represent the notes, and itÕs column of the grid represents itÕs time position in the phrase. There can only be one note playing \nat a time. If you do not enter any note in a column, a note will be selected at random to fill this time space in the phrase when played or used by the swarms.";
+        }
+    }
+    
+    
+    
+    infoFont.drawString(info, 50, 870);
+    
+  
+    
+   
+    
+}
 //--------------------------------------------------------------
 void ofApp::mouseEntered(int x, int y){
 

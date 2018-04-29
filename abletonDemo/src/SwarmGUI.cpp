@@ -20,18 +20,46 @@ void SwarmGUI::setupInterface() {
     swarmLabel->setLabelAlignment(ofxDatGuiAlignment::CENTER);
     swarmComponents.push_back(swarmLabel);
     y+=swarmLabel->getHeight();
-
     
     //GUI setup of toggle and sliders.
-    playingToggle = new ofxDatGuiToggle("Playing", false);
-    playingToggle->onToggleEvent(this, &SwarmGUI::onToggleEvent);
-    playingToggle->setPosition(x, y);
-    playingToggle->setWidth(UIWidth);
-    playingToggle->setChecked(false);
-    swarmComponents.push_back(playingToggle);
-    y+=playingToggle->getHeight();
+    selectMotifToggle = new ofxDatGuiToggle("Select phrase from list", false);
+    selectMotifToggle->onToggleEvent(this, &SwarmGUI::onToggleEvent);
+    selectMotifToggle->setPosition(x, y);
+    selectMotifToggle->setWidth(UIWidth);
+    selectMotifToggle->setChecked(false);
+    motifComponents.push_back(selectMotifToggle);
+    y+=selectMotifToggle->getHeight();
 
+    currentMotifLabel = new ofxDatGuiLabel("");
+    currentMotifLabel->setPosition(x, y);
+    currentMotifLabel->setWidth(UIWidth);
+    motifComponents.push_back(currentMotifLabel);
+    y+=currentMotifLabel->getHeight();
     
+    desiredNoteDistSlider = new ofxDatGuiSlider(desiredNoteDistInt.set("Phrase distance", 0, 0, 100));
+    desiredNoteDistSlider->setPosition(x, y);
+    desiredNoteDistSlider->setWidth(UIWidth, sliderRatio);
+    desiredNoteDistSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
+    motifComponents.push_back(desiredNoteDistSlider);
+    y+=desiredNoteDistSlider->getHeight();
+    
+    searchIntensitySlider = new ofxDatGuiSlider(searchIntensityInt.set("Search intensity", 1, 1, 100));
+    searchIntensitySlider->setPosition(x, y);
+    searchIntensitySlider->setWidth(UIWidth, sliderRatio);
+    searchIntensitySlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
+    motifComponents.push_back(searchIntensitySlider);
+    y+=searchIntensitySlider->getHeight();
+    
+    y+=20;
+    
+    desiredRhythmDistSlider = new ofxDatGuiSlider(desiredRhythmDistInt.set("Rhythm speed", swarm->dimensionalityMotif, 1, 16));
+    desiredRhythmDistSlider->setPosition(x, y);
+    desiredRhythmDistSlider->setWidth(UIWidth, sliderRatio);
+    desiredRhythmDistSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
+    motifComponents.push_back(desiredRhythmDistSlider);
+    y+=desiredRhythmDistSlider->getHeight();
+    
+
     velocitySlider = new ofxDatGuiSlider(velocityInt.set("Velocity Level", maxVelocity/2., 0, maxVelocity));
     velocitySlider->setPosition(x, y);
     velocitySlider->setWidth(UIWidth, sliderRatio);
@@ -52,6 +80,8 @@ void SwarmGUI::setupInterface() {
     chordSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
     swarmComponents.push_back(chordSlider);
     y+=chordSlider->getHeight();
+    
+    y+=20;
     
     //Interval penalties for specific swarm
     //First
@@ -119,46 +149,11 @@ void SwarmGUI::setupInterface() {
     intervalPenalties.push_back(elsePen);
     y+=elsePen->getHeight();
 
-    y+=20;
     
     
-    desiredNoteDistSlider = new ofxDatGuiSlider(desiredNoteDistInt.set("Phrase distance", 0, 0, 100));
-    desiredNoteDistSlider->setPosition(x, y);
-    desiredNoteDistSlider->setWidth(UIWidth, sliderRatio);
-    desiredNoteDistSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
-    motifComponents.push_back(desiredNoteDistSlider);
-    y+=desiredNoteDistSlider->getHeight();
-    
-    desiredRhythmDistSlider = new ofxDatGuiSlider(desiredRhythmDistInt.set("Rhythm speed", swarm->dimensionalityMotif, 0, 16));
-    desiredRhythmDistSlider->setPosition(x, y);
-    desiredRhythmDistSlider->setWidth(UIWidth, sliderRatio);
-    desiredRhythmDistSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
-    motifComponents.push_back(desiredRhythmDistSlider);
-    y+=desiredRhythmDistSlider->getHeight();
-    
-    searchIntensitySlider = new ofxDatGuiSlider(searchIntensityInt.set("Search intensity", 1, 1, 100));
-    searchIntensitySlider->setPosition(x, y);
-    searchIntensitySlider->setWidth(UIWidth, sliderRatio);
-    searchIntensitySlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);
-    motifComponents.push_back(searchIntensitySlider);
-    y+=searchIntensitySlider->getHeight();
-    
-    //GUI setup of toggle and sliders.
-    selectMotifToggle = new ofxDatGuiToggle("Select motif from list", false);
-    selectMotifToggle->onToggleEvent(this, &SwarmGUI::onToggleEvent);
-    selectMotifToggle->setPosition(x, y);
-    selectMotifToggle->setWidth(UIWidth);
-    selectMotifToggle->setChecked(false);
-    motifComponents.push_back(selectMotifToggle);
-    y+=playingToggle->getHeight();
-
-    currentMotifLabel = new ofxDatGuiLabel("");
-    currentMotifLabel->setPosition(x, y);
-    currentMotifLabel->setWidth(UIWidth);
-    motifComponents.push_back(currentMotifLabel);
     
     
-    y+=50;
+   
     
     
     for (int i = 0; i < swarmComponents.size(); i++) {
@@ -211,12 +206,12 @@ void SwarmGUI::updateInterface() {
 void SwarmGUI::drawInterface() {
     
     
-    for (int i = 0; i < swarmComponents.size(); i++) {
-        swarmComponents[i]->draw();
-    }
-
     for (int i = 0; i < motifComponents.size(); i++) {
         motifComponents[i]->draw();
+    }
+    
+    for (int i = 0; i < swarmComponents.size(); i++) {
+        swarmComponents[i]->draw();
     }
     
     for (int i = 0; i < intervalPenalties.size(); i++) {
@@ -232,23 +227,7 @@ void SwarmGUI::drawInterface() {
 
 void SwarmGUI::onToggleEvent(ofxDatGuiToggleEvent e) {
 
-    //Set swarm to play.
-    if (e.target == playingToggle && e.checked == true) {
-        
-        swarm->readyToPlay = true;
-        swarm->playFinalNote = false;
-        swarm->notePlayhead = 0;
-        cout << swarm->play << endl;
-    }
-    
-    //Set swarm to stop playing.
-    if (e.target == playingToggle && e.checked == false) {
-        swarm->playFinalNote = true;
-        //swarm->play = false;
-        cout << swarm->play << endl;
-        cout << swarm->tonic << endl;
 
-    }
     
     //If selectMotifToggle is set to true, when clicking on the phrase list it will
     //assign the phrase to the swarm's current motif.
@@ -440,9 +419,9 @@ void SwarmGUI::resetParticleRhythmVelocity() {
 void SwarmGUI::resetParticleVelocity() {
     
     for (int i = 0; i < swarm->particles.size(); i++) {
-        swarm->particles[i]->velocityVel = ofRandom(-0.75, 0.75);
+        swarm->particles[i]->velocityVel = ofRandom(-2, 2);
         swarm->particles[i]->bestParticleVelocity = swarm->particles[i]->velocity;
-        swarm->particles[i]->bestParticleVelocityFitness = 9999;
+        swarm->particles[i]->bestParticleVelocityFitness = 9999999;
     }
     
     swarm->bestVelocityFitness = 99999;
