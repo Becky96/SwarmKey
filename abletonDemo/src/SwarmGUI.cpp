@@ -424,7 +424,7 @@ void SwarmGUI::resetParticleVelocity() {
         swarm->particles[i]->bestParticleVelocityFitness = 9999999;
     }
     
-    swarm->bestVelocityFitness = 99999;
+    swarm->bestVelocityFitness = 999999;
 }
 
 //--------------------------------------------------------------

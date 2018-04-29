@@ -145,7 +145,7 @@ public:
     int targetDimensionality;
     
     //Note motif of continuous tonic of whatever key currently in.
-    int noteMotif[16] = {28, 30, 32, 30, 28, 30, 32, 30, 28, 30, 32, 30, 28, 30, 32, 30};
+    int noteMotif[16] = {21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21};
     int originalMotif[16];
     int rhythmMotif[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
     int dimensionalityMotif = 4;

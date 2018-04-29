@@ -30,7 +30,7 @@ public:
     
 
     
-    int start = int(ofRandom(29, 36));
+    int start = int(ofRandom(17, 25));
     
     int fitness;
     int bestFit = 200000;

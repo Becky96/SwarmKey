@@ -508,7 +508,7 @@ void ofApp::draw(){
         
         //RHYTHM AND NOTE SEQUENCES//
         //Determine whether to change rhythm sequences
-        if (changeRhythm == true && changeRhythmInt % 2 == 0) {
+        if (changeRhythm == true && changeRhythmInt % 1 == 0) {
 
             
             if (swarms[2].play == true) {
