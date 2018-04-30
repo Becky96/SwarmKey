@@ -19,17 +19,20 @@ void PhraseUI::setupPhraseUI() {
     phraseUIComponents.push_back(addPhrase);
     x+=addPhrase->getWidth()+37;
     
+    
+    x=1150;
+    
     playPhrase = new ofxDatGuiButton("Play selected phrase");
-    playPhrase->setPosition(x, y);
-    playPhrase->setWidth(buttonWidth, buttonWidth*20);
+    playPhrase->setPosition(x, 700);
+    playPhrase->setWidth(buttonWidth-50, buttonWidth-50);
     playPhrase->setLabelAlignment(ofxDatGuiAlignment::CENTER);
     playPhrase->onButtonEvent(this, &PhraseUI::onButtonEvent);
     phraseUIComponents.push_back(playPhrase);
     x+=playPhrase->getWidth()+37;
     
     deletePhrase = new ofxDatGuiButton("Delete selected phrase");
-    deletePhrase->setPosition(x, y);
-    deletePhrase->setWidth(buttonWidth, buttonWidth);
+    deletePhrase->setPosition(x, 700);
+    deletePhrase->setWidth(buttonWidth-50, buttonWidth-50);
     deletePhrase->setLabelAlignment(ofxDatGuiAlignment::CENTER);
     deletePhrase->onButtonEvent(this, &PhraseUI::onButtonEvent);
     phraseUIComponents.push_back(deletePhrase);
@@ -46,7 +49,7 @@ void PhraseUI::setupPhraseUI() {
         phraseUIComponents[i]->setBackgroundColor(ofColor(25, 47, 55));
     }
     
-    phraseListLabel->setBackgroundColor(ofColor(48, 68, 74));
+    phraseListLabel->setBackgroundColor(ofColor(91, 125, 123));
 }
 
 
@@ -66,12 +69,14 @@ void PhraseUI::updatePhraseUI() {
 //Display phrase UI (add phrase)
 void PhraseUI::displayPhraseUI() {
 
-    for (int i = 0; i < phraseUIComponents.size()-1; i++) {
-        phraseUIComponents[i]->draw();
-    }
+
+        phraseUIComponents[0]->draw();
+    
     
     if (phrases.size() >= 1) {
-        phraseUIComponents[3]->draw();
+        for (int i = 1; i < phraseUIComponents.size(); i++) {
+            phraseUIComponents[i]->draw();
+        }
     }
     
     
@@ -253,17 +258,6 @@ void PhraseUI::calculatePhraseKey(int keyType, int tonic) {
         
     }
 
-    
-    
-    
-    for (int i = 0; i < currentKeyNotes.size(); i++) {
-        cout << currentKeyNotes[i] << ", ";
-    }
-    
-    for (int i = 0; i < currentMidiNotes.size(); i++) {
-        cout << currentMidiNotes[i] << ", ";
-    }
-    
 
     
 }
@@ -284,12 +278,10 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
             
             //Setting newly created phrase displayGrid boolean to true
             if (i == selectedPhrase) {
-                cout << "selected" << endl;
                 phrases[i]->displayGrid = true;
                 phrases[i]->selectCell->setStripeColor(255);
                 //Setting all other displayGrid booleans to false apart from the currently selected.
             } else {
-                cout << "not selected" << endl;
                 phrases[i]->displayGrid = false;
                 phrases[i]->selectCell->setStripeColor(0);
             }
@@ -312,14 +304,8 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
         
         //Delete button functionality is only used if there is more than 1 phrase currently active.
         if (phrases.size() >= 1) {
-            cout << "phrase list size: " << phrases.size() << endl;
-            cout << "selected: " << selectedPhrase << endl;
-            
-            
-            //listY-=phrases[selectedPhrase]->selectCell->getHeight();
-            
-            
-            
+
+
 
             //Set phrase's to be deleted 'displayGrid' to false so previous functions do not try to display it.
             phrases[selectedPhrase]->displayGrid = false;
@@ -347,15 +333,21 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
             phrases.erase(phrases.begin() + selectedPhrase);
             
             
+            
+            //Reset the y coordinate of the buttons to the top of the list and reposition them
+            //without the phrase that has now been deleted.
             listY = 300;
             listY+=phraseListLabel->getHeight();
 
+            
+            //Resetting phrase IDs and positions.
             id = 1;
             
             for (int i = 0; i < phrases.size(); i++) {
                 
                 phrases[i]->selectCell->setPosition(listX, listY);
                 listY+=phrases[i]->selectCell->getHeight();
+                phrases[i]->prevId = phrases[i]->id;
                 phrases[i]->id = id;
                 phrases[i]->selectCell->setLabel("phrase " + ofToString(id));
                
@@ -363,8 +355,13 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
             }
             
             if (phrases.size() >= 1) {
-            selectedPhrase = phrases[phrases.size()-1]->id-1;
+                selectedPhrase = phrases[phrases.size()-1]->id-1;
             }
+            
+            
+            //ResetPhraseIds signals to ofApp that if the swarms need to check if there selected phrase's id has changed or if it has been deleted.
+            resetPhraseIds = true;
+
 
         }
         

@@ -24,16 +24,10 @@ void Particle::setupParticle() {
     for (int i = 1; i < 16; i++) {
         indFreqs[i] = start+int(ofRandom(0, 8));
         bestIndFreqs[i] = start+int(ofRandom(0, 8));
-        indFreqsVel[i] = ofRandom(-2, 2);
+        indFreqsVel[i] = ofRandom(-3, 3);
     }
 
     
-    
-
-    
-    for (int i = 0; i < 16; i++) {
-        compareBestRhythm.push_back(0);
-    }
     
     
     

@@ -42,8 +42,30 @@ void Swarm::setup(int _channel) {
 
     }
     
-    //bestRhythm = *new Particle();
+    bestRhythm = *new Particle();
     bestRhythm.setupParticle();
+    
+    for (int i = 0; i < 16; i++) {
+        bestRhythm.hits[i] = 0;
+    }
+    
+    bestRhythm.hits[0] = 1;
+    bestRhythm.hits[4] = 1;
+    bestRhythm.hits[8] = 1;
+    bestRhythm.hits[12] = 1;
+    
+    bestRhythm.rhythm.clear();
+    bestRhythm.rhythm.push_back(1);
+    bestRhythm.rhythm.push_back(1);
+    bestRhythm.rhythm.push_back(1);
+    bestRhythm.rhythm.push_back(1);
+    
+    bestRhythm.dimensionality = 4;
+    bestRhythm.bestDimensionality = 4;
+    
+    bestRhythm.bestRhythm = bestRhythm.rhythm;
+    
+    bestFitnessRhythm = 0;
     
     //Learning factors
     noteC1 = noteCon * (4.1/2);
@@ -64,7 +86,7 @@ void Swarm::setup(int _channel) {
     }
 
     
-
+ 
     
 }
 //--------------------------------------------------------------
@@ -94,14 +116,6 @@ void Swarm::inputMotif(int nMotif[16]) {
 
     }
 
-    
-    cout << "Octave of note: " << noteMotif[0] << "is: " << noteMotifOctaves[0] << endl;
-    cout << "Octave of note: " << noteMotif[1] << "is: " << noteMotifOctaves[1] << endl;
-    cout << "Octave of note: " << noteMotif[2] << "is: " << noteMotifOctaves[2] << endl;
-    cout << "Octave of note: " << noteMotif[3] << "is: " << noteMotifOctaves[3] << endl;
-    
-    //distMotifOctave = chosenOctave - noteMotifOctaves[0];
-    cout << "octave distance: " << distMotifOctave << endl;
 }
 
 
@@ -141,12 +155,7 @@ void Swarm::calculateKey(int start, int type) {
         }
         
     }
-    
-    
-    
-    for (int i = 0; i < availableNotes.size(); i++) {
-        cout << i << ": " << availableNotes[i] << endl;
-    }
+
 
 }
 
@@ -217,7 +226,6 @@ void Swarm::harmonicIntervalFitness(Swarm *alternateSwarm, int rhythmPlayhead, i
             
                 if (alternateSwarm->bestRhythm.hits[j] == 1) {
                 
-                    //cout << "CALCULATE INERVAL" << endl;
                     //Calculate absolute difference
                     int interval = abs(alternateSwarm->best.indFreqs[tempAlternateNotePlayhead]-particles[i]->indFreqs[tempNotePlayhead]);
                     
@@ -640,7 +648,7 @@ void Swarm::disturb() {
             
             for (int j = 0; j < 16; j++) {
 
-                particles[i]->indFreqs[j] = int(ofRandom(0, availableNotes.size()));
+                particles[i]->indFreqs[j] = int(ofRandom(21-8, 21+8));
                 particles[i]->indFreqsVel[j] = ofRandom(-2, 2);
                 
             }
@@ -1024,25 +1032,5 @@ void Swarm::updateParticleVelocity() {
 }
 
 //--------------------------------------------------------------
-
-void Swarm::visualisation() {
-    
-    for (int i = 0; i < N; i++) {
-        int pX, pY;
-        for (int j = 0; j < 16; j++) {
-            pX += particles[i]->indFreqs[j] + (particles[i]->velocity);
-            pY += particles[i]->indFreqsVel[j] + (particles[i]->velocity);
-        }
-        
-        
-        pX = pX % 500;
-        pY = pY % 500;
-        cout << pX << endl;
-        cout << pY << endl;
-        ofDrawEllipse(vX  + (pX), vY+ (pY), 15, 15);
-        
-        
-    }
-}
 
 

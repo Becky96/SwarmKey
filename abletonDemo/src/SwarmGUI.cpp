@@ -180,6 +180,8 @@ void SwarmGUI::setupInterface() {
         }
     
     swarmLabel->setBackgroundColor(ofColor(48, 68, 74));
+    selectMotifToggle->setBackgroundColor(ofColor(91, 125, 123));
+    currentMotifLabel->setBackgroundColor(ofColor(91, 125, 123));
 }
 
 //--------------------------------------------------------------
@@ -351,7 +353,7 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     }
     
     if (e.target == searchIntensitySlider) {
-        swarm->numOfIterations = int(e.value/2.);
+        swarm->numOfIterations = int(e.value)*2;
     }
 }
 
@@ -428,40 +430,4 @@ void SwarmGUI::resetParticleVelocity() {
 }
 
 //--------------------------------------------------------------
-
-void SwarmGUI::displaySwarmParameters() {
-    
-   /*
-    string sequence = "Note sequence: " + ofToString(swarm->best.indFreqs[0]) + ", " + ofToString(swarm->best.indFreqs[1]) + ", " + ofToString(swarm->best.indFreqs[2]) + ", " + ofToString(swarm->best.indFreqs[3]) + ofToString(swarm->best.indFreqs[4]) + ", "+ ofToString(swarm->best.indFreqs[5]) + ", " + ofToString(swarm->best.indFreqs[6]) + ", " + ofToString(swarm->best.indFreqs[7]) + ", " + ofToString(swarm->best.indFreqs[8]) + ", " + ofToString(swarm->best.indFreqs[9]) + ", " + ofToString(swarm->best.indFreqs[10]) + ", " + ofToString(swarm->best.indFreqs[11]) + ", " + ofToString(swarm->best.indFreqs[12]) + ", " + ofToString(swarm->best.indFreqs[13]) + ", " + ofToString(swarm->best.indFreqs[14]) + ", " + ofToString(swarm->best.indFreqs[15]) + ", ";
-    ofDrawBitmapStringHighlight(sequence, x, y);
-    
-    sequence = "MIDI equivalent: " + ofToString(swarm->availableNotes[swarm->best.indFreqs[0]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[1]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[2]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[3]]) + ofToString(swarm->availableNotes[swarm->best.indFreqs[4]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[5]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[6]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[7]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[8]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[9]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[10]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[11]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[12]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[13]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[14]]) + ", " + ofToString(swarm->availableNotes[swarm->best.indFreqs[15]]) + ", ";
-    ofDrawBitmapStringHighlight(sequence, x, y+25);
-    
-    
-    
-    string bestFit = "Best note fitness currently: " + ofToString(swarm->bestFitness);
-    ofDrawBitmapStringHighlight(bestFit, x, y+50);
-    
-    
-    
-    string rhythmSequence = "Sequence: " + ofToString(swarm->bestRhythm.rhythm);
-    string rhythmBest = "Dimensionality: " + ofToString(swarm->bestRhythm.dimensionality);
-    
-    ofDrawBitmapStringHighlight(rhythmSequence, x, y+75);
-    ofDrawBitmapStringHighlight(rhythmBest, x, y+100);
-    
-    string velocityText = "Velocity: " + ofToString(swarm->bestParticleSwarmVelocity);
-    ofDrawBitmapStringHighlight(velocityText, x, y+150);
-    
-    string rhythmText = "Rhythm fitness: " + ofToString(swarm->bestFitnessRhythm);
-    ofDrawBitmapStringHighlight(rhythmText, x, y+125);
-    
-    string currentMotif = "Current: " + ofToString(swarm->noteMotif[0]) + ", " + ofToString(swarm->noteMotif[1]) + ", " + ofToString(swarm->noteMotif[2]) + ", " + ofToString(swarm->noteMotif[3]) + ", " + ofToString(swarm->noteMotif[4]) + ", " + ofToString(swarm->noteMotif[5]) + ", " + ofToString(swarm->noteMotif[6]) + ", " + ofToString(swarm->noteMotif[7]) + ", " + ofToString(swarm->noteMotif[8]) + ", " + ofToString(swarm->noteMotif[9]) + ", " + ofToString(swarm->noteMotif[10]) + ", " + ofToString(swarm->noteMotif[11]) + ", " + ofToString(swarm->noteMotif[12]) + ", " + ofToString(swarm->noteMotif[13]) + ", " + ofToString(swarm->noteMotif[14]) + ", " + ofToString(swarm->noteMotif[15]) + ", ";
-    ofDrawBitmapStringHighlight(currentMotif, x, y+200);
-
-    
-
-    */
-}
 

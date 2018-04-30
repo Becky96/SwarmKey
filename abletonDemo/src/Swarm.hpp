@@ -56,7 +56,7 @@ public:
     
     //Algoirthm variables
     vector<Particle*> particles;
-    int N = 25;                 //Number of particles
+    int N = 75;                 //Number of particles
     float noteCon = 0.7984;         //Constriction factor
     float noteC1, noteC2;               //Learning rates
     float r1, r2;               //Stochastic elements
@@ -180,6 +180,9 @@ public:
     
     void visualisation();
     float vX = 800, vY = 300;
+    
+    
+    int phraseId;
 };
 
 #endif /* Swarm_hpp */

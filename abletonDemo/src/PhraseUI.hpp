@@ -109,6 +109,8 @@ class PhraseUI {
     
     bool phraseChanged = false;
     
+    bool resetPhraseIds = false;
+    
     vector<int> currentPhrase = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
 };
 

@@ -49,7 +49,7 @@ public:
     
     vector<float> compareRhythm;
     vector<float> compareRhythmVels;
-    vector<float> compareBestRhythm;
+
     
     float validDurations[5] = {4, 2, 1, 0.5, 0.25};
     
@@ -75,8 +75,7 @@ public:
     float velocityVel = ofRandom(-0.5, 0.5);      //Rate to accelerate particle's velocity
     int bestParticleVelocityFitness = 999;                       //Particle's personal best velocity
     int bestParticleVelocity;
-    
-   // int bestNeighbour[4];
+ 
     
     int maxVelocity = 120;
     

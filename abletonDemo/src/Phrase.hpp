@@ -52,6 +52,8 @@ public:
     
    vector<int> phraseList = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
     
+    int prevId;
+    
 };
 
 #endif /* Phrase_hpp */

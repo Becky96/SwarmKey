@@ -18,11 +18,7 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
 
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
 		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
 		void mouseEntered(int x, int y);
 		void mouseExited(int x, int y);
@@ -36,7 +32,12 @@ class ofApp : public ofBaseApp{
 
 
 
+    void loadFonts();           //Loading fonts required for app text.
     void sendMIDI();
+    void displayIntroScreen();      //Introducton screen contents
+    void displayAreaSegments();     //Displaying line segments for different screen areas.
+    void checkPhraseDeleted();
+    void checkPhraseChanged();
     
     int sampleRate;
     int bufferSize;
@@ -44,34 +45,51 @@ class ofApp : public ofBaseApp{
     Swarm swarms[SWARM_NUM];
     Swarm swarmPort;
     
+    
     SwarmGUI * left;
     SwarmGUI * right;
 
+    //UI COMPONENTS
     vector<ofxDatGuiComponent*> globalSwarmComponents;
-    ofxDatGuiToggle* playSwarmsToggle;
+    ofxDatGui* gui;
+    void setupUI();
+    void onToggleEvent(ofxDatGuiToggleEvent e);
+    void onSliderEvent(ofxDatGuiSliderEvent e);
+    void onDropdownEvent(ofxDatGuiDropdownEvent e);
     
-    //Tempo variables
-    float tempo = 4.;
-    ofxDatGuiSlider* tempoSlider;
-    ofParameter<int> tempoInt;
-    
-    
+    //KEY TYPES
     //User dropdown menu for selecting key type
     vector<string> types = {"Major", "Minor"};
     ofxDatGuiDropdown* keyTypes;
     int getKeyType = 1;
     
+    
+    //KEY TONICS
     //User dropdown menu for selecting key tonic
     vector<string> options = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     ofxDatGuiDropdown* key;
     int keyNum = 60;
+
     
     
+    int UIWidth = 300;                  //Width of UI buttons
+    float sliderRatio = .45;            //Slider width
+    
+    ofxDatGuiToggle* playSwarmsToggle;
+    
+    //TEMPO VARIABLES
+    float tempo = 4.;
+    ofxDatGuiSlider* tempoSlider;
+    ofParameter<int> tempoInt;
+    
+    
+    
+    
+    //TIMER VARIABLES
     //Oscillator used to time the composition based upon the rhythms of the swarms
     maxiOsc timer;
     int currentCount, lastCount;
-    int playHead = 0;
-    
+    int rhythmPlayHead = 0;
     
     
     bool changeNotesLeft = true;
@@ -82,11 +100,7 @@ class ofApp : public ofBaseApp{
     bool noteChangeLeft = false;
     bool noteChangeRight = false;
 
-    void onToggleEvent(ofxDatGuiToggleEvent e);
-    void onSliderEvent(ofxDatGuiSliderEvent e);
-    void onDropdownEvent(ofxDatGuiDropdownEvent e);
-    
-    ofxDatGui* gui;
+
 
     float vel = 3;
 
@@ -103,28 +117,31 @@ class ofApp : public ofBaseApp{
     bool calculateChordRight = false;
     
     
-    //Temporary variable for recording with Disklavier 
     int maxVelocity = 120;
    
     
     
     //PHRASE USER INTERFACE
     PhraseUI * phraseUI;
-    
-    void playCurrentPhrase();
-    int playHeadPhrase = 0;
+    void playCurrentPhrase();               //Activated when 'Play Selected Phrase' button is pressed.
+    int playHeadPhrase = 0;                 //Playhead for MIDI note sending.
 
     
-    //WELCOME SCREEN
-    bool welcomePage = true;
-    
-    int UIWidth = 300;
-    float sliderRatio = .45;
-    
-    ofTrueTypeFont sectionFont;
-    ofTrueTypeFont infoFont;
+
     
     
-    void displayCorrectInfo();
+    //INFORMATION AREA FUNCTIONALITY
+    void displayInfoAreaText();
+    ofTrueTypeFont infoFont;                //Font for information area texr
     
+    
+    //APP LAYOUT FUNCTIONALITY
+    void displaySections();
+    ofTrueTypeFont sectionFont;             //Font for section titles
+
+
+    
+    //Introduction screen
+    void introductionScreen();
+    bool introScreen = true;
 };

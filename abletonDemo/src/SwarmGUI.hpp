@@ -45,7 +45,6 @@ public:
     void resetParticleIntervalVelocity();
     void resetParticleRhythmVelocity();
     void resetParticleVelocity();
-    void displaySwarmParameters();
     
 
     //Vector containing interface components for individual components of swarm.
@@ -107,6 +106,9 @@ public:
     int UIWidth = 300;
     float sliderRatio = .45;
     
+    int phraseId;
+    
+    bool phraseIdChanged = false;
 };
 
 #endif /* SwarmGUI_hpp */
