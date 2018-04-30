@@ -1,58 +1,8 @@
 #include "ofApp.h"
 
-//--------------------------------------------------------------
-void ofApp::setup(){
-
-    
-    /////MISCELLANEOUS/////
-    gui->setAssetPath("");   //Assigning correct path for ofxDatGui addon to assets folder.
-    ofBackground(2, 20, 26); //Background of program
-    
-    
-    //MIDI PORT SETUP//
-    //Setting up MIDI port for swarms to send to Ableton to trigger MIDI notes.
-    for (int i = 1; i < SWARM_NUM+1; i++) {
-        
-        swarms[i].openVirtualPort("Swarm");
-        swarms[i].setup(i);
-        
-    }
-    
-    //INDIVIDUAL SWARM INTERFACES//
-    left = new SwarmGUI(1, 50, 230, &swarms[1], "Left Swarm");              //Left SwarmGUI controls swarms[1]
-    right = new SwarmGUI(2, 400, 230, &swarms[2], "Right Swarm");           //Right SwarmGUI controls swarms[2]
-    
-    
-    //Set up of individual interfaces for swarms.
-    left->setupInterface();
-    right->setupInterface();
-    
-
-    
-    //GLOBAL INTERFACE//
-    setupUI();
-    
-    //PHRASE UI//
-    phraseUI = new PhraseUI();
-    phraseUI->setupPhraseUI();
-    phraseUI->calculatePhraseKey(1, 60);            //Calculate phrase input/output based on the current key
-    
-    
-    //FONTS//
-    loadFonts();                                    //Loading fonts required for program
-    
-
-    
-    //AUDIO//
-    //Sample and buffer size required for outputting sound and using ofxMaxim oscillator for timing.
-    sampleRate = 44100;
-    bufferSize = 1025;
-    ofxMaxiSettings::setup(sampleRate, 2, bufferSize);
-    ofSoundStreamSetup(2,0, this, maxiSettings::sampleRate, bufferSize, 4);
-}
 
 //--------------------------------------------------------------
-
+/*Loading required fonts for introduction screen and main program*/
 void ofApp::loadFonts() {
     
     //Fonts for main page
@@ -69,22 +19,7 @@ void ofApp::loadFonts() {
 }
 
 //--------------------------------------------------------------
-void ofApp::update(){
-
-    //Updating global swarm user interface components
-    for (int i = 0; i < globalSwarmComponents.size(); i++) {
-        globalSwarmComponents[i]->update();
-    }
-   
-    
-    //Updating individual swarm user interface components
-    left->updateInterface();
-    right->updateInterface();
-
-    phraseUI->updatePhraseUI();
-}
-//--------------------------------------------------------------
-
+/*Setup of global UI.*/
 void ofApp::setupUI() {
     
     //GLOBAL USER INTERFACE//
@@ -101,10 +36,12 @@ void ofApp::setupUI() {
     playSwarmsToggle->setChecked(false);                            //Set toggle to false when loaded as default
     globalSwarmComponents.push_back(playSwarmsToggle);
     
+    
     //Swarm global controls (controlling both swarms)
     tempoSlider = new ofxDatGuiSlider(tempoInt.set("Tempo", 240, 1, 480));
     tempoSlider->onSliderEvent(this, &ofApp::onSliderEvent);
     globalSwarmComponents.push_back(tempoSlider);
+    
     
     keyTypes = new ofxDatGuiDropdown("Select key type", types);
     keyTypes->onDropdownEvent(this, &ofApp::onDropdownEvent);
@@ -113,7 +50,7 @@ void ofApp::setupUI() {
     keyTypes->getChildAt(0)->setBackgroundColor(ofColor(25, 47, 55));
     keyTypes->getChildAt(1)->setBackgroundColor(ofColor(25, 47, 55));
     globalSwarmComponents.push_back(keyTypes);              //Add to globalSwarmComponents vector
-
+    
     
     key = new ofxDatGuiDropdown("Select key", options);
     key->onDropdownEvent(this, &ofApp::onDropdownEvent);
@@ -122,7 +59,6 @@ void ofApp::setupUI() {
         key->getChildAt(i)->setBackgroundColor(ofColor(25, 47, 55));
     }
     globalSwarmComponents.push_back(key);                   //Add to globalSwarmComponents vector
-
     
     
     //Set all UI colours to same colour and set position, incrememting 'x' by height of UI width to create horizontal layout
@@ -132,67 +68,139 @@ void ofApp::setupUI() {
         x+=globalSwarmComponents[i]->getWidth()+50;
     }
     
+    
+    //Setting playSwarmsToggle to different colour than the other UI elements in order to provide emphasis on the element.
     playSwarmsToggle->setBackgroundColors(ofColor(255), ofColor(180, 235, 255), ofColor(180, 235, 255));
     playSwarmsToggle->setLabelColor(ofColor(25, 47, 55));
     playSwarmsToggle->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-
+    
 }
 
 //--------------------------------------------------------------
-/*Function playCurrentPhrase() is called when phraseUI object's 'Play Selected Phrase'. The MIDI notes of
- the currently selected grid are sent using Swarm 1's port and channel to Ableton to play the phrase so 
- that the user is able to understand exactly what their phrase sounds like. 
- The rhythm of the phrase is played simply as 16 1/4 notes. */
-void ofApp::playCurrentPhrase() {
+/*All setup of program.*/
+void ofApp::setup(){
+
+    /////MISCELLANEOUS/////
+    gui->setAssetPath("");   //Assigning correct path for ofxDatGui addon to assets folder.
+    ofBackground(2, 20, 26); //Background of program
     
     
-        int phraseHits[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};        //Rhythm for playing selected phrase is 16 1/4 notes.
-        
-        for (int i = 0; i < bufferSize; i++){
-            
-            /*The currentCount and lastCount variables are used to time the output of MIDI messages to Ableton.
-            The timer oscillator uses a a phasor, acting as a continuous linear ramp producing a floating point number between 0.0 and 1.0. The frequency alters the speed at which the phasor ramps from 0 to 1, and so the faster the tempo/frequency of the phasor, the faster the oscillator counts through from 0 to 1 and thus increase the speed of the sending of MIDI messages to Ableton. 
-             As currentCount and lastCount are both integers, there values are only concerned with when the phasor reaches 0 and 1. Whenever lastCount does not equal currentCount, this equates to a time step having occurred and a MIDI message should be sent to Ableton if the current rhythm hit specifies so.*/
-            currentCount = (int)timer.phasor(tempo);
-            
-            
-            //When playHeadPhrase equals 16, the phrase has now played all of its notes and the process should stop.
-            if (playHeadPhrase == 16) {
-                phraseUI->playPhraseBool = false;           //Stop playing by setting boolean to false and so 'if statement' is no longer true.
-                playHeadPhrase = 0;                         //Reset playHeadPhrase for the next time the 'Play Selected Phrase' button is true and this process is repeated.
-            }
-            
-            
-            /*When lastCount is not equal to currentCount, this signals a change in time step, and so if
-             the current phraseHit is equal to 1 (signalling a hit in the Rhythm) then output the current note to be played determined by the playHeadPhraseVariable*/
-            if (lastCount != currentCount) {
-                
-                        if (phraseHits[playHeadPhrase% 16] == 1) {
-                            
-                                //Output MIDI message to Ableton to play current note in Phrase sequence, at velocity 80
-                                swarms[1].midiOut.sendNoteOn(swarms[1].channel, phraseUI->currentPhrase[playHeadPhrase%16], 80);
-                            
-                                                                                                        
-                        }
-                
-                        //Output MIDI message to Ableton to turn current note in Phrase sequence off.
-                        swarms[1].midiOut.sendNoteOff(swarms[1].channel, phraseUI->currentPhrase[playHeadPhrase%16]);
-                
-                            
-                
-                
-                playHeadPhrase++;               //Increment playHeadPhrase by 1 so that the next MIDI note in the sequence will be played.
-                lastCount = 0;                  //Reset lastCount to 0 for the next iteration.
-                
-                
-            }
-            
+    //MIDI PORT SETUP//
+    //Setting up MIDI port for swarms to send to Ableton to trigger MIDI notes.
+    for (int i = 1; i < SWARM_NUM+1; i++) {
+        swarms[i].openVirtualPort("Swarm");
+        swarms[i].setup(i);
     }
+    
+    
+    //INDIVIDUAL SWARM INTERFACES//
+    left = new SwarmGUI(1, 50, 230, &swarms[1], "Left Swarm");              //Left SwarmGUI controls swarms[1]
+    right = new SwarmGUI(2, 400, 230, &swarms[2], "Right Swarm");           //Right SwarmGUI controls swarms[2]
+    
+    
+    //SWARM UI//
+    //Set up of individual interfaces for swarms.
+    left->setupInterface();
+    right->setupInterface();
+    
+
+    //GLOBAL INTERFACE//
+    setupUI();
+    
+    
+    //PHRASE UI//
+    phraseUI = new PhraseUI();
+    phraseUI->setupPhraseUI();
+    phraseUI->calculatePhraseKey(1, 60);            //Calculate phrase input/output based on the current key
+    
+    
+    //FONTS//
+    loadFonts();                                    //Loading fonts required for program
+    
+    
+    //AUDIO//
+    //Sample and buffer size required for outputting sound and using ofxMaxim oscillator for timing.
+    sampleRate = 44100;
+    bufferSize = 1025;
+    ofxMaxiSettings::setup(sampleRate, 2, bufferSize);
+    ofSoundStreamSetup(2,0, this, maxiSettings::sampleRate, bufferSize, 4);
 }
 
+//--------------------------------------------------------------
+/*Updating all UI elements for GlobalUI, SwarmUI, and PhraseUI.*/
+void ofApp::update(){
+
+    //Updating global swarm user interface components
+    for (int i = 0; i < globalSwarmComponents.size(); i++) {
+        globalSwarmComponents[i]->update();
+    }
+   
+    
+    //Updating individual swarm user interface components
+    left->updateInterface();
+    right->updateInterface();
+    
+
+    //Updating Phrase UI
+    phraseUI->updatePhraseUI();
+}
 
 //--------------------------------------------------------------
+/*Main "hub" of program. All functionality is called from here, and is used to determine when to trigger which functions for the main algorithmic processes of the program.*/
+void ofApp::draw(){
+    
+    
+    //If introScreen is true, only display the contents of the introduction screen.
+    if (introScreen == true) {
+        
+        displayIntroScreen();
+        
+        //When introScreen is false, begin the processes/functionality of the main program.
+    } else {
+        
+        sendMIDI();                     //Sending of MIDI messages to Ableton based upon currently best-ranked note sequences, velocity, and rhythm sequence.
+        
+        displayAreaSegments();          //Display the lines that segment the screen into the different functionality areas.
+        
+        checkPhraseDeleted();           //Function monitors whether a phrase has been deleted from the current phrase list.
+        
+        checkPhraseChanged();
+        
+        //When PhhraseUI button is pressed, send MIDI of grid notes to Ableton to play.
+        if (phraseUI->playPhraseBool == true) {
+            playCurrentPhrase();
+        }
+        
+        //SWARM UI//
+        //Drawing the individial swarm user interfaces
+        left->drawInterface();                      //Swarm 1
+        right->drawInterface();                     //Swarm 2
+        
+        
+        //PHRASE UI//
+        phraseUI->displayPhraseList();              //Displaying list of currently made phrases
+        phraseUI->displayPhraseUI();                //Displaying phrase UI options
+        phraseUI->displaySelectedPhrase();          //Displaying selected Phrase's grid.
+        
+        //SWARM/ALGORITHMIC FUNCTIONALITY//
+        checkSwarmsStopPlaying();               //Check whether global 'playSwarmsToggle' has been deactivated
+        checkSwarmsPlaying();                   //Check whether global 'playSwarmsToggle' has been activated
+        
+        
+        //GLOBAL UI//
+        ofNoFill();
+        //Drawing the global swarm user interfaces
+        //This is done at the very end in order for the dropdown menus to appear in front of the other UI elements rather than disappear behind.
+        for (int i = 0; i < globalSwarmComponents.size(); i++) {
+            globalSwarmComponents[i]->draw();
+        }
+        
+    }
+    
+}
 
+//--------------------------------------------------------------
+/*This function controls the main pipeline between Ableton and openFrameworks. MIDI messages are sent to determine note on/off messages of the current best-ranked note sequences of both Swarm 1 and Swarm 2 at the defined velocity and tempo.*/
 void ofApp::sendMIDI() {
     
     //If global 'playSwarms' has been toggled to on, startSwarm becomes true and so begins the PSO
@@ -256,7 +264,7 @@ void ofApp::sendMIDI() {
                             if (rhythmPlayHead % 16 == 0) {
                                 swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%16]], swarms[1].bestParticleSwarmVelocity);
                                 
-                            //This else block establishes any other notes that are not the first beat of the bar as a slightly lower velocity.
+                                //This else block establishes any other notes that are not the first beat of the bar as a slightly lower velocity.
                             } else {
                                 swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%16]], swarms[1].bestParticleSwarmVelocity-20);
                                 
@@ -303,7 +311,7 @@ void ofApp::sendMIDI() {
                             
                             //This will measure whether there was an additional 1 or 2 notes played earlier and if so, to send a MIDI message to turn these corresponding notes off.
                             if (swarms[1].chordPotential > 5) {
-
+                                
                                 if (valR1 < swarms[1].chordPotential) {
                                     swarms[1].midiOut.sendNoteOff(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%16]+2]);
                                 }
@@ -316,18 +324,15 @@ void ofApp::sendMIDI() {
                             }
                             
                             
-                            //
-                            lastNotePlayheadLeft = swarms[1].notePlayhead;
+                            //Increment Swarm 1's notePlayhead by 1 to continue through the note sequence.
                             swarms[1].notePlayhead++;
                             
-                            if (lastNotePlayheadLeft != swarms[1].notePlayhead) {
-                                calculateChordLeft = true;
-                            }
+                            //As a note has been played, noteChangedLeft becomes true to perform the PSO algorithmic process on velocity later in this program.
                             noteChangeLeft = true;
                             
                         }
                         
-                    //This determines whether the global 'playSwarmsToggle' has been deactivated, and if so, a final note will be played by the swarm as the tonic of the current key.
+                        //This determines whether the global 'playSwarmsToggle' has been deactivated, and if so, a final note will be played by the swarm as the tonic of the current key.
                     } else if (swarms[1].readyToPlay == false) {
                         
                         //Play the final note when the swarm has a registered hit to play in its rhythm sequence.
@@ -416,17 +421,17 @@ void ofApp::sendMIDI() {
                                 
                             }
                             
-                            lastNotePlayheadRight = swarms[2].notePlayhead;
+                            
+                            //Increment Swarm 2's notePlayhead by 1 to continue through the note sequence.
                             swarms[2].notePlayhead++;
                             
-                            if (lastNotePlayheadRight != swarms[2].notePlayhead) {
-                                calculateChordRight = true;
-                            }
+                            
+                            //As a note has been played, noteChangedLeft becomes true to perform the PSO algorithmic process on velocity later in this program.
                             noteChangeRight = true;
                             
                         }
                         
-                    
+                        
                         //If playSwarmsToggle has been deactivated, Swarm 2 will output the tonic of the current key to signal the end of the playing.
                     } else if (swarms[2].readyToPlay == false) {
                         
@@ -456,73 +461,117 @@ void ofApp::sendMIDI() {
             
         }
     }
-   
-}
-//--------------------------------------------------------------
-/*This function will display the introduction screen. It is run by default when the program is loaded, and when the screen is pressed, this function will now longer be run throughout the remainder of the program's running duration*/
-void ofApp::displayIntroScreen() {
-    
-    
-    //Display box area of introduction screen (outline)
-    ofNoFill();
-    ofSetColor(255);
-    ofDrawRectangle(75, 75, ofGetWidth()- (75*2), ofGetHeight() - (75*2));
-    
-    //Display box area of introduction screen (coloured)
-    ofFill();
-    ofSetColor(91, 125, 123, 20);
-    ofDrawRectangle(75, 75, ofGetWidth()- (75*2), ofGetHeight() - (75*2));
-    
-    
-    //Text information for introduction screen
-    ofSetColor(255);
-    titleFont.drawString("Swarm Key", 350, ofGetHeight()/2-100);
-    smallFont.drawString("Welcome to Swarm Key, an interactive generative music program. \nCreate phrases in the Phrase Control area, and then select these \nphrases to be used as targets for the Swarms in the Independent Swarm Control area.", 300, ofGetHeight()/2+100);
-    smallFont.drawString("Press the screen to continue.", 300, ofGetHeight()/2+200);
-
 }
 
 //--------------------------------------------------------------
-/*This function displays the lines that divide the program screen into areas of "Global Swarm Controls", "Independent Swarm Controls", "Phrase Area", and "Information Area".*/
+/*This function determines whether the global 'playSwarmsToggle' has been deactivated and if the final note of each swarm has been played. If so, startSwarm will become false to stop all algorithmic functions stop.*/
+void ofApp::checkSwarmsStopPlaying() {
+    
+    //Checking if all booleans 'readyToPlay', 'play', and 'playFinalNote' of individual swarms
+    //are false. If all are false, this indicates that startSwarm is now false to stop
+    //all algorithmic functions.
+    if (swarms[1].readyToPlay == false && swarms[2].readyToPlay == false && swarms[1].play == false && swarms[2].play == false && swarms[1].playFinalNote == false && swarms[2].playFinalNote == false) {
+        startSwarm = false;
+    }
+}
 
-void ofApp::displayAreaSegments() {
+//--------------------------------------------------------------
+/* This function is responsible for running all PSO algorithmic processes for velocity, rhythm sequence, and note sequence at the correct time. The functionality will only run if global 'playSwarmsToggle' has been activated.*/
+void ofApp::checkSwarmsPlaying() {
     
-    displayInfoAreaText();                  //Display the information area text based upon the current position of the mouse.
+    //Check condition for if playSwarmsToggle has been activated.
+    if (startSwarm == true) {
+        
+        //VELOCITY//
+        //If swarm one has played a note, run the PSO algorithmic process to update the swarm's velocity.
+        if (noteChangeLeft == true) {
+            swarms[1].runVelocity();            //PSO process for Swarm 1 velocity.
+            noteChangeLeft = false;             //noteChangeLeft becomes false until the next note has been played, and then will run this process again.
+            
+        }
+        
+        
+        //If swarm two has played a note, run the PSO algorithmic process to update the swarm's velocity.
+        if (noteChangeRight == true) {
+            swarms[2].runVelocity();            //PSO process for Swarm 2 velocity.
+            noteChangeRight = false;            //noteChangeRight becomes false until the next note has been played, and then will run this process again.
+            
+        }
+        
+        
+        //RHYTHM AND NOTE SEQUENCES//
+        //Determine whether to change perform PSO process on rhythm and note sequences when each swarm's individual rhythm sequence has finished. As each rhythm sequence adds up to a total of 4, both rhythm sequences will finish at the same time and so will perform the algorithmic process at the same time.
+        if (changeRhythm == true && changeRhythmInt % 1 == 0) {
+            
+            
+            //Performing PSO processes for Swarm 2
+            if (swarms[2].play == true) {
+                
+                swarms[2].runRhythm();
+                swarms[2].run(&swarms[1], rhythmPlayHead, swarms[2].notePlayhead, swarms[1].notePlayhead);
+                
+            }
+            
+            //Performing PSO processes for Swarm 1. As Swarm 1 is calculating harmonic intervals between itself and the best evaluated note sequence of Swarm 2, it's algorithmic process is performed after Swarm 1's.
+            if (swarms[1].play == true) {
+                
+                swarms[1].runRhythm();
+                swarms[1].run(&swarms[2], rhythmPlayHead, swarms[1].notePlayhead, swarms[2].notePlayhead);
+                
+            }
+            
+            //changeRhythm becomes false until the next rhythm sequence has been played in full by both swarms.
+            changeRhythm = false;
+        }
+    }
     
     
-    
-    //Outline of rectangle areas.
-    ofNoFill();
-    ofSetColor(255);
-    ofDrawRectangle(25, 175, 700, 600);
-    ofDrawRectangle(25, 800, 1550, 300);
-    ofDrawRectangle(25, 25, 1550, 125);
-    ofDrawRectangle(775, 175, 800, 600);
-    
-    
-    //Shape fill of rectangle areas.
-    ofFill();
-    ofSetColor(91, 125, 123, 20);
-    ofDrawRectangle(25, 175, 700, 600);         //Independent swarm
-    ofDrawRectangle(25, 800, 1550, 300);        //Text area box
-    ofDrawRectangle(25, 25, 1550, 125);         //Global swarm box
-    ofDrawRectangle(775, 175, 800, 600);        //Phrase box
-    
-    
-    //Titles of function areas.
-    ofFill();
-    ofSetColor(255);
-    sectionFont.drawString("INDEPENDENT SWARM CONTROLS", 225, 205);
-    sectionFont.drawString("INFORMATION AREA", 50, 830);
-    sectionFont.drawString("GLOBAL SWARM CONTROLS", 675, 55);
-    sectionFont.drawString("PHRASE CONTROLS", 1100, 205);
-    
+}
 
-    //Reset to ofNoFill for slider/UI appearences.
-    ofNoFill();
+//--------------------------------------------------------------
+/*Function playCurrentPhrase() is called when phraseUI object's 'Play Selected Phrase'. The MIDI notes of
+ the currently selected grid are sent using Swarm 1's port and channel to Ableton to play the phrase so 
+ that the user is able to understand exactly what their phrase sounds like. 
+ The rhythm of the phrase is played simply as 16 1/4 notes. */
+void ofApp::playCurrentPhrase() {
     
     
-    
+        int phraseHits[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};        //Rhythm for playing selected phrase is 16 1/4 notes.
+        
+        for (int i = 0; i < bufferSize; i++){
+            
+            /*The currentCount and lastCount variables are used to time the output of MIDI messages to Ableton.
+            The timer oscillator uses a a phasor, acting as a continuous linear ramp producing a floating point number between 0.0 and 1.0. The frequency alters the speed at which the phasor ramps from 0 to 1, and so the faster the tempo/frequency of the phasor, the faster the oscillator counts through from 0 to 1 and thus increase the speed of the sending of MIDI messages to Ableton. 
+             As currentCount and lastCount are both integers, there values are only concerned with when the phasor reaches 0 and 1. Whenever lastCount does not equal currentCount, this equates to a time step having occurred and a MIDI message should be sent to Ableton if the current rhythm hit specifies so.*/
+            currentCount = (int)timer.phasor(tempo);
+            
+            
+            //When playHeadPhrase equals 16, the phrase has now played all of its notes and the process should stop.
+            if (playHeadPhrase == 16) {
+                phraseUI->playPhraseBool = false;           //Stop playing by setting boolean to false and so 'if statement' is no longer true.
+                playHeadPhrase = 0;                         //Reset playHeadPhrase for the next time the 'Play Selected Phrase' button is true and this process is repeated.
+            }
+            
+            
+            /*When lastCount is not equal to currentCount, this signals a change in time step, and so if
+             the current phraseHit is equal to 1 (signalling a hit in the Rhythm) then output the current note to be played determined by the playHeadPhraseVariable*/
+            if (lastCount != currentCount) {
+                
+                        if (phraseHits[playHeadPhrase% 16] == 1) {
+                            
+                                //Output MIDI message to Ableton to play current note in Phrase sequence, at velocity 80
+                                swarms[1].midiOut.sendNoteOn(swarms[1].channel, phraseUI->currentPhrase[playHeadPhrase%16], 80);
+                            
+                                                                                                        
+                        }
+                
+                //Output MIDI message to Ableton to turn current note in Phrase sequence off.
+                swarms[1].midiOut.sendNoteOff(swarms[1].channel, phraseUI->currentPhrase[playHeadPhrase%16]);
+                playHeadPhrase++;               //Increment playHeadPhrase by 1 so that the next MIDI note in the sequence will be played.
+                lastCount = 0;                  //Reset lastCount to 0 for the next iteration.
+                
+            }
+    }
 }
 
 //--------------------------------------------------------------
@@ -635,119 +684,12 @@ void ofApp::checkPhraseChanged() {
 }
 
 //--------------------------------------------------------------
-
-void ofApp::draw(){
-    
-
-    //If introScreen is true, only display the contents of the introduction screen.
-    if (introScreen == true) {
-        
-        displayIntroScreen();
-        
-    //When introScreen is false, begin the processes/functionality of the main program.
-    } else {
-    
-        
-    sendMIDI();                     //Sending of MIDI messages to Ableton based upon currently best-ranked note sequences, velocity, and rhythm sequence.
-        
-    displayAreaSegments();          //Display the lines that segment the screen into the different functionality areas.
-        
-    checkPhraseDeleted();           //Function monitors whether a phrase has been deleted from the current phrase list.
-        
-    checkPhraseChanged();
-    
-    //When PhhraseUI button is pressed, send MIDI of grid notes to Ableton to play.
-    if (phraseUI->playPhraseBool == true) {
-        playCurrentPhrase();
-    }
-    
-
-
-    
-    
-    //Drawing the individial swarm user interfaces
-    left->drawInterface();
-    right->drawInterface();
-    
-    
-    
-    //PHRASE UI
-    phraseUI->displayPhraseList();
-    phraseUI->displayPhraseUI();
-    phraseUI->displaySelectedPhrase();
-    
-    
-    //Checking if all booleans 'readyToPlay', 'play', and 'playFinalNote' of individual swarms
-    //are false. If all are false, this indicates that startSwarm is now false to stop
-    //all algorithmic functions.
-    if (swarms[1].readyToPlay == false && swarms[2].readyToPlay == false && swarms[1].play == false && swarms[2].play == false && swarms[1].playFinalNote == false && swarms[2].playFinalNote == false) {
-        startSwarm = false;
-    }
-  
-    
-    if (startSwarm == true) {
-        
-        //VELOCITY//
-        //If swarm one has played a note, run the PSO algorithmic process to update the swarm's velocity.
-        if (noteChangeLeft == true) {
-            swarms[1].runVelocity();
-            noteChangeLeft = false;
-            
-        //If swarm two has played a note, run the PSO algorithmic process to update the swarm's velocity.
-        } if (noteChangeRight == true) {
-            swarms[2].runVelocity();
-            noteChangeRight = false;
-            
-        }
-
-        
-        //RHYTHM AND NOTE SEQUENCES//
-        //Determine whether to change rhythm sequences
-        if (changeRhythm == true && changeRhythmInt % 1 == 0) {
-
-
-            
-            if (swarms[2].play == true) {
-    
-                swarms[2].runRhythm();
-                swarms[2].run(&swarms[1], rhythmPlayHead, swarms[2].notePlayhead, swarms[1].notePlayhead);
-                
-            }
-            
-            
-            if (swarms[1].play == true) {
-                
-                swarms[1].runRhythm();
-                swarms[1].run(&swarms[2], rhythmPlayHead, swarms[1].notePlayhead, swarms[2].notePlayhead);
-                
-            }
-
-            changeRhythm = false;
-        }
-    }
-    
-    
-    ofNoFill();
-    //Drawing the global swarm user interfaces
-    for (int i = 0; i < globalSwarmComponents.size(); i++) {
-        globalSwarmComponents[i]->draw();
-    }
-    
-    }
-
-    
-
-    
-}
-
-
-
-//--------------------------------------------------------------
-
+/*UI responses for UI toggles.*/
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
     
-    //Set swarm to play.
-    //Response to playSwarms toggle.
+    
+    //Global 'playSwarmsToggle'
+    //When activated, all playHeads are reset to 0 to begin the composition for both swarms at the same point in note sequence and rhythm sequence. Both swarms are set to play at the beginning of the next bar.
     if (e.target == playSwarmsToggle && e.checked == true && startSwarm == false) {
         
         startSwarm = true;
@@ -755,7 +697,6 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
         currentCount = 0;
         rhythmPlayHead = 0;
         changeRhythmInt = 0;
- 
         
         swarms[1].readyToPlay = true;
         swarms[1].playFinalNote = false;
@@ -766,21 +707,17 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
         swarms[2].notePlayhead = 0;
     }
     
-    //Set swarm to stop playing.
+    //When toggle is deactivated, both swarms are set to play the final note as the tonic of the current key.
     if (e.target == playSwarmsToggle && e.checked == false && startSwarm == true) {
         swarms[1].playFinalNote = true;
         swarms[2].playFinalNote = true;
         
-  
-
-        
     }
-    
     
 }
 
 //--------------------------------------------------------------
-//Handler for UI sliders
+/*Handler for UI Tempo slider.*/
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
     
     //Tempo is converted from bpm to hertz for the oscillator to time the swarm's playing.
@@ -792,11 +729,10 @@ void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
 }
 
 //--------------------------------------------------------------
-//Handler for UI dropdown menus
+/*Handler for UI dropdown menus*/
 void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
     
-    ////////////////////////
-    //Key type dropdown menu
+    //Key type dropdown menu//
     //If statements select which key type has been selected from the dropdown, Major or Minor.
     //getKeyType is assigned as either 1 (Major), or 2 (Minor) and the swarms available notes are then recalculated to generate notes in the specific key.
     if (e.target->getLabel() == "Major") {
@@ -922,16 +858,20 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e) {
 }
 
 //--------------------------------------------------------------
+/*This function will check whether the grid of the currently selected Phrase has been pressed, and if so will activate/deactivate the correct notes.*/
 void ofApp::mouseDragged(int x, int y, int button){
 
 
-    
+    //This functionality only occurs when at least one phrase has been made.
     if (phraseUI->phrases.size() >= 1) {
         
-
+        //Checking all grid cells of the currently selected phrase to see if they have been pressed.
         phraseUI->phrases[phraseUI->selectedPhrase]->checkGridPressed();
+        
+        //This indicates that the phrase grid cell has been altered in same way, and so to reset the target phrase note sequences if either of the Swarms have currently selected the altered Phrase as it's target Phrase.
         phraseUI->phraseChanged = true;
         
+        //Recalcalculating the correct note sequence of the currently selected phrase to have the correct indexes for the vector containing all available MIDI notes that each Swarm can play/use as output.
         for (int j = 0; j < 16; j++) {
             phraseUI->swarmNoteIndexes[j] = (phraseUI->phrases[phraseUI->selectedPhrase]->phraseList[j]+17);
         }
@@ -944,34 +884,108 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 
 //--------------------------------------------------------------
+/*This function controls whether to exit the introduction screen. If it is no longer within the introduction screen, it resets all of the grid cells of the currently selected Phrase to be ready to be pressed again. 
+ The boolean 'changedOnce' means that when the mouse has been pressed, it is set to true for each cell, and they can only be changed once (from either active or to inactive) during the time period that the mouse is pressed. This stops the grid cells from constantly highlighting/dehighlighting if you hold the mouse over in one position and creates a smoother movement/UI for the grid.*/
 void ofApp::mouseReleased(int x, int y, int button){
     
+    //If mouse is pressed within introduction screen state, set it to false to continue to the main program.
     if (introScreen == true) {
-        introScreen = false;
+        introScreen = false; //Introduction screen is now exited.
+        
+    //When the program is not in the state of the introduction screen.
     } else {
     
-    
-    if (phraseUI->phrases.size() >= 1) {
-
-        for (int i = 0; i < phraseUI->phrases[phraseUI->selectedPhrase]->phraseCells.size(); i++) {
-            phraseUI->phrases[phraseUI->selectedPhrase]->phraseCells[i]->changedOnce = false;
-        }
-           phraseUI->phrases[phraseUI->selectedPhrase]->checkGridPressed();
+        //Only perform this process when there is atleast one available Phrase.
+        if (phraseUI->phrases.size() >= 1) {
+        
+        
+            //Reset all 'changedOnce' booleans to false.
+            for (int i = 0; i < phraseUI->phrases[phraseUI->selectedPhrase]->phraseCells.size(); i++) {
+                phraseUI->phrases[phraseUI->selectedPhrase]->phraseCells[i]->changedOnce = false;
+            }
+        
+        
+            //When the mouse is released, check which cell is currently pressed andw hether or not to activate/deactivate it.
+            phraseUI->phrases[phraseUI->selectedPhrase]->checkGridPressed();
       
-    }
+        }
     }
     
 }
 
+//--------------------------------------------------------------
+/*This function will display the introduction screen. It is run by default when the program is loaded, and when the screen is pressed, this function will now longer be run throughout the remainder of the program's running duration*/
+void ofApp::displayIntroScreen() {
+    
+    
+    //Display box area of introduction screen (outline)
+    ofNoFill();
+    ofSetColor(255);
+    ofDrawRectangle(75, 75, ofGetWidth()- (75*2), ofGetHeight() - (75*2));
+    
+    //Display box area of introduction screen (coloured)
+    ofFill();
+    ofSetColor(91, 125, 123, 20);
+    ofDrawRectangle(75, 75, ofGetWidth()- (75*2), ofGetHeight() - (75*2));
+    
+    
+    //Text information for introduction screen
+    ofSetColor(255);
+    titleFont.drawString("Swarm Key", 350, ofGetHeight()/2-100);
+    smallFont.drawString("Welcome to Swarm Key, an interactive generative music program. \nCreate phrases in the Phrase Control area, and then select these \nphrases to be used as targets for the Swarms in the Independent Swarm Control area.", 300, ofGetHeight()/2+100);
+    smallFont.drawString("Press the screen to continue.", 300, ofGetHeight()/2+200);
+    
+}
 
 //--------------------------------------------------------------
+/*This function displays the lines that divide the program screen into areas of "Global Swarm Controls", "Independent Swarm Controls", "Phrase Area", and "Information Area".*/
+void ofApp::displayAreaSegments() {
+    
+    displayInfoAreaText();                  //Display the information area text based upon the current position of the mouse.
+    
+    //Outline of rectangle areas.
+    ofNoFill();
+    ofSetColor(255);
+    ofDrawRectangle(25, 175, 700, 600);
+    ofDrawRectangle(25, 800, 1550, 300);
+    ofDrawRectangle(25, 25, 1550, 125);
+    ofDrawRectangle(775, 175, 800, 600);
+    
+    
+    //Shape fill of rectangle areas.
+    ofFill();
+    ofSetColor(91, 125, 123, 20);
+    ofDrawRectangle(25, 175, 700, 600);         //Independent swarm
+    ofDrawRectangle(25, 800, 1550, 300);        //Text area box
+    ofDrawRectangle(25, 25, 1550, 125);         //Global swarm box
+    ofDrawRectangle(775, 175, 800, 600);        //Phrase box
+    
+    
+    //Titles of function areas.
+    ofFill();
+    ofSetColor(255);
+    sectionFont.drawString("INDEPENDENT SWARM CONTROLS", 225, 205);
+    sectionFont.drawString("INFORMATION AREA", 50, 830);
+    sectionFont.drawString("GLOBAL SWARM CONTROLS", 675, 55);
+    sectionFont.drawString("PHRASE CONTROLS", 1100, 205);
+    
+    
+    //Reset to ofNoFill for slider/UI appearences.
+    ofNoFill();
+    
+}
 
+//--------------------------------------------------------------
+/*This function controls which information text to display in the Information Area. The coordinates of the mouse's position is checked and the relevant information is displayed based upon which area or which UI element the mouse is positioned on*/
 void ofApp::displayInfoAreaText() {
     
     ofSetColor(255);
+    
+    //Current mouse position
     int x = ofGetMouseX();
     int y = ofGetMouseY();
     
+    //String holds the current information to be displayed
     string info;
     
     //Global swarm controls info
@@ -981,35 +995,27 @@ void ofApp::displayInfoAreaText() {
     
     //Play swarms info
     if (x >= 160 && x <= (160+UIWidth) && y >= 82 && y<= (82+playSwarmsToggle->getHeight())) {
-        
         info = "PLAY SWARMS : Use this button to start and stop playing both swarms at the same time. Make a phrase in the Phrase Area for the swarms to use as targets before playing the swarms.";
-        
     }
     
     //Tempo info
     if (x >= 510 && x <= (510+UIWidth) && y >= 82 && y<= (82+playSwarmsToggle->getHeight())) {
-        
         info = "TEMPO : This slider alters the tempo of the composition.";
-        
     }
     
     //Key type info
     if (x >= 830 && x <= (830+UIWidth) && y >= 82 && y<= (82+playSwarmsToggle->getHeight())) {
-        
         info = "KEY TYPE : Use this menu to alter the key type you want the swarms to compose in.";
     }
     
     //Key tonic info
     if (x >= 1150 && x <= (1150+UIWidth) && y >= 82 && y<= (82+playSwarmsToggle->getHeight())) {
-        
         info = "KEY TONIC : Use this menu to alter the tonic of the key you want the swarms to compose in.";
     }
     
     
     //INDEPENDENT SWARM CONTROLS
-    
     if (x >= 25 && x <= (25+700) && y >= 175 && y<= (175+600)) {
-        
         info = "INDEPENDENT SWARM CONTROLS : These controls alter the individual swarms, with the left block altering the Left swarm and the right block altering the Right swarm.";
     }
     
@@ -1017,13 +1023,11 @@ void ofApp::displayInfoAreaText() {
     //Swarm Labels
     //Left swarm
     if (x >= 50 && x <= 50+300 && y >= 230 && y <= 256) {
-        
         info = "LEFT SWARM : User interface panel for the Left swarmÕs composition controls.";
     }
     
     //Right swarm
     if (x >= 400 && x <= 700 && y >= 230 && y <= 256) {
-        
         info = "RIGHT SWARM : User interface panel for the Right swarmÕs composition controls.";
     }
     
@@ -1068,7 +1072,6 @@ void ofApp::displayInfoAreaText() {
     }
     
     //Intervals
-    
     if (((x >= 50 && x <= 350) || (x >= 400 && x<= 700)) && (y >= 504 && y<= 738)) {
         info = "INTERVALS : These sliders determine what intervals you would like your swarm to target if the PHRASE DISTANCE is more than 0. A higher slider value means that the swarm will show preference to these intervals.";
     }
@@ -1084,7 +1087,7 @@ void ofApp::displayInfoAreaText() {
     }
     
     
-    //Phrase List
+    //Only display this information when the UI elements have been loaded.
     if (phraseUI->phrases.size() > 0) {
         
         //Play phrase
@@ -1097,11 +1100,10 @@ void ofApp::displayInfoAreaText() {
             info = "DELETE SELECTED PHRASE : Click to delete the currently selected phrase.";
         }
 
-        
+        //Phrase list
         if (x >= 800 && x <= 1025 && y >= 300 && y <= 326) {
             info = "PHRASE LIST : List of currently available phrases.";
         }
-        
         
         //Grid area
         if (x >= 1150 && x <= 1550 && y >= 300 && y <= 675) {
@@ -1110,33 +1112,10 @@ void ofApp::displayInfoAreaText() {
     }
     
     
-    
+    //Display the info string in the Information Area.
     infoFont.drawString(info, 50, 870);
     
    
     
 }
 //--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
-}

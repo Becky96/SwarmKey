@@ -14,134 +14,120 @@
 class ofApp : public ofBaseApp{
 
 	public:
+    
+        //ORDER OF OFAPP FUNCTIONS//
+        void loadFonts();               //Loading fonts required for app text.
+        void setupUI();                 //Setup UI appearence/options
 		void setup();
 		void update();
 		void draw();
-
+        void sendMIDI();                //Sending MIDI messages of real-time Swarm composition
+        void checkSwarmsStopPlaying();              //Determine whether to run PSO processes.
+        void checkSwarmsPlaying();          //Determine wher to stop PSO processes.
+        void playCurrentPhrase();               //Activated when 'Play Selected Phrase' button is pressed.
+        void checkPhraseDeleted();      //Responds to whether a phrase has been deleted from the Phrase List
+        void checkPhraseChanged();      //Update Swarm's with correct target Phrase note sequences
+        void onToggleEvent(ofxDatGuiToggleEvent e);         //Toggle responses
+        void onSliderEvent(ofxDatGuiSliderEvent e);         //Slider responses
+        void onDropdownEvent(ofxDatGuiDropdownEvent e);     //Dropdown responses
 		void mouseDragged(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-		
+        void displayIntroScreen();      //Introducton screen contents
+        void displayAreaSegments();     //Displaying line segments for different screen areas.
+        void displayInfoAreaText();
+        /////////////////////////////
+
     
-    ofTrueTypeFont titleFont;
-    ofTrueTypeFont smallFont;
-
-
-
-    void loadFonts();           //Loading fonts required for app text.
-    void sendMIDI();
-    void displayIntroScreen();      //Introducton screen contents
-    void displayAreaSegments();     //Displaying line segments for different screen areas.
-    void checkPhraseDeleted();
-    void checkPhraseChanged();
+    //////OBJECTS/VARIABLES//////
     
+    //AUDIO//
     int sampleRate;
     int bufferSize;
+    /////////
     
+    
+    //SWARMS//
     Swarm swarms[SWARM_NUM];
     Swarm swarmPort;
+    bool startSwarm = false;
+    //////////
     
     
+    //SWARM UI//
     SwarmGUI * left;
     SwarmGUI * right;
+    ////////////
 
-    //UI COMPONENTS
+    
+    //GLOBAL UI//
     vector<ofxDatGuiComponent*> globalSwarmComponents;
     ofxDatGui* gui;
-    void setupUI();
-    void onToggleEvent(ofxDatGuiToggleEvent e);
-    void onSliderEvent(ofxDatGuiSliderEvent e);
-    void onDropdownEvent(ofxDatGuiDropdownEvent e);
+    ofxDatGuiToggle* playSwarmsToggle;                  //Toggle to run/stop both swarms
+    int UIWidth = 300;                  //Width of UI buttons
+    float sliderRatio = .45;            //Slider width
+    //////////////
     
-    //KEY TYPES
+    
+    //KEY TYPES//
     //User dropdown menu for selecting key type
     vector<string> types = {"Major", "Minor"};
     ofxDatGuiDropdown* keyTypes;
-    int getKeyType = 1;
+    int getKeyType = 1;             //Integer represents current key type
+    //////////////
     
     
-    //KEY TONICS
+    //KEY TONICS//
     //User dropdown menu for selecting key tonic
     vector<string> options = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     ofxDatGuiDropdown* key;
-    int keyNum = 60;
+    int keyNum = 60;                //Integer represents key tonic
+    //////////////
+    
 
-    
-    
-    int UIWidth = 300;                  //Width of UI buttons
-    float sliderRatio = .45;            //Slider width
-    
-    ofxDatGuiToggle* playSwarmsToggle;
-    
-    //TEMPO VARIABLES
-    float tempo = 4.;
+    //TEMPO VARIABLES//
+    float tempo = 4.;                   //Tempo float is converted from BPM in tempo slider to frequency for the 'timer' oscillator
     ofxDatGuiSlider* tempoSlider;
     ofParameter<int> tempoInt;
+    ///////////////////
     
     
-    
-    
-    //TIMER VARIABLES
+    //TIMER VARIABLES//
     //Oscillator used to time the composition based upon the rhythms of the swarms
     maxiOsc timer;
-    int currentCount, lastCount;
-    int rhythmPlayHead = 0;
+    int currentCount, lastCount;            //Variables to compare together to check whether there has been a time step
+    int rhythmPlayHead = 0;                 //Used to increment through rhythm sequence
+    ///////////////////
     
     
-    bool changeNotesLeft = true;
-    bool changeNotesRight = true;
-    bool startSwarm = false;
-    
+    //VELOCITY//
+    //Booleans determine whether to run velocity algorithm process.
+    bool noteChangeLeft = false;            //Swarm 1 check
+    bool noteChangeRight = false;           //Swarm 2 checl
+    int maxVelocity = 120;                  //Max velocity of output
+    /////////////
 
-    bool noteChangeLeft = false;
-    bool noteChangeRight = false;
+ 
+    //RHYTHM//
+    bool changeRhythm = true;           //Determines when to run algorithmic rhythm process
+    int changeRhythmInt = 0;            //Determines how many times the rhythm sequence has been played without running the algorithmic process
+    //////////
 
 
-
-    float vel = 3;
-
-    bool changeRhythm = true;
-    int changeRhythmInt = 0;
-
-    int pitchPlayheadLeft = 0;
-    int pitchPlayheadRight = 0;
-
-    int lastNotePlayheadLeft;
-    bool calculateChordLeft = false;
-    
-    int lastNotePlayheadRight;
-    bool calculateChordRight = false;
-    
-    
-    int maxVelocity = 120;
-   
-    
-    
-    //PHRASE USER INTERFACE
+    //PHRASE UI//
     PhraseUI * phraseUI;
-    void playCurrentPhrase();               //Activated when 'Play Selected Phrase' button is pressed.
     int playHeadPhrase = 0;                 //Playhead for MIDI note sending.
-
-    
-
+    /////////////
     
     
-    //INFORMATION AREA FUNCTIONALITY
-    void displayInfoAreaText();
-    ofTrueTypeFont infoFont;                //Font for information area texr
-    
-    
-    //APP LAYOUT FUNCTIONALITY
-    void displaySections();
+    //FONTS//
+    ofTrueTypeFont titleFont;               //Introduction title font
+    ofTrueTypeFont smallFont;               //Introduction text font
     ofTrueTypeFont sectionFont;             //Font for section titles
-
-
+    ofTrueTypeFont infoFont;                //Font for information area text
+    ////////
     
-    //Introduction screen
-    void introductionScreen();
+    
+    //INTRO SCREEN//
     bool introScreen = true;
+    ////////////////
 };
