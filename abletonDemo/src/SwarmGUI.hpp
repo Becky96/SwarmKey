@@ -1,3 +1,5 @@
+//  SWARM KEY
+//  SwarmGUI.hpp
 
 #ifndef SwarmGUI_hpp
 #define SwarmGUI_hpp
@@ -100,14 +102,10 @@ public:
 
     
     int maxVelocity = 120;
-
     int playHead;
-    
     int UIWidth = 300;
     float sliderRatio = .45;
-    
     int phraseId;
-    
     bool phraseIdChanged = false;
 };
 

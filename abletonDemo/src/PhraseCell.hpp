@@ -1,11 +1,7 @@
-//
+//  SWARM KEY
 //  PhraseCell.hpp
-//  abletonDemo
-//
-
 
 #pragma once
-
 
 #ifndef PhraseCell_hpp
 #define PhraseCell_hpp
@@ -15,23 +11,22 @@
 
 class PhraseCell {
     
-    
 public:
     
+    //FUNCTIONS
+    void setupCell(int _x, int _y, int _width, int _height, int _note, int _row, int _col);
+    void changeColour();
+    void displayCell();
+
+    //VARIABLES
     int x, y;
     int width, height;
     int note;
     bool highlighted = false;
-    
     int row, col;
-    
     ofColor colour;
     
-    void setupCell(int _x, int _y, int _width, int _height, int _note, int _row, int _col);
-    void changeColour();
-    void displayCell();
-    void checkCellPressed();
-    
+    //Booleans control when to activate/deactivate cells in ofApp. 
     bool pressed = false;
     bool changedOnce = false;
 };

@@ -1,10 +1,5 @@
-//
+//  SWARM KEY
 //  SwarmGUI.cpp
-//  abletonDemo
-//
-//  Created by Becky Johnson on 23/02/2018.
-//
-//
 
 #include "SwarmGUI.hpp"
 
@@ -264,77 +259,61 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
         
         swarm->desiredVelocity = e.value;
         resetParticleVelocity();
-        
     }
     
     if (e.target == octaveSlider) {
-        
-        
         swarm->chosenOctave = e.value;
         swarm->distMotifOctave = swarm->chosenOctave - swarm->noteMotifOctaves[0];
-
         resetParticleIntervals();
-
     }
     
     if (e.target == chordSlider) {
-        
         swarm->chordPotential = e.value;
-
     }
     
     ///////////////////////////////
     //Interval penalties
     if (e.target == firstPen) {
-        
         swarm->firstPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == secondPen) {
-        
         swarm->secondPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == thirdPen) {
-        
         swarm->thirdPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == fourthPen) {
-        
         swarm->fourthPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == fifthPen) {
-        
         swarm->fifthPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == sixthPen) {
-        
         swarm->sixthPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == seventhPen) {
-        
         swarm->seventhPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == eighthPen) {
-        
         swarm->eighthPen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
     
     if (e.target == elsePen) {
-        
         swarm->elsePen = ofMap(e.value, 0, 100, 100, 0);
         resetParticleIntervals();
     }
@@ -355,6 +334,7 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     if (e.target == searchIntensitySlider) {
         swarm->numOfIterations = int(e.value)*2;
     }
+    
 }
 
 
@@ -374,8 +354,6 @@ void SwarmGUI::resetParticleIntervals() {
         }
     }
 
-    
-    
 }
 
 //--------------------------------------------------------------

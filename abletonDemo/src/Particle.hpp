@@ -1,10 +1,6 @@
-//
+//  SWARM KEY
 //  Particle.hpp
-//  abletonDemo
-//
-//  Created by Becky Johnson on 30/01/2018.
-//
-//
+
 
 #ifndef Particle_hpp
 #define Particle_hpp

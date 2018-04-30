@@ -1,3 +1,6 @@
+//  SWARM KEY
+//  ofApp.h
+
 #pragma once
 
 #include "ofMain.h"
@@ -7,9 +10,7 @@
 #include "SwarmGUI.hpp"
 #include "PhraseUI.hpp"
 
-//Number of swarms
-#define SWARM_NUM 2
-
+#define SWARM_NUM 2     //Number of swarms
 
 class ofApp : public ofBaseApp{
 
@@ -37,7 +38,6 @@ class ofApp : public ofBaseApp{
         void displayInfoAreaText();
         /////////////////////////////
 
-    
     //////OBJECTS/VARIABLES//////
     
     //AUDIO//

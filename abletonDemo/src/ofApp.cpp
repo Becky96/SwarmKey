@@ -1,5 +1,7 @@
-#include "ofApp.h"
+//  SWARM KEY
+//  ofApp.cpp
 
+#include "ofApp.h"
 
 //--------------------------------------------------------------
 /*Loading required fonts for introduction screen and main program*/
@@ -158,7 +160,6 @@ void ofApp::draw(){
         //When introScreen is false, begin the processes/functionality of the main program.
     } else {
         
-        sendMIDI();                     //Sending of MIDI messages to Ableton based upon currently best-ranked note sequences, velocity, and rhythm sequence.
         
         displayAreaSegments();          //Display the lines that segment the screen into the different functionality areas.
         
@@ -186,6 +187,8 @@ void ofApp::draw(){
         checkSwarmsStopPlaying();               //Check whether global 'playSwarmsToggle' has been deactivated
         checkSwarmsPlaying();                   //Check whether global 'playSwarmsToggle' has been activated
         
+
+        sendMIDI();                                 //Sending of MIDI messages to Ableton based upon currently best-ranked note sequences, velocity, and rhythm sequence.
         
         //GLOBAL UI//
         ofNoFill();

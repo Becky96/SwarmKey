@@ -1,13 +1,7 @@
-//
+//  SWARM KEY
 //  Particle.cpp
-//  abletonDemo
-//
-//  Created by Becky Johnson on 30/01/2018.
-//
-//
 
 #include "Particle.hpp"
-
 
 void Particle::setupParticle() {
     
@@ -28,9 +22,6 @@ void Particle::setupParticle() {
     }
 
     
-    
-    
-    
     //////////////////////////////
     //////////RHYTHM//////////////
     //////////////////////////////
@@ -39,8 +30,6 @@ void Particle::setupParticle() {
     for (int i = 0; i < rhythm.size(); i++) {
         bestRhythm.push_back(0);
     }
-    
-    
     
     
     //////////////////////////////

@@ -1,10 +1,5 @@
-//
+//  SWARM KEY
 //  Swarm.hpp
-//  abletonDemo
-//
-//  Created by Becky Johnson on 29/01/2018.
-//
-//
 
 #ifndef Swarm_hpp
 #define Swarm_hpp
@@ -16,7 +11,6 @@
 #include "Particle.hpp"
 
 class Swarm {
-    
     
 public:
     

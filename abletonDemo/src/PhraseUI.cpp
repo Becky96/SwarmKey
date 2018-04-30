@@ -1,13 +1,9 @@
-//
+//  SWARM KEY
 //  PhraseUI.cpp
-//  abletonDemo
-//
-
-
 
 #include "PhraseUI.hpp"
 
-
+//--------------------------------------------------------------
 //Set up phrase UI
 void PhraseUI::setupPhraseUI() {
 
@@ -18,7 +14,6 @@ void PhraseUI::setupPhraseUI() {
     addPhrase->onButtonEvent(this, &PhraseUI::onButtonEvent);
     phraseUIComponents.push_back(addPhrase);
     x+=addPhrase->getWidth()+37;
-    
     
     x=1150;
     
@@ -52,7 +47,7 @@ void PhraseUI::setupPhraseUI() {
     phraseListLabel->setBackgroundColor(ofColor(91, 125, 123));
 }
 
-
+//--------------------------------------------------------------
 //Update phrase UI
 void PhraseUI::updatePhraseUI() {
     
@@ -65,13 +60,11 @@ void PhraseUI::updatePhraseUI() {
     }
 }
 
-
+//--------------------------------------------------------------
 //Display phrase UI (add phrase)
 void PhraseUI::displayPhraseUI() {
 
-
-        phraseUIComponents[0]->draw();
-    
+    phraseUIComponents[0]->draw();
     
     if (phrases.size() >= 1) {
         for (int i = 1; i < phraseUIComponents.size(); i++) {
@@ -84,13 +77,14 @@ void PhraseUI::displayPhraseUI() {
     ofSetColor(255);
     
     if (phrases.size() >= 1) {
-    for (int i = currentKeyNotes.size()-1; i > -1; i--) {
-        ofDrawBitmapString((currentKeyNotes[i]), textX, textY + (14*25) - (i * 25));
-    }
+        for (int i = currentKeyNotes.size()-1; i > -1; i--) {
+            ofDrawBitmapString((currentKeyNotes[i]), textX, textY + (14*25) - (i * 25));
+        }
     }
     
 }
 
+//--------------------------------------------------------------
 //Display list of all phrases (all currently made phrases)
 void PhraseUI::displayPhraseList() {
     
@@ -100,7 +94,7 @@ void PhraseUI::displayPhraseList() {
     
 }
 
-
+//--------------------------------------------------------------
 //Display editing mode for currently selected phrase (display the grid of the currently selected phrase)
 void PhraseUI::displaySelectedPhrase() {
  
@@ -135,27 +129,17 @@ void PhraseUI::displaySelectedPhrase() {
             phrases[i]->displayPhraseGrid();
             
             for (int j = 0; j < 16; j++) {
-
-           // ofDrawBitmapString(ofToString(currentMidiNotes[phrases[selectedPhrase]->phraseList[j]]), listX+(j*50), 450);
-            currentPhrase[j] = currentMidiNotes[phrases[selectedPhrase]->phraseList[j]];
-           //     swarmNoteIndexes[j] = phrases[selectedPhrase]->phraseList[j] + 17;
-           //     phraseChanged = true;
-                
+                currentPhrase[j] = currentMidiNotes[phrases[selectedPhrase]->phraseList[j]];
             }
+            
         } else {
             phrases[i]->selectCell->setStripeColor(0);
         }
-
-        
     }
-    
-    
-    
     
 }
 
-
-
+//--------------------------------------------------------------
 void PhraseUI::calculatePhraseKey(int keyType, int tonic) {
     
     currentKeyNotes.clear();
@@ -164,16 +148,10 @@ void PhraseUI::calculatePhraseKey(int keyType, int tonic) {
     int index;
     
     for (int i = 0; i < midiNotes.size(); i++) {
-        
         if (midiNotes[i] == tonic) {
             index = i;
         }
-        
     }
-    
-    
-    
-    
     
     //If major key
     if (keyType == 1) {
@@ -193,8 +171,6 @@ void PhraseUI::calculatePhraseKey(int keyType, int tonic) {
         currentKeyNotes.push_back( notes[index+14] );
         currentKeyNotes.push_back( notes[index+16] );
         currentKeyNotes.push_back( notes[index+17] );
-
-
         
         currentMidiNotes.push_back( midiNotes[index-7] );
         currentMidiNotes.push_back( midiNotes[index-5] );
@@ -211,15 +187,11 @@ void PhraseUI::calculatePhraseKey(int keyType, int tonic) {
         currentMidiNotes.push_back( midiNotes[index+14] );
         currentMidiNotes.push_back( midiNotes[index+16] );
         currentMidiNotes.push_back( midiNotes[index+17] );
-
-
-
         
     }
     
     //If minor key
     if (keyType == 2) {
-        
         
         currentKeyNotes.push_back( notes[index-7] );
         currentKeyNotes.push_back( notes[index-5] );
@@ -237,7 +209,6 @@ void PhraseUI::calculatePhraseKey(int keyType, int tonic) {
         currentKeyNotes.push_back( notes[index+15] );
         currentKeyNotes.push_back( notes[index+17] );
         
-        
         currentMidiNotes.push_back( midiNotes[index-7] );
         currentMidiNotes.push_back( midiNotes[index-5] );
         currentMidiNotes.push_back( midiNotes[index-4] );
@@ -253,15 +224,10 @@ void PhraseUI::calculatePhraseKey(int keyType, int tonic) {
         currentMidiNotes.push_back( midiNotes[index+14] );
         currentMidiNotes.push_back( midiNotes[index+15] );
         currentMidiNotes.push_back( midiNotes[index+17] );
-        
-
-        
     }
-
-
-    
 }
 
+//--------------------------------------------------------------
 void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
     
     
@@ -288,9 +254,7 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
         }
         
         phraseChanged = true;
-        
         id++;
-
     }
     
     
@@ -301,25 +265,16 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
     
     //If delete phrase button is pressed.
     if (e.target == deletePhrase) {
-        
         //Delete button functionality is only used if there is more than 1 phrase currently active.
         if (phrases.size() >= 1) {
-
-
 
             //Set phrase's to be deleted 'displayGrid' to false so previous functions do not try to display it.
             phrases[selectedPhrase]->displayGrid = false;
             
-            
-           // listY-= (phrases[selectedPhrase]->selectCell->getHeight()*(selectedPhrase+1));
-            
-            
             //Delete all phrase cell pointers in the phrase to be deleted.
             for (int i = 0; i < phrases[selectedPhrase]->phraseCells.size(); i++) {
-                
                 delete phrases[selectedPhrase]->phraseCells[i];
             }
-            
             
             //Delete phrase's selectCell button
             delete phrases[selectedPhrase]->selectCell;
@@ -327,12 +282,8 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
             //Delete phrase
             delete phrases[selectedPhrase];
             
-            
-            
             //Erase phrase from vector list.
             phrases.erase(phrases.begin() + selectedPhrase);
-            
-            
             
             //Reset the y coordinate of the buttons to the top of the list and reposition them
             //without the phrase that has now been deleted.
@@ -344,13 +295,11 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
             id = 1;
             
             for (int i = 0; i < phrases.size(); i++) {
-                
                 phrases[i]->selectCell->setPosition(listX, listY);
                 listY+=phrases[i]->selectCell->getHeight();
                 phrases[i]->prevId = phrases[i]->id;
                 phrases[i]->id = id;
                 phrases[i]->selectCell->setLabel("phrase " + ofToString(id));
-               
                 id++;
             }
             
@@ -358,12 +307,10 @@ void PhraseUI::onButtonEvent(ofxDatGuiButtonEvent e) {
                 selectedPhrase = phrases[phrases.size()-1]->id-1;
             }
             
-            
             //ResetPhraseIds signals to ofApp that if the swarms need to check if there selected phrase's id has changed or if it has been deleted.
             resetPhraseIds = true;
 
-
         }
-        
     }
 }
+//--------------------------------------------------------------

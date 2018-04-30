@@ -1,11 +1,7 @@
-//
+//  SWARM KEY
 //  PhraseUI.hpp
-//  abletonDemo
-//
-
 
 #pragma once
-
 
 #ifndef PhraseUI_hpp
 #define PhraseUI_hpp
@@ -17,7 +13,6 @@
 #include "ofxMidi.h"
 
 class PhraseUI {
-    
     
     public:
     
