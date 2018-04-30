@@ -10,30 +10,31 @@
 #include "ofxMaxim.h"
 #include "Particle.hpp"
 
+//--------------------------------------------------------------
 class Swarm {
     
 public:
     
     //MIDI//
-    void openVirtualPort(string portName);
-    void setup(int _channel);
-    void exit();
+    void openVirtualPort(string portName);  //Opening port with correct port name
+    void setup(int _channel);               //Setting up swarm in unique channel
+    void exit();                            //Closing port
     int channel, note, velocity;
-    ofxMidiOut midiOut;
+    ofxMidiOut midiOut;                     //ofxMidi object used to send messages to Ableton
 
 
     //CURRENT KEY//
-    int tonic = 60;                     //Starting scale is C major
-    void inputMotif(int nMotif[16]);    //Takes phrase note sequence as target note sequence
+    int tonic = 60;                         //Starting scale is C major
+    void inputMotif(int nMotif[16]);        //Takes phrase note sequence as target note sequence
     void calculateKey(int start, int type);
-    vector<int> availableNotes;         //Vector to store MIDI note numbers which correspond with the current key.
+    vector<int> availableNotes;             //Vector to store MIDI note numbers which correspond with the current key.
     int notePlayhead = 0;                   //Note playhead to determine which note to play in the sequence
     
     
     //SWARM PLAY FUNCTIONALITY
-    bool play = false;                  //Determines whether to run algorithmic process on swarm
-    bool readyToPlay = false;           //Prepares algorithmic process
-    bool playFinalNote = false;         //Determines whether to play final note
+    bool play = false;                      //Determines whether to run algorithmic process on swarm
+    bool readyToPlay = false;               //Prepares algorithmic process
+    bool playFinalNote = false;             //Determines whether to play final note
     
 
     //PARTICLE POPULATION
@@ -60,28 +61,28 @@ public:
     void disturb();
     
     //Algoirthm variables
-    int N = 75;                 //Number of particles
-    float noteCon = 0.7984;     //Constriction factor
-    float noteC1, noteC2;       //Learning rates
-    float r1, r2;               //Stochastic elements
-    float dt = 0.2;             //Dispersive Flies Optimisation - disturbance threshold
-    Particle best;              //Pointer to best particle of note sequence calculations
-    float bestFitness = 9999999999.;    //Best fitness of swarm
-    int bestIndex;                      //Index of best particle in particles vector
-    int numOfIterations = 1;    //Defined by searchIntensity slider in ofApp, determines how many times to run the algorithmic process.
+    int N = 75;                             //Number of particles
+    float noteCon = 0.7984;                 //Constriction factor
+    float noteC1, noteC2;                   //Learning rates
+    float r1, r2;                           //Stochastic elements
+    float dt = 0.2;                         //Dispersive Flies Optimisation - disturbance threshold
+    Particle best;                          //Pointer to best particle of note sequence calculations
+    float bestFitness = 9999999999.;        //Best fitness of swarm
+    int bestIndex;                          //Index of best particle in particles vector
+    int numOfIterations = 1;                //Defined by searchIntensity slider in ofApp, determines how many times to run the algorithmic process.
     int prevBestIndFreqs[16];
-    int repeated = 0;           //Used to determine how many times the note sequence has been repeated.
+    int repeated = 0;                       //Used to determine how many times the note sequence has been repeated.
     
     //Note sequence interval penalties
-    int firstPen = 10;          //Interval of one (same note)
-    int secondPen = 100;        //Interval of two
-    int thirdPen = 0;           //Interval of three
-    int fourthPen = 50;         //Interval of four
-    int fifthPen = 0;           //Interval of five
-    int sixthPen = 50;          //Interval of six
-    int seventhPen = 100;       //Interval of seven
-    int eighthPen = 0;          //Octave
-    int elsePen = 100;          //Intervals higher than an octave
+    int firstPen = 10;                      //Interval of one (same note)
+    int secondPen = 100;                    //Interval of two
+    int thirdPen = 0;                       //Interval of three
+    int fourthPen = 50;                     //Interval of four
+    int fifthPen = 0;                       //Interval of five
+    int sixthPen = 50;                      //Interval of six
+    int seventhPen = 100;                   //Interval of seven
+    int eighthPen = 0;                      //Octave
+    int elsePen = 100;                      //Intervals higher than an octave
     
     
     //Chords
@@ -127,5 +128,5 @@ public:
     
 
 };
-
+//--------------------------------------------------------------
 #endif /* Swarm_hpp */

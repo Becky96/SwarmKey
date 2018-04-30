@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "ofMain.h"
 
+//--------------------------------------------------------------
 class PhraseCell {
     
 public:
@@ -31,3 +32,5 @@ public:
     bool changedOnce = false;
 };
 #endif /* PhraseCell_hpp */
+//--------------------------------------------------------------
+

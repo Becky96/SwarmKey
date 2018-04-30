@@ -595,7 +595,6 @@ void ofApp::checkPhraseDeleted() {
         //Checking through all phrases that have not been deleted.
         for (int i = 0; i < phraseUI->phrases.size(); i++) {
             
-            
             //If the currently checked phrase's previous id matches the swarm's selected phrase's id, replace the swarm's selected phrase's id with the phrase's new id. This process occurs as an if statement for both Swarm 1 and Swarm 2.
             if (phraseUI->phrases[i]->prevId == swarms[1].phraseId) {
                 swarms[1].phraseId = phraseUI->phrases[i]->id;
@@ -609,9 +608,7 @@ void ofApp::checkPhraseDeleted() {
                 right->currentMotifLabel->setLabel(phraseUI->phrases[i]->selectCell->getLabel() + " selected"); //Replacing label with the phrase's new id.
                 right->phraseIdChanged = true;      //PhraseIdChanged now becomes true to indicate that the phrsae that was deleted was not the phrase used by the swarm.
             }
-
         }
-        
         
         //If boolean remains false, indicates it has been deleted for the specific swarm. Label is relabeled as instruction to select new phrase.
         //Left swarm phrase deleted check.
@@ -639,7 +636,6 @@ void ofApp::checkPhraseDeleted() {
  */
 
 void ofApp::checkPhraseChanged() {
-    
     
     //If a different phrase has been selected on the Phrase List, or if the grid of the currently selected phrase has been altered.
     if (phraseUI->phraseChanged == true) {
@@ -714,7 +710,6 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
     if (e.target == playSwarmsToggle && e.checked == false && startSwarm == true) {
         swarms[1].playFinalNote = true;
         swarms[2].playFinalNote = true;
-        
     }
     
 }
@@ -879,9 +874,6 @@ void ofApp::mouseDragged(int x, int y, int button){
             phraseUI->swarmNoteIndexes[j] = (phraseUI->phrases[phraseUI->selectedPhrase]->phraseList[j]+17);
         }
     }
-    
-
-    
   
 }
 

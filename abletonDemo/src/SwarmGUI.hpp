@@ -8,33 +8,21 @@
 #include "ofxDatGui.h"
 #include "Swarm.hpp"
 
-//Class responsible for the user interface of the swarm it controls.
-//This allows the user to control components of the individual swarm that
-//an object of this class will be responsible for.
-
-//Will control components of swarm such as:
-//-Is swarm playing
-//-Interval distance
-//-Rhythm speed
-//-Velocity
-//-Tempo
-//-Current octave
-
+//--------------------------------------------------------------
+/*Class responsible for the user interface of the swarm it controls. This allows the user to control components of the individual swarm that an object of this class will be responsible for. This will control components of swarm such as melodic intervals, rhythm "speed", distance from target phrase, current target phrase, current velocity, and current octave.*/
 class SwarmGUI {
     
 public:
     
-    int channel;
-    int x, y;
+    int channel;                            //Port channel of individual swarm
+    int x, y;                               //Coordinates of UI components
     int textY;
-    Swarm * swarm;
-    int vel = 3;
+    Swarm * swarm;                          //Pointer to swarm that UI controls
+    int vel = 3;                            //Velocity used when resetting particles
     string label;
     
     SwarmGUI() = default;
     SwarmGUI(int _channel, int _x, int _y, Swarm * _swarm, string _label) : channel(_channel), x(_x), y(_y), swarm(_swarm), label(_label) {}
-
-
     
     void setupInterface();
     void updateInterface();
@@ -42,6 +30,7 @@ public:
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
 
+    //Resetting particle algorithm processes/components is required when changing any of the musical parameters. When a new value has been defined, the search space changes and the particle's best solution found so far may in fact be an entirely weaker solution, and so each best fitness for each musical segment needs to be reset, as well as the best sequences and velocitys to propel particles towards other new solutions.
     void resetParticleIntervals();
     void resetParticleRhythms();
     void resetParticleIntervalVelocity();
@@ -56,13 +45,12 @@ public:
     ofxDatGuiSlider* velocitySlider;
     ofxDatGuiSlider* octaveSlider;
     ofxDatGuiSlider* chordSlider;
-
     ofParameter<int> rhythmInt;
     ofParameter<int> velocityInt;
     ofParameter<int> octaveInt;
     ofParameter<int> chordInt;
     
-    //Vector containing the individual sliders for the desired intervals that the user wants.
+    //Vector containing the individual sliders for the desired user intervals.
     vector<ofxDatGuiComponent*> intervalPenalties;
     ofxDatGuiSlider* firstPen;
     ofxDatGuiSlider* secondPen;
@@ -84,29 +72,22 @@ public:
     ofParameter<int> eighthInt;
     ofParameter<int> elseInt;
     
-   
     vector<ofxDatGuiComponent*> motifComponents;
     ofxDatGuiSlider* desiredRhythmDistSlider;
     ofxDatGuiSlider* desiredNoteDistSlider;
     ofxDatGuiSlider* searchIntensitySlider;
     ofxDatGuiToggle* selectMotifToggle;
     ofxDatGuiLabel* currentMotifLabel;
-    
-    bool assignNewPhrase = false;
-
-    
     ofParameter<int> desiredNoteDistInt;
     ofParameter<int> desiredRhythmDistInt;
     ofParameter<int> searchIntensityInt;
     
-
-    
-    int maxVelocity = 120;
-    int playHead;
-    int UIWidth = 300;
-    float sliderRatio = .45;
-    int phraseId;
-    bool phraseIdChanged = false;
+    bool assignNewPhrase = false;       //Becomes true/false when using 'selectNewMotif' toggle to select/deselect phrases as targets
+    int maxVelocity = 120;              //Maximum output velocity
+    int UIWidth = 300;                  //Width of UI components
+    float sliderRatio = .45;            //Slider ratio of slider component
+    int phraseId;                       //Phrase id of currently selected phrase
+    bool phraseIdChanged = false;       //Responds when phrase id is changed if a phrase has been deleted
 };
-
+//--------------------------------------------------------------
 #endif /* SwarmGUI_hpp */

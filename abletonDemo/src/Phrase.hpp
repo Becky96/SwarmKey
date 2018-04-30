@@ -23,6 +23,7 @@ public:
     void checkGridPressed();                                    //Used to determine which cells have been pressed when the mouse is dragged or released.
     void onButtonEvent(ofxDatGuiButtonEvent e);                 //UI response to selectCell button
 
+    
     //VARIABLES/OBJECTS
     int id;                             //Phrase's personal id
     int prevId;                         //If phrase list is reorganised (when another phrase has been deleted), prevId is used to reselect correct phrase for a swarm if it is using it as a target phrase.

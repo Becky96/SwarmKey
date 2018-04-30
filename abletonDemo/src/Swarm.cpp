@@ -33,7 +33,6 @@ void Swarm::setup(int _channel) {
 
     }
     
-    
     //bestRhythm particle is created and setup to begin the program with a rhythm sequence of (1, 1, 1, 1)
     bestRhythm = *new Particle();
     bestRhythm.setupParticle();
@@ -165,9 +164,9 @@ void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, in
         checkSwarmBest();           //Check whether the particle has a new overall best of the swarm
     
     
-    //This if statement checks whether or not the Swarm is Swarm 1 or Swarm 2. If the swarm is Swarm 1, it will craete new fitnesses for each particle in the population that check the intervals between it's individual note sequence and the note sequence of the best particle of Swarm 2. This allows for a higher chance of more consonant harmonic intervals.
-    //This process is only run for Swarm 1, as it would be meaningless to perform this process for both.
-   if (channel == 1 && desiredNoteDistance != 0) {
+        //This if statement checks whether or not the Swarm is Swarm 1 or Swarm 2. If the swarm is Swarm 1, it will craete new fitnesses for each particle in the population that check the intervals between it's individual note sequence and the note sequence of the best particle of Swarm 2. This allows for a higher chance of more consonant harmonic intervals.
+        //This process is only run for Swarm 1, as it would be meaningless to perform this process for both.
+        if (channel == 1 && desiredNoteDistance != 0) {
        
        
             //Calculate fitness taking into account harmonic intervals with alternate swarm
@@ -178,24 +177,22 @@ void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, in
             checkPersonalBest();
             checkSwarmBest();
    
+        }
+    
+        disturb();                      //Utilising disturbance thresholf
+        updateParticles();              //Updating particles with PSO update equation
+    
+        //If desired phrase distance is more than 0, check that the note sequence has not repeated for more than 2 iterations.
+        if (desiredNoteDistance != 0) {
+            checkRepeat();
+        }
+    
+    
+        for (int i = 0; i < particles.size(); i++) {
+            particles[i]->fitness = 0;
+        }
     }
     
-    disturb();
-    updateParticles();
-    
-    
-    if (desiredNoteDistance != 0) {
-        checkRepeat();
-    }
-    
-    
-    for (int i = 0; i < particles.size(); i++) {
-        particles[i]->fitness = 0;
-    }
-    }
-    
-    
-
 }
 
 //--------------------------------------------------------------
