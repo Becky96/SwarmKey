@@ -52,7 +52,7 @@ void SwarmGUI::setupInterface() {
     
     y+=20;
     
-    desiredRhythmDistSlider = new ofxDatGuiSlider(desiredRhythmDistInt.set("Rhythm speed", swarm->dimensionalityMotif, 1, 16));
+    desiredRhythmDistSlider = new ofxDatGuiSlider(desiredRhythmDistInt.set("Rhythm speed", 4, 1, 16));
     desiredRhythmDistSlider->setPosition(x, y);
     desiredRhythmDistSlider->setWidth(UIWidth, sliderRatio);
     desiredRhythmDistSlider->onSliderEvent(this, &SwarmGUI::onSliderEvent);

@@ -20,25 +20,42 @@ class Swarm {
     
 public:
     
+    //MIDI//
     void openVirtualPort(string portName);
-    
     void setup(int _channel);
-    
-    void inputMotif(int nMotif[16]);
     void exit();
-    
+    int channel, note, velocity;
     ofxMidiOut midiOut;
 
 
-    //Starting scale is C major
-    int tonic = 60;
+    //CURRENT KEY//
+    int tonic = 60;                     //Starting scale is C major
+    void inputMotif(int nMotif[16]);    //Takes phrase note sequence as target note sequence
+    void calculateKey(int start, int type);
+    vector<int> availableNotes;         //Vector to store MIDI note numbers which correspond with the current key.
+    int notePlayhead = 0;                   //Note playhead to determine which note to play in the sequence
     
-    int channel, note, velocity;
     
-    int tempo = 120;
+    //SWARM PLAY FUNCTIONALITY
+    bool play = false;                  //Determines whether to run algorithmic process on swarm
+    bool readyToPlay = false;           //Prepares algorithmic process
+    bool playFinalNote = false;         //Determines whether to play final note
+    
+
+    //PARTICLE POPULATION
+    vector<Particle*> particles;
     
     
-    //Algorithm functions
+    //PHRASES
+    int noteMotif[16] = {21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21}; //Array holds note sequence of target phrase's note sequence
+    int desiredNoteDistance = 0;            //Desired input from target phrase
+    int phraseId;                           //Id of target phrase
+    int noteMotifOctaves[16];               //Used to store octaves of phrase target note sequence's octaves
+    int distMotifOctave;                    //Stores distance between user-preferred octave and octave of candidate solution.
+    int chosenOctave;                       //User-defined octave
+
+    
+    //NOTE SEQUENCE//
     void run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, int alternateNotePlayhead);
     void fitness();
     void checkPersonalBest();
@@ -48,53 +65,36 @@ public:
     void checkRepeat();
     void disturb();
     
-    int previousBestFitness;
-    
-    void display();
-    
-    int repeated = 0;
-    
     //Algoirthm variables
-    vector<Particle*> particles;
     int N = 75;                 //Number of particles
-    float noteCon = 0.7984;         //Constriction factor
-    float noteC1, noteC2;               //Learning rates
+    float noteCon = 0.7984;     //Constriction factor
+    float noteC1, noteC2;       //Learning rates
     float r1, r2;               //Stochastic elements
-    Particle best;
-
-    
-    float rhythmCon = 0.4;
-    float rhythmC1, rhythmC2;
-
+    float dt = 0.2;             //Dispersive Flies Optimisation - disturbance threshold
+    Particle best;              //Pointer to best particle of note sequence calculations
+    float bestFitness = 9999999999.;    //Best fitness of swarm
+    int bestIndex;                      //Index of best particle in particles vector
+    int numOfIterations = 1;    //Defined by searchIntensity slider in ofApp, determines how many times to run the algorithmic process.
     int prevBestIndFreqs[16];
+    int repeated = 0;           //Used to determine how many times the note sequence has been repeated.
     
-    
-    float dt = 0.2; //Like DFO
-
-
-    void calculateKey(int start, int type);
-   
-    vector<int> availableNotes;
-    
-    
-    float bestFitness = 9999999999.;
-    
-    int bestIndex;
-    
-    
-    int firstPen = 10;         //Interval of one (same note)
-    int secondPen = 100;      //Interval of two
-    int thirdPen = 0;        //Interval of three
-    int fourthPen = 50;      //Interval of four
-    int fifthPen = 0;         //Interval of five
-    int sixthPen = 50;        //Interval of six
+    //Note sequence interval penalties
+    int firstPen = 10;          //Interval of one (same note)
+    int secondPen = 100;        //Interval of two
+    int thirdPen = 0;           //Interval of three
+    int fourthPen = 50;         //Interval of four
+    int fifthPen = 0;           //Interval of five
+    int sixthPen = 50;          //Interval of six
     int seventhPen = 100;       //Interval of seven
     int eighthPen = 0;          //Octave
-    int elsePen = 100;                //Other inval
-
-    int numOfIterations = 1;
+    int elsePen = 100;          //Intervals higher than an octave
     
-    //Rhythm
+    
+    //Chords
+    int chordPotential = 0;                 //Used to determine likelihood of playing chord
+
+    
+    //RHYTHM//
     //Rhythm functionality
     void runRhythm();
     void fitnessRhythm();
@@ -103,86 +103,35 @@ public:
     void updateParticlesRhythm();
     void createSequenceRhythm(int d, Particle * p);
     
-    int chosenDimension;
+    //Algorithm variables
+    float rhythmCon = 0.4;                  //Constraint factor
+    float rhythmC1, rhythmC2;               //Learning coefficients
+    int targetDimensionality;               //The target rhythm dimensionality as defined as the user
     float validDurations[5] = {4, 2, 1, 0.5, 0.25};
-    vector<float> validDur;
-    int bestFitnessRhythm = 200000;
-    Particle bestRhythm;
-    
-    int chosenOctave = 4;
-    int determineParticleOctave(int index);
-    
-    
-    bool play = false;
-    bool readyToPlay = false;
-    
-    int stressedVelocity;
-    int notStressedVelocity;
-    
-    
-    //Velocity
-    void runVelocity();
-    void fitnessVelocity();
-    void checkPersonalBestVelocity();
-    void calculateBestVelocity();
-    void updateParticleVelocity();
-    
-    int desiredVelocity = 40;
+    vector<float> validDur;                 //Vector holding the available note durations: 4, 2, 1, 0.5, 0.25
+    int bestFitnessRhythm = 200000;         //Global best fitness
+    Particle bestRhythm;                    //Pointer to particle with best rhythm sequence
+    int chosenDimension;                     //User defined preferred rhythm dimensionality
 
-    int bestParticleSwarmVelocity;
-    float bestVelocityFitness = 999;
     
-    float velocityCon = 0.7;
-    float velocityC1, velocityC2;
+    //VELOCITY//
+    void runVelocity();                     //Encompasses all following algorithm functions
+    void fitnessVelocity();                 //Determine particle's velocity fitness
+    void checkPersonalBestVelocity();       //Determine whether their current velocity is a new personal best
+    void calculateBestVelocity();           //Determine whether their current velocity is a new swarm best
+    void updateParticleVelocity();          //Update velocity using PSO equation
+    
+    //Algorithm variables
+    float velocityCon = 0.7;                //Constraint factor
+    float velocityC1, velocityC2;           //Learning coefficients
+    int desiredVelocity = 80;               //Initial desired velocity when prorgam is launched
+    int bestParticleSwarmVelocity;          //Best velocity of the swarm
+    float bestVelocityFitness = 999;        //Global best fitness
+    int maxVelocity = 120;                  //Maximum possible velocity to output
+    int stressedVelocity;                   //Velocity of bars 1st note
+    int notStressedVelocity;                //Velocity of following notes
+    
 
-    int notePlayhead = 0;
-    
-    int maxVelocity = 80;
-    
-    //Motif/Phrase
-    int desiredRhythmDistance = 0;
-    int desiredNoteDistance = 0;
-    int targetDimensionality;
-    
-    //Note motif of continuous tonic of whatever key currently in.
-    int noteMotif[16] = {21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21};
-    int originalMotif[16];
-    int rhythmMotif[16] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
-    int dimensionalityMotif = 4;
-    
-    
-    int chordPotential = 0;
-    int prevChordPotential;
-    int chordBestFitness = 9999;
-    int bestChord[3];
-    
-    float chordCon = 0.78;
-    float chordC1, chordC2;
-    
-    void runChord(int notePlayhead);
-    void randomiseParticleChord(int p);
-    void removeParticleChordIndex();
-    void fitnessChord();
-    void checkPersonalBestChord();
-    void checkBestChord();
-    void updateParticleChord();
-    
-    int currentNotePlayhead;
-    
-    
-    
-    //Octave
-    int noteMotifOctaves[16];
-    int distMotifOctave;
-    
-    bool playFinalNote = false;
-    
-    
-    void visualisation();
-    float vX = 800, vY = 300;
-    
-    
-    int phraseId;
 };
 
 #endif /* Swarm_hpp */
