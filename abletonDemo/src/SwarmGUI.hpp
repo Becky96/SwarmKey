@@ -18,7 +18,7 @@ public:
     int x, y;                               //Coordinates of UI components
     int textY;
     Swarm * swarm;                          //Pointer to swarm that UI controls
-    int vel = 3;                            //Velocity used when resetting particles
+    int vel = 2;                            //Velocity used when resetting particles
     string label;
     
     SwarmGUI() = default;

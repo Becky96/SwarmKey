@@ -161,7 +161,7 @@ void ofApp::draw(){
     } else {
         
         
-        displayAreaSegments();          //Display the lines that segment the screen into the different functionality areas.
+        //displayAreaSegments();          //Display the lines that segment the screen into the different functionality areas.
         
         checkPhraseDeleted();           //Function monitors whether a phrase has been deleted from the current phrase list.
         
@@ -286,6 +286,7 @@ void ofApp::sendMIDI() {
                                 //If r is smaller than the swarm's chordPotential, then a note with an interval of 3 against the current note to be played is directed to be played at the same time also.
                                 if (r < swarms[1].chordPotential) {
                                     swarms[1].midiOut.sendNoteOn(swarms[1].channel, swarms[1].availableNotes[swarms[1].best.indFreqs[swarms[1].notePlayhead%16]+2], swarms[1].bestParticleSwarmVelocity-20);
+
                                 }
                                 
                                 //The value of r is recorded in valR1 in order to determine whether a chord has been played and if so, to ensure that a MIDI message is sent to turn the additional note(s) off.
@@ -398,6 +399,7 @@ void ofApp::sendMIDI() {
                                     swarms[2].midiOut.sendNoteOn(swarms[2].channel, swarms[2].availableNotes[swarms[2].best.indFreqs[swarms[2].notePlayhead%16]+4], swarms[2].bestParticleSwarmVelocity-20);
                                 }
                                 val2R = r;      //r is saved into val2R to determine whether to turn off additional note through MIDI message.
+
                             }
                             
                             
@@ -476,6 +478,7 @@ void ofApp::checkSwarmsStopPlaying() {
     if (swarms[1].readyToPlay == false && swarms[2].readyToPlay == false && swarms[1].play == false && swarms[2].play == false && swarms[1].playFinalNote == false && swarms[2].playFinalNote == false) {
         startSwarm = false;
     }
+    
 }
 
 //--------------------------------------------------------------
@@ -488,9 +491,9 @@ void ofApp::checkSwarmsPlaying() {
         //VELOCITY//
         //If swarm one has played a note, run the PSO algorithmic process to update the swarm's velocity.
         if (noteChangeLeft == true) {
+            
             swarms[1].runVelocity();            //PSO process for Swarm 1 velocity.
             noteChangeLeft = false;             //noteChangeLeft becomes false until the next note has been played, and then will run this process again.
-            
         }
         
         
@@ -498,14 +501,12 @@ void ofApp::checkSwarmsPlaying() {
         if (noteChangeRight == true) {
             swarms[2].runVelocity();            //PSO process for Swarm 2 velocity.
             noteChangeRight = false;            //noteChangeRight becomes false until the next note has been played, and then will run this process again.
-            
         }
         
         
         //RHYTHM AND NOTE SEQUENCES//
         //Determine whether to change perform PSO process on rhythm and note sequences when each swarm's individual rhythm sequence has finished. As each rhythm sequence adds up to a total of 4, both rhythm sequences will finish at the same time and so will perform the algorithmic process at the same time.
         if (changeRhythm == true && changeRhythmInt % 1 == 0) {
-            
             
             //Performing PSO processes for Swarm 2
             if (swarms[2].play == true) {

@@ -17,7 +17,7 @@ class ofApp : public ofBaseApp{
 
 	public:
     
-        //ORDER OF OFAPP FUNCTIONS//
+        //OFAPP FUNCTIONS//
         void loadFonts();                                 //Loading fonts required for app text.
         void setupUI();                                   //Setup UI appearence/options
 		void setup();

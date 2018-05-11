@@ -85,6 +85,8 @@ void Swarm::setup(int _channel) {
         prevBestIndFreqs[i] = 100;
     }
 
+    //Setting initial rhythms to 4
+    targetDimensionality;
     
  
     
@@ -93,15 +95,22 @@ void Swarm::setup(int _channel) {
 /*This function takes the selected phrase note sequence and sets it to the swarms target note sequence. This is called whenever a new phrase is selected for the Swarm's target, or when the Swarm's currently selected phrase is altered.*/
 void Swarm::inputMotif(int nMotif[16]) {
     
+    
     //Assigning note motif as sthe new swarm warm note motif
     for (int i = 0; i < 16; i++) {
         noteMotif[i] = nMotif[i];
     }
+
     
     //Calculating octaves of the input target note sequence
     for (int i = 0; i < 16; i++) {
         noteMotifOctaves[i] = (floor(noteMotif[i])/7)+1;
     }
+    
+    chosenOctave = noteMotifOctaves[0];
+    distMotifOctave = chosenOctave - noteMotifOctaves[0];
+    
+    desiredVelocity = 60;
 
 }
 
@@ -144,6 +153,9 @@ void Swarm::calculateKey(int start, int type) {
             availableNotes.push_back((start+(i*12))+10);
         }
     }
+    
+    
+    cout << availableNotes.size() << endl;
 
 }
 
@@ -157,16 +169,17 @@ void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, in
     //numOfIterations is defined by the 'searchIntensity' slider.
     //When the program is run, it is by default set to 1.
     //By increasing this number, there is a far higher chance of the swarm finding the correct note sequence at a faster rate.
-    for (int i = 0; i < numOfIterations; i++) {
+        for (int i = 0; i < numOfIterations; i++) {
         
         fitness();                  //Calculate the fitness of each particle
         checkPersonalBest();        //Check whether the particle has a new personal best
         checkSwarmBest();           //Check whether the particle has a new overall best of the swarm
     
     
+        
         //This if statement checks whether or not the Swarm is Swarm 1 or Swarm 2. If the swarm is Swarm 1, it will craete new fitnesses for each particle in the population that check the intervals between it's individual note sequence and the note sequence of the best particle of Swarm 2. This allows for a higher chance of more consonant harmonic intervals.
         //This process is only run for Swarm 1, as it would be meaningless to perform this process for both.
-        if (channel == 1 && desiredNoteDistance != 0) {
+       if (channel == 1 && bestFitness > 0) {
        
        
             //Calculate fitness taking into account harmonic intervals with alternate swarm
@@ -182,17 +195,18 @@ void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, in
         disturb();                      //Utilising disturbance thresholf
         updateParticles();              //Updating particles with PSO update equation
     
-        //If desired phrase distance is more than 0, check that the note sequence has not repeated for more than 2 iterations.
-        if (desiredNoteDistance != 0) {
-            checkRepeat();
+        
+        for (int p = 0; p < particles.size(); p++) {
+            particles[p]->fitness = 0;
         }
     
     
-        for (int i = 0; i < particles.size(); i++) {
-            particles[i]->fitness = 0;
+        /*
+        diversityAnalysis();
+        //errorAnalysis();
+        iteration++;
+        */
         }
-    }
-    
 }
 
 //--------------------------------------------------------------
@@ -234,7 +248,7 @@ void Swarm::harmonicIntervalFitness(Swarm *alternateSwarm, int rhythmPlayhead, i
                         
                     //Add 'bonuses' to intervals of 1, 3, and 5 as we do want occurances of these harmonic intervals.
                     } else if (interval % 7 == 0 || interval % 7 == 2 || interval % 7 == 4) {
-                        harmonicIntervalSum -= 1000;
+                        harmonicIntervalSum -= 5000;
                     }
                     
                     //Increment the note playheads to calculate other following harmonic intervals within the particle sequences.
@@ -315,9 +329,13 @@ void Swarm::fitness() {
          This calculates an overall distance of the note sequence that the particle offers and the inputted phrase by the user.
          
          */
+        
          for (int j = 0; j < 16; j++) {
             
-            noteDistance += ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]) * ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]);
+          //  noteDistance += ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]) * ( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]);
+             
+             noteDistance += abs( (noteMotif[j]+(distMotifOctave*7)) - particles[i]->indFreqs[j]);
+
 
         }
         
@@ -325,13 +343,15 @@ void Swarm::fitness() {
         //The fitness sum of the particle becomes the desired distance (that the user would like) subtracted from the desired phrase ditance the user would like.
         //For example, if the desired phrase distance is 0, the user would like the swarm to search for the precise phrase notes (in the desired octave). The larger the distance inputted by the user, the further away from the original phrase they would like the current output to sound.
         //Melodic intervals are not accounted for when the desiredNoteDistance is 0, as the swarm should only search for the direct notes inputted in the phrase.
-        fitnessSum = (abs(desiredNoteDistance - noteDistance)*1000);
+        fitnessSum = (abs(desiredNoteDistance - noteDistance) * 1000);
+
+
         
         
         
         //If the desired note distance is not 0 (the particle is not aiming towards the current inputted phrase, then the melodic intervals that the user would like is
         //evaluated using the interactive penalties that the user can alter.
-        if (desiredNoteDistance != 0) {
+       if (desiredNoteDistance != 0) {
             
             
         //Array to store melodic intervals of the candidate solution.
@@ -417,45 +437,14 @@ void Swarm::fitness() {
             
    
         }
-            
-            
-            //Determine fitness based on whether particle candidate solution adheres to an ascending or descending contour.
-            //The sign of the first interval is calculated to determine whether there is a descending or ascending route from the first note sequence note to the second. All other intervals are then assessed to check whether they follow the same ascending or descending pattern.
-            //This is to stop a 'random' feeling in the output, which as humans we are able to detect if there is not a logical contour in note sequences.
-            int barSign = ofSign(intervals[0]);
-            for (int j = 0; j < 15; j++) {
-                if (barSign == 0) {
-                    
-                    if (intervals[j+1] == 0) {
-                        fitnessSum+=100000;
-                    }
-                }
-                
-                if (barSign == -1) {
-                    if (intervals[j+1] > intervals[j]) {
-                        fitnessSum+=100000;
-                    }
-                    
-                } else if (barSign == 1) {
-                    if (intervals[j+1] < intervals[j]) {
-                        fitnessSum+=100000;
-                
-                    }
-                }
-                
-                if (intervals[j+1] > 7) {
-                    fitnessSum+=500000;
-                }
-            }
+           
+           
+
+       }
         
-        }
-    
-        //Particles fitness adds the fitnessSum variable to its overall fitness.
-        //For Swarm 1, this now becomes an overall sum of this fitnessSum, and the fitnessSum calculated by the harmonic intervals.
         particles[i]->fitness += fitnessSum;
-        
+
     }
-    
     
 }
 //--------------------------------------------------------------
@@ -518,68 +507,6 @@ void Swarm::updateParticles() {
     }
 }
 
-//--------------------------------------------------------------
-/*This function aids the swarm in becoming "unstuck" in a sequence that is a local optima as defined by the fitness function. This also allows for variation by taking the repeated sequence and changing it slightly, similar to the mutation operation of a genetic algorithm.
- When the desired phrase distance is more than 0, in order to stop the current best-defined note sequence from being repeated for too many iterations, a check is implemented that will spur particles to explore more of the search space in order to discover other viable solutions.*/
-void Swarm::checkRepeat() {
-    
-    int indexCheck = 0;
-    
-    //Check if previous frequency indexes of the last iteration matches the current frequency indexes of the current iteration of the best particle.
-    //If yes, increment for each
-    for (int i = 0; i < 16; i++) {
-        if (prevBestIndFreqs[i] == best.indFreqs[i]) {
-            indexCheck++;
-        }
-    }
-    
-    //If all indexes matched, this means that the note sequence is the same and so 'repeated' is incremented by 1. 2 repetitions are allowed before forcing best particle to randomise or vary
-    if (indexCheck == 16) {
-        repeated++;
-    }
-    
-    //If sequence has been repeated twice, loop through all particles and randomly reset some of them based upon random variable r. Also using a random variable, alter some of the values of the best particle's indFreq array to hopefully create some variation of the sequence.
-    if (repeated == 2) {
-        
-        //Loop through all particles
-        for (int i= 0; i < N; i++) {
-            
-            float r = ofRandom(1);
-            
-            //If r is larger than 0.75, displace the particle's note sequence by a note one above or below the current note.
-            if (r > 0.75) {
-                for (int j = 0; j < 16; j++) {
-                    if (particles[i]->indFreqs[j] >= 2 && particles[i]->indFreqs[j] <= availableNotes.size()-1) {
-                    particles[i]->indFreqs[j] = particles[i]->indFreqs[j]+int(ofRandom(-1, 1));
-                    }
-                }
-            }
-        }
-        
-        
-        //All 16 notes of the sequences are iterated through, if the value of r is larger than 0.25, displace the specific note by either 2 notes above or below the current note.
-        for (int i = 0; i < 16; i++) {
-            float r = ofRandom(1);
-            
-            if (r > 0.25) {
-                best.indFreqs[i] = best.indFreqs[i]+int(ofRandom(-2, 2));
-                prevBestIndFreqs[i] = 100;
-            }
-        }
-        
-        //Reset repeated to 0
-        repeated = 0;
-
-    } else {
-        
-        //If the note sequence has not been repeated, set the previousBestIndFreqs to best.indFreqs to check in the next iteration.
-        for (int i = 0; i < 16; i++) {
-            
-            prevBestIndFreqs[i] = best.indFreqs[i];
-            
-        }
-    }
-}
 
 //--------------------------------------------------------------
 /*This function borrows the disturbance threshold mechanism from Dispersive Flies Optimisation in order to increase diversity among the population. If the randomly generated variable r exceeds a certain variable, the particle will reset its note sequence to discover potentially stronger soltuions.*/
@@ -604,6 +531,74 @@ void Swarm::disturb() {
 }
 
 //--------------------------------------------------------------
+/*This function calculates the diversity of the particle's note sequences.
+ This is assessed by altering the disturbance threshold parameter to note its affect on diversity, the behaviour exploration and exploitation of the particles in the search space.*/
+void Swarm::diversityAnalysis() {
+    
+    //Clear all note dimension averages and diversity values
+    for (int j = 0; j < 16; j++) {
+        noteDimensionsAverage[j] = 0.;
+    }
+    noteDiversity = 0.;
+    
+    //Looping through all dimensions
+    for (int j = 0; j < 16; j++) {
+        
+        //Loop through all particles
+        for (int i = 0; i < N; i++) {
+            
+            //Summing the total of all particles' value of the current dimension
+            noteDimensionsAverage[j] += particles[i]->indFreqs[j];
+        }
+    }
+    
+    
+    
+    //Transforming each dimension sum into the average of the particles values.
+    for (int j = 0; j < 16; j++) {
+        noteDimensionsAverage[j] /= N;
+    }
+    
+    //Calculating diversity
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < 16; j++) {
+                noteDiversity += (particles[i]->indFreqs[j] - noteDimensionsAverage[j]) * (particles[i]->indFreqs[j] - noteDimensionsAverage[j]);
+        }
+    }
+    
+    //Creating average of all dimension averages
+    noteDiversity = sqrt(noteDiversity);
+    noteDiversity /= N;
+
+    if (iteration % 50 == 0) {
+        
+        noteDiversityCoord.push_back("(" + ofToString(iteration) + ", " + ofToString(noteDiversity) + ")");
+        bestFitnessCoord.push_back("(" + ofToString(iteration) + ", " + ofToString(bestFitness) + ")");
+        cout << iteration << endl;
+        
+        /*cout << iteration << ": note diversity: " << noteDiversity << endl;
+        cout << iteration << ": best fitness: " << bestFitness << endl;
+        cout << iteration << ": best note sequence: " << best.indFreqs[0] << ", " << best.indFreqs[1] << ", " << best.indFreqs[2] << ", " << best.indFreqs[3] << ", " << best.indFreqs[4] << ", " << best.indFreqs[5] << ", " << best.indFreqs[6] << ", " << best.indFreqs[7] << ", " << best.indFreqs[8] << ", " << best.indFreqs[9] << ", " << best.indFreqs[10] << ", " << best.indFreqs[11] << ", " << best.indFreqs[12] << ", " << best.indFreqs[13] << ", " << best.indFreqs[14] << ", " << best.indFreqs[15] << ", " << endl;*/
+    }
+
+}
+
+//--------------------------------------------------------------
+/*This function calculates the error margin of the algorithm. This is the absolute value of the distance between the best-found candidate solution, and the optimal solution, which in the case of this application is the target phrase note sequence when the defined phrase distance is 0.*/
+void Swarm::errorAnalysis() {
+    
+    //Resetting note error for each iteration
+    noteError = 0;
+    
+    for (int j = 0; j < 16; j++) {
+        noteError += abs(best.indFreqs[j] - noteMotif[j]);
+    }
+    
+    if (iteration % 50 == 0) {
+        cout << iteration << ": note error: " << noteError << endl;
+    }
+}
+//--------------------------------------------------------------
 /*Closing the MIDI port when the program is closed.*/
 void Swarm::exit() {
     midiOut.closePort();
@@ -613,17 +608,20 @@ void Swarm::exit() {
 /*This function encompasses the algorithmic processes for the rhythm candidate solutions of the particles.*/
 void Swarm::runRhythm() {
     
-    //Check fitness of particle's candidate solutions
-    fitnessRhythm();
+       
+        //Check fitness of particle's candidate solutions
+        fitnessRhythm();
+        
+        //Evaluate if candidate solution is particle's new personal best
+        checkPersonalBestRhythm();
+        
+        //Evaluate if candidate solution is best solution of the swarm
+        calculateBestRhythm();
+        
+        //Perform update process on rhythm candidate soltuion
+        updateParticlesRhythm();
+        
     
-    //Evaluate if candidate solution is particle's new personal best
-    checkPersonalBestRhythm();
-    
-    //Evaluate if candidate solution is best solution of the swarm
-    calculateBestRhythm();
-    
-    //Perform update process on rhythm candidate soltuion
-    updateParticlesRhythm();
 }
 
 //--------------------------------------------------------------
@@ -631,20 +629,10 @@ void Swarm::runRhythm() {
 void Swarm::fitnessRhythm() {
     
     //Checking each particle's rhythm candidate solution
-    for (int i = 0; i < N; i++) {
-        
-        //Variable to store overall fitness
-        float fitnessSum = 0;
-
-        //Rhythm distance evaluates as the particle's distance from the chosen dimensionality
-        double rhythmDistance = 0;
-        rhythmDistance = abs(targetDimensionality-particles[i]->dimensionality);
-        
-        //Fitness sum evaluates as the particle's distance from the target rhythm dimensionality
-        fitnessSum = (rhythmDistance);
+    for (int i = 0; i < rhythmPopSize; i++) {
    
         //Particle's fitness for rhythm component equates to overall fitness sum.
-        particles[i]->fitnessRhythm = fitnessSum;
+        particles[i]->fitnessRhythm = abs(targetDimensionality-particles[i]->dimensionality)*100;
         
     }
 }
@@ -654,7 +642,7 @@ void Swarm::fitnessRhythm() {
 void Swarm::checkPersonalBestRhythm() {
     
     //Loop through all particles
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < rhythmPopSize; i++) {
         
         
         /*If the particle's current fitness for it's rhythm candidate solution is less than its overall best rhythm fitness, its 'bestRhythm' vector, storing it's previous best rhythm sequence, is cleared and the variable storing the number for it's previous best rhythm dimensionality is replaced with its current rhythm sequence and rhythm dimensionality.*/
@@ -682,7 +670,7 @@ void Swarm::checkPersonalBestRhythm() {
 /*This function determines if any particle offers a rhythm candidate solution that is 'stronger' than any previous candidate solutions in the overall swarm.*/
 void Swarm::calculateBestRhythm() {
     
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < rhythmPopSize; i++) {
         
         //If rhythm fitness is lower than the previous global best rhythm fitness of the swarm, assign the 'bestRhythm' particle to point at the particle that offers the new fittest solution.
         if (particles[i]->fitnessRhythm < bestFitnessRhythm) {
@@ -702,7 +690,7 @@ void Swarm::calculateBestRhythm() {
 /*This function contains the PSO rhythm update process for each particle. The velocity is calculated using the PSO algorithm equation, and then added to the particle's 'dimensionality' value. Based upon the new 'dimensionality' number, which is clamped between 1 and 16 to allow for valid rhythm sequences, the particle's 'rhythm' and 'hit' vectors are recalculated.*/
 void Swarm::updateParticlesRhythm() {
     
-    for (int i = 0; i < particles.size(); i++) {
+    for (int i = 0; i < rhythmPopSize; i++) {
         
         //Clear particle vectors that store the numeric rhythm values and hits of the rhythm to update their dimensionality and create new rhythm and hit sequences.
         particles[i]->rhythm.clear();
@@ -893,6 +881,65 @@ void Swarm::createSequenceRhythm(int d, Particle * p) {
 }
 
 //--------------------------------------------------------------
+/*This function calculates the diversity of the particle's note sequences.
+ This is assessed by altering the disturbance threshold parameter to note its affect on diversity, the behaviour exploration and exploitation of the particles in the search space.*/
+void Swarm::rhythmDiversityAnalysis() {
+
+    
+    //Reset average and diversity
+    rhythmAverage = 0;
+    rhythmDiversity = 0;
+    
+
+        
+        //Loop through all particles
+        for (int i = 0; i < rhythmPopSize; i++) {
+            
+            //Summing the total of all particles' value of the current dimension
+            rhythmAverage += particles[i]->dimensionality;
+        }
+    
+    
+
+    //Transforming each dimension sum into the average of the particles values.
+        rhythmAverage /= rhythmPopSize;
+    
+    //Calculating diversity
+    for (int i = 0; i < rhythmPopSize; i++) {
+            rhythmDiversity += (particles[i]->dimensionality - rhythmAverage) * (particles[i]->dimensionality - rhythmAverage);
+    }
+    
+
+    //Creating overall average of rhythm
+    rhythmDiversity = sqrt(rhythmDiversity);
+    rhythmDiversity /= rhythmPopSize;
+    
+
+    
+    if (iteration % 1 == 0) {
+        
+        rhythmDiversityCoord.push_back("(" + ofToString(iteration) + ", " + ofToString(rhythmDiversity) + ")");
+        cout << iteration << endl;
+    }
+    
+}
+
+//--------------------------------------------------------------
+/*This function calculates the error margin of the algorithm. This is the absolute value of the distance between the best-found candidate solution, and the optimal solution, which in the case of this application is the target phrase note sequence when the defined phrase distance is 0.*/
+void Swarm::rhythmErrorAnalysis() {
+    
+    //Resetting note error for each iteration
+    rhythmError = 0;
+    
+    rhythmError = abs(bestRhythm.dimensionality - targetDimensionality);
+    
+    if (iteration % 1 == 0) {
+        rhythmErrorCoord.push_back("(" + ofToString(iteration) + ", " + ofToString(rhythmError) + ")");
+    }
+}
+
+
+//--------------------------------------------------------------
 //VELOCITY FUNCTIONALITY
 //--------------------------------------------------------------
 /*This function encompassess all of the algorithmic processes for the velocity candidate solutions.*/
@@ -902,6 +949,11 @@ void Swarm::runVelocity() {
     checkPersonalBestVelocity();        //Checking whether each particle's current fitness is a new personal best
     calculateBestVelocity();            //Checking whether each particle's current fitness is a new global best
     updateParticleVelocity();           //Updating the particle's velocity candidate solution
+    
+    //Analysis functionality
+    //velocityDiversityAnalysis();
+    //velocityErrorAnalysis();
+    //iteration++;
     
 }
 
@@ -965,5 +1017,62 @@ void Swarm::updateParticleVelocity() {
 }
 
 //--------------------------------------------------------------
+//--------------------------------------------------------------
+/*This function calculates the diversity of the particle's note sequences.
+ This is assessed by altering the disturbance threshold parameter to note its affect on diversity, the behaviour exploration and exploitation of the particles in the search space.*/
+void Swarm::velocityDiversityAnalysis() {
+    
+    
+    //Reset average and diversity
+    velocityAverage = 0;
+    velocityDiversity = 0;
+    
+    
+    //Loop through all particles
+    for (int i = 0; i < N; i++) {
+        
+        //Summing the total of all particles' value of the current dimension
+        velocityAverage += particles[i]->velocity;
+    }
+    
+    
+    
+    
+    //Transforming each dimension sum into the average of the particles values.
+    velocityAverage /= N;
+    
+    //Calculating diversity
+    for (int i = 0; i < N; i++) {
+        velocityDiversity += (particles[i]->velocity - velocityAverage) * (particles[i]->velocity - velocityAverage);
+    }
+    
+    
+    //Creating overall average of rhythm
+    velocityDiversity = sqrt(velocityDiversity);
+    velocityDiversity /= N;
+    
+    
+    
+    if (iteration % 1 == 0) {
+        
+        velocityDiversityCoord.push_back("(" + ofToString(iteration) + ", " + ofToString(velocityDiversity) + ")");
+        cout << iteration << endl;
+    }
+    
+}
+
+//--------------------------------------------------------------
+/*This function calculates the error margin of the algorithm. This is the absolute value of the distance between the best-found candidate solution, and the optimal solution, which in the case of this application is the target phrase note sequence when the defined phrase distance is 0.*/
+void Swarm::velocityErrorAnalysis() {
+    
+    //Resetting note error for each iteration
+    velocityError = 0;
+    
+    velocityError = abs(bestParticleSwarmVelocity - desiredVelocity);
+    
+    if (iteration % 1 == 0) {
+        velocityErrorCoord.push_back("(" + ofToString(iteration) + ", " + ofToString(velocityError) + ")");
+    }
+}
 
 

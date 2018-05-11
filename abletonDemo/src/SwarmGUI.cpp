@@ -316,8 +316,7 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     //Motif sliders
     //DesiredNoteSlider defines the distance the user would like from the target phrase. Reset all particle note sequence velocities to provoke particles to discover new solutions.
     if (e.target == desiredNoteDistSlider) {
-        swarm->desiredNoteDistance = e.value;
-        swarm->targetDimensionality = e.value;
+        swarm->desiredNoteDistance = int(e.value/4);
         resetParticleIntervals();
     }
     
