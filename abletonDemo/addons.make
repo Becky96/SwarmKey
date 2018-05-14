@@ -1,3 +1,0 @@
-ofxDatGui-master
-ofxMaxim
-ofxMidi
