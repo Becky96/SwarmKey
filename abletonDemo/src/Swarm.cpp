@@ -179,7 +179,7 @@ void Swarm::run(Swarm * alternateSwarm, int rhythmPlayhead, int notePlayhead, in
         
         //This if statement checks whether or not the Swarm is Swarm 1 or Swarm 2. If the swarm is Swarm 1, it will craete new fitnesses for each particle in the population that check the intervals between it's individual note sequence and the note sequence of the best particle of Swarm 2. This allows for a higher chance of more consonant harmonic intervals.
         //This process is only run for Swarm 1, as it would be meaningless to perform this process for both.
-       if (channel == 1 && bestFitness > 0) {
+       if (channel == 1 && desiredNoteDistance > 0) {
        
        
             //Calculate fitness taking into account harmonic intervals with alternate swarm
@@ -265,7 +265,7 @@ void Swarm::harmonicIntervalFitness(Swarm *alternateSwarm, int rhythmPlayhead, i
     }
     
     //Best fitness is reset in order to assess whether it's new candidate solution that will be based upon the harmonic interval testing will become a new best of the swarm.
-    bestFitness = 9999999;
+    //bestFitness = 9999999;
     
     
 }
@@ -346,17 +346,16 @@ void Swarm::fitness() {
         fitnessSum = (abs(desiredNoteDistance - noteDistance) * 1000);
 
 
-        
+
+        //Array to store melodic intervals of the candidate solution.
+        int intervals[15];
         
         
         //If the desired note distance is not 0 (the particle is not aiming towards the current inputted phrase, then the melodic intervals that the user would like is
         //evaluated using the interactive penalties that the user can alter.
        if (desiredNoteDistance != 0) {
             
-            
-        //Array to store melodic intervals of the candidate solution.
-        int intervals[15];
-
+           
         //Determine distance of notes 2, 3, and 4 from note 1.
         for (int j = 0; j < 15; j++) {
 
@@ -377,56 +376,56 @@ void Swarm::fitness() {
             //If distance is 0, this evaluates to an interval of 1 (perfect unison)
             if (dist == 0) {
                 
-                fitnessSum += firstPen/10;
+                fitnessSum += firstPen/2;
                
             }
             
             //If distance is 1, this evaluates to an interval of 2 (slight disonnance)
             else if (dist == sign*1 || dist == (-sign)*1) {
                 
-                fitnessSum += secondPen/10;
+                fitnessSum += secondPen/2;
                 
             }
             
             //If distance is 2, this evaluates to an interval of 3 (third)
             else if (dist == sign*2 || dist == (-sign)*2) {
                 
-                fitnessSum += thirdPen/10;
+                fitnessSum += thirdPen/2;
              
             }
             
             //If ditance is 3, this evaluates to an interval of 4
             else if (dist == sign*3 || dist == (-sign)*3) {
                 
-                fitnessSum += fourthPen/10;
+                fitnessSum += fourthPen/2;
                 
             }
             
             //If distance is 4, this evaluates to an interval of 5
             else if (dist == sign*4 || dist == (-sign)*4) {
                 
-                fitnessSum += fifthPen/10;
+                fitnessSum += fifthPen/2;
              
             }
             
             //If distance is 5, this evaluates to an interval of 6
             else if (dist == sign*5 || dist == (-sign)*5) {
                 
-                fitnessSum += sixthPen/10;
+                fitnessSum += sixthPen/2;
                 
             }
             
             //If distance is 6, this evaluates to an interval of 7
             else if (dist == sign*6 || dist == (-sign)*6) {
                 
-                fitnessSum += seventhPen/10;
+                fitnessSum += seventhPen/2;
             
             }
             
             //If distance is 7, this evaluates to an interval of 8 (octave)
             else if (dist == sign*7 || dist == (-sign)*7) {
                 
-                fitnessSum += eighthPen/10;
+                fitnessSum += eighthPen/2;
               
             
             //Else statement evaluates to distances above 7, so any intervals higher than an octave.
@@ -438,9 +437,36 @@ void Swarm::fitness() {
    
         }
            
-           
-
-       }
+    }
+        
+        //Determine fitness based on whether particle candidate solution adheres to an ascending or descending contour.
+        //The sign of the first interval is calculated to determine whether there is a descending or ascending route from the first note sequence note to the second. All other intervals are then assessed to check whether they follow the same ascending or descending pattern.
+        //This is to stop a 'random' feeling in the output, which as humans we are able to detect if there is not a logical contour in note sequences.
+        int barSign = ofSign(intervals[0]);
+        for (int j = 0; j < 15; j++) {
+            if (barSign == 0) {
+                
+                if (intervals[j+1] == 0) {
+                    fitnessSum+=100000;
+                }
+            }
+            
+            if (barSign == -1) {
+                if (intervals[j+1] > intervals[j]) {
+                    fitnessSum+=100000;
+                }
+                
+            } else if (barSign == 1) {
+                if (intervals[j+1] < intervals[j]) {
+                    fitnessSum+=100000;
+                    
+                }
+            }
+            
+            if (intervals[j+1] > 7) {
+                fitnessSum+=500000;
+            }
+        }
         
         particles[i]->fitness += fitnessSum;
 

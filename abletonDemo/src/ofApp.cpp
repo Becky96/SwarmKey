@@ -161,7 +161,7 @@ void ofApp::draw(){
     } else {
         
         
-        //displayAreaSegments();          //Display the lines that segment the screen into the different functionality areas.
+        displayAreaSegments();          //Display the lines that segment the screen into the different functionality areas.
         
         checkPhraseDeleted();           //Function monitors whether a phrase has been deleted from the current phrase list.
         

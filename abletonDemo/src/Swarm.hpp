@@ -61,7 +61,7 @@ public:
     
     //Algoirthm variables
     int N = 20;                             //Number of particles
-    float noteCon = (0.72984);                 //Constriction factor
+    float noteCon = (0.7984);                 //Constriction factor
     float noteC1, noteC2;                   //Learning rates
     float r1, r2;                           //Stochastic elements
     float dt = 0.01;                         //Dispersive Flies Optimisation - disturbance threshold
@@ -98,7 +98,7 @@ public:
     void createSequenceRhythm(int d, Particle * p);
     
     //Algorithm variables
-    float rhythmCon = 0.72984;                  //Constraint factor
+    float rhythmCon = 0.45;                  //Constraint factor
     float rhythmC1, rhythmC2;               //Learning coefficients
     int targetDimensionality;               //The target rhythm dimensionality as defined as the user
     float validDurations[5] = {4, 2, 1, 0.5, 0.25};
@@ -117,7 +117,7 @@ public:
     void updateParticleVelocity();          //Update velocity using PSO equation
     
     //Algorithm variables
-    float velocityCon = 0.72984;                //Constraint factor
+    float velocityCon = 0.65;                //Constraint factor
     float velocityC1, velocityC2;           //Learning coefficients
     int desiredVelocity = 60;               //Initial desired velocity when prorgam is launched
     int bestParticleSwarmVelocity;          //Best velocity of the swarm

@@ -243,7 +243,6 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     
 
     if (e.target == rhythmSlider) {
-        swarm->bestRhythm.bestDimensionality = e.value;
         swarm->chosenDimension = e.value;
         resetParticleRhythms();
     }
@@ -316,7 +315,7 @@ void SwarmGUI::onSliderEvent(ofxDatGuiSliderEvent e) {
     //Motif sliders
     //DesiredNoteSlider defines the distance the user would like from the target phrase. Reset all particle note sequence velocities to provoke particles to discover new solutions.
     if (e.target == desiredNoteDistSlider) {
-        swarm->desiredNoteDistance = int(e.value/4);
+        swarm->desiredNoteDistance = int(e.value/2);
         resetParticleIntervals();
     }
     
@@ -357,6 +356,8 @@ void SwarmGUI::resetParticleIntervals() {
 void SwarmGUI::resetParticleRhythms() {
     
     swarm->bestRhythm.bestRhythm.clear();
+    swarm->bestRhythm.hits.clear();
+
     swarm->bestFitnessRhythm = 9999999;
     
     for (int i = 0; i < swarm->particles.size(); i++) {
