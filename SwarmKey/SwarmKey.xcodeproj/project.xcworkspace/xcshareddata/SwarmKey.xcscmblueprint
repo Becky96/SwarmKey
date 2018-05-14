@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "6F1BBBB7678CEE75218453DB3CD16375AD53DAE0",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "90E2F969A762FB62C413A0C44D1F334E6EC3F531" : 0,
+    "6F1BBBB7678CEE75218453DB3CD16375AD53DAE0" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "3A786256-857A-4B94-933B-EC5AAF08E154",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "90E2F969A762FB62C413A0C44D1F334E6EC3F531" : "..\/addons\/ofxMidi",
+    "6F1BBBB7678CEE75218453DB3CD16375AD53DAE0" : "SwarmKey\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "SwarmKey",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "SwarmKey\/SwarmKey.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/Becky96\/SwarmKey.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6F1BBBB7678CEE75218453DB3CD16375AD53DAE0"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/danomatika\/ofxMidi.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "90E2F969A762FB62C413A0C44D1F334E6EC3F531"
+    }
+  ]
+}
